@@ -1,0 +1,6 @@
+@CungCapAPI_HostAddress = http://localhost:5230
+
+GET {{CungCapAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
