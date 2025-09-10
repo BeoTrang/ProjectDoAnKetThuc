@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  cungcapapi:
+    build:
+      context: .
+      dockerfile: CungCapAPI/Dockerfile
+    container_name: cungcapapi
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5000:5000"
+
+  webiot:
+    build:
+      context: .
+      dockerfile: WebIot/Dockerfile
+    container_name: webiot
+    environment:
+      - ASPNETCORE_URLS=http://+:5001
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5001:5001"
+
+
