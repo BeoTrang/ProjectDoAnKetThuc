@@ -1,10 +1,12 @@
-﻿using CungCapAPI.Helpers;
+﻿using Azure.Core;
+using CungCapAPI.Helpers;
 using CungCapAPI.Models;
 using CungCapAPI.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 
 namespace CungCapAPI.Controllers
@@ -13,12 +15,14 @@ namespace CungCapAPI.Controllers
     [Route("[controller]")]
     public class DangNhapController : Controller
     {
+        private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
         private readonly IRedisService _redis;
-        public DangNhapController(ApplicationDbContext context, IRedisService redis)
+        public DangNhapController(ApplicationDbContext context, IRedisService redis, IConfiguration configuration)
         {
             _context = context;
             _redis = redis;
+            _configuration = configuration;
         }
 
         
@@ -49,10 +53,33 @@ namespace CungCapAPI.Controllers
 
             await _redis.SetAsync($"refresh_token:{refreshToken}", user.NguoiDungId.ToString(), TimeSpan.FromDays(7));
 
+            var cookieSettings = _configuration.GetSection("CookieSettings");
+            string cookieDomain = cookieSettings.GetValue<string>("Domain");
+            string cookiePath = cookieSettings.GetValue<string>("Path");
+
+            Response.Cookies.Append("access_token", accessToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Domain = cookieDomain,
+                Path = cookiePath,
+                Expires = DateTimeOffset.UtcNow.AddMinutes(15)
+            });
+
+            Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Domain = cookieDomain,
+                Path = cookiePath,
+                Expires = DateTimeOffset.UtcNow.AddDays(7)
+            });
+
             return Ok(new
             {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken
+                Message = "Đăng nhập thành công!",
             });
         }
 
@@ -73,10 +100,25 @@ namespace CungCapAPI.Controllers
                 .AsEnumerable()  
                 .FirstOrDefault();
 
+            var cookieSettings = _configuration.GetSection("CookieSettings");
+            string cookieDomain = cookieSettings.GetValue<string>("Domain");
+            string cookiePath = cookieSettings.GetValue<string>("Path");
+
             var newAccessToken = JwtHelper.GenerateAccessToken(ClaimAccessToken, HttpContext.RequestServices.GetService<IConfiguration>());
+
+            Response.Cookies.Append("access_token", newAccessToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Domain = cookieDomain,
+                Path = cookiePath,
+                Expires = DateTimeOffset.UtcNow.AddMinutes(15)
+            });
+
             return Ok(new
             {
-                AccessToken = newAccessToken
+                Message = "Làm mới access token thành công!"
             });
         }
 
