@@ -64,7 +64,7 @@ namespace CungCapAPI.Controllers
                 SameSite = SameSiteMode.Lax,
                 Domain = cookieDomain,
                 Path = cookiePath,
-                Expires = DateTimeOffset.UtcNow.AddMinutes(15)
+                Expires = DateTimeOffset.UtcNow.AddMinutes(1)
             });
 
             Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
@@ -84,9 +84,10 @@ namespace CungCapAPI.Controllers
         }
 
         [HttpPost("/refresh")]
-        public async Task<IActionResult> Refresh([FromBody] Models.RefreshRequest request)
+        public async Task<IActionResult> Refresh()
         {
-            var NguoiDungId = await _redis.GetAsync($"refresh_token:{request.RefreshToken}");
+            var refreshToken = Request.Cookies["refresh_token"];
+            var NguoiDungId = await _redis.GetAsync($"refresh_token:{refreshToken}");
             if (NguoiDungId == null)
             {
                 return Unauthorized();
