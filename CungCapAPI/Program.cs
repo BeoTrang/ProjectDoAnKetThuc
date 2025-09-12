@@ -34,17 +34,17 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            if (context.Request.Cookies.ContainsKey("access_token"))
-            {
-                context.Token = context.Request.Cookies["access_token"];
-            }
-            return Task.CompletedTask;
-        }
-    };
+    //options.Events = new JwtBearerEvents
+    //{
+    //    OnMessageReceived = context =>
+    //    {
+    //        if (context.Request.Cookies.ContainsKey("access_token"))
+    //        {
+    //            context.Token = context.Request.Cookies["access_token"];
+    //        }
+    //        return Task.CompletedTask;
+    //    }
+    //};
 });
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
