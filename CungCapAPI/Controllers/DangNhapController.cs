@@ -25,18 +25,25 @@ namespace CungCapAPI.Controllers
             _configuration = configuration;
         }
 
-        
         [HttpPost("/login")]
         public async Task<IActionResult> Login([FromBody] Models.TaiKhoanGuiVe request)
         {
             var user = await SqlServer.NguoiDungs.FirstOrDefaultAsync(u => u.TaiKhoan == request.TaiKhoan);
             if (user == null)
             {
-                return Unauthorized("Nhập sai tài khoản hoặc mật khẩu!");
+                return Json(new
+                {
+                    success = false,
+                    message = "Nhập sai tài khoản hoặc mật khẩu!"
+                });
             }
             if (!PasswordHelper.KiemTraMatKhau(request.MatKhau, user.MatKhauMaHoa, user.MatKhauMuoi))
             {
-                return Unauthorized("Nhập sai tài khoản hoặc mật khẩu");
+                return Json(new
+                {
+                    success = false,
+                    message = "Nhập sai tài khoản hoặc mật khẩu!"
+                });
             }
 
             var ClaimAccessToken = SqlServer.ThongTinNguoiDung
@@ -53,44 +60,29 @@ namespace CungCapAPI.Controllers
 
             await _redis.SetAsync($"refresh_token:{refreshToken}", user.NguoiDungId.ToString(), TimeSpan.FromDays(7));
 
-            //var cookieSettings = _configuration.GetSection("CookieSettings");
-            //string cookieDomain = cookieSettings.GetValue<string>("Domain");
-            //string cookiePath = cookieSettings.GetValue<string>("Path");
-
-            //Response.Cookies.Append("access_token", accessToken, new CookieOptions
-            //{
-            //    HttpOnly = true,
-            //    Secure = true,
-            //    SameSite = SameSiteMode.Lax,
-            //    Domain = cookieDomain,
-            //    Path = cookiePath,
-            //    Expires = DateTimeOffset.UtcNow.AddMinutes(1)
-            //});
-
-            //Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
-            //{
-            //    HttpOnly = true,
-            //    Secure = true,
-            //    SameSite = SameSiteMode.Lax,
-            //    Domain = cookieDomain,
-            //    Path = cookiePath,
-            //    Expires = DateTimeOffset.UtcNow.AddDays(7)
-            //});
-
-            return Ok(new
+            return Json(new
             {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken
+                success = true,
+                message = "Đăng nhập thành công!",
+                data = new
+                {
+                    accessToken = accessToken,
+                    refreshToken = refreshToken
+                }
             });
         }
 
-        [HttpPost("/refresh")]
+        [HttpPost("/cap-lai-access-token")]
         public async Task<IActionResult> Refresh([FromBody] Models.RefreshRequest request)
         {
             var NguoiDungId = await _redis.GetAsync($"refresh_token:{request.RefreshToken}");
             if (NguoiDungId == null)
             {
-                return Unauthorized();
+                return Json(new
+                {
+                    success = false,
+                    message = "Refresh token không tồn tại hoặc đã hết hạn!"
+                });
             }
 
             var ClaimAccessToken = SqlServer.ThongTinNguoiDung
@@ -98,30 +90,25 @@ namespace CungCapAPI.Controllers
                     new SqlParameter("@NguoiDungId", NguoiDungId)
                 )
                 .AsNoTracking()
-                .AsEnumerable()  
+                .AsEnumerable()
                 .FirstOrDefault();
 
-            //var cookieSettings = _configuration.GetSection("CookieSettings");
-            //string cookieDomain = cookieSettings.GetValue<string>("Domain");
-            //string cookiePath = cookieSettings.GetValue<string>("Path");
+            var newAccessToken = JwtHelper.GenerateAccessToken(
+                ClaimAccessToken,
+                HttpContext.RequestServices.GetService<IConfiguration>()
+            );
 
-            var newAccessToken = JwtHelper.GenerateAccessToken(ClaimAccessToken, HttpContext.RequestServices.GetService<IConfiguration>());
-
-            //Response.Cookies.Append("access_token", newAccessToken, new CookieOptions
-            //{
-            //    HttpOnly = true,
-            //    Secure = true,
-            //    SameSite = SameSiteMode.Lax,
-            //    Domain = cookieDomain,
-            //    Path = cookiePath,
-            //    Expires = DateTimeOffset.UtcNow.AddMinutes(15)
-            //});
-
-            return Ok(new
+            return Json(new
             {
-                AccessToken = newAccessToken
+                success = true,
+                message = "Cấp lại access token thành công!",
+                data = new
+                {
+                    accessToken = newAccessToken
+                }
             });
         }
+
 
         [HttpPost("/logout")]
         public async Task<IActionResult> Logout([FromBody] Models.RefreshRequest request)
@@ -131,25 +118,41 @@ namespace CungCapAPI.Controllers
 
             if (string.IsNullOrEmpty(DangXuat))
             {
-                return NotFound("Refresh token không tồn tại hoặc đã hết hạn!");
+                return Json(new
+                {
+                    success = false,
+                    message = "Đã hết hạn"
+                });
             }
 
             await _redis.RemoveAsync(key);
 
-            return Ok(new
+            return Json(new
             {
-                Message = "Đăng xuất thành công!"
+                success = true,
+                message = "Đăng xuất thành công!"
             });
         }
 
-        [HttpGet("/test-auth")]
+        [HttpGet("/lay-thong-tin-nguoi-dung")]
         [Authorize]
-        public async Task<IActionResult> LayDuLieu()
+        public async Task<IActionResult> LayThongTinNguoiDung()
         {
-            var userId = User.FindFirst("NguoiDungId")?.Value; 
-            return Ok(new
+            var NguoiDungId = User.FindFirst("NguoiDungId")?.Value; 
+            var TenNguoiDung = User.FindFirst("TenNguoiDung")?.Value;
+            var Email = User.FindFirst("Email")?.Value;
+            var VaiTro = User.FindFirst("VaiTro")?.Value;
+            return Json(new
             {
-                Message = $"Oke, UserId = {userId}"
+                success = true,
+                message = "Lấy thông tin người dùng thành công!",
+                data = new
+                {
+                    nguoiDungId = NguoiDungId,
+                    tenNguoiDung = TenNguoiDung,
+                    email = Email,
+                    vaiTro = VaiTro
+                }
             });
         }
     }

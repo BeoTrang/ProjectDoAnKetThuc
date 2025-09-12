@@ -1,0 +1,122 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
+using System.Runtime.InteropServices;
+using WebIot.Models;
+
+namespace WebIot.Controllers
+{
+    public class TaiKhoanController : Controller
+    {
+        private readonly ApiSettings _apiSettings;
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public TaiKhoanController(IHttpClientFactory httpClientFactory, IOptions<ApiSettings> apiSettings)
+        {
+            _httpClientFactory = httpClientFactory;
+            _apiSettings = apiSettings.Value;
+        }
+
+        [Route("/dang-nhap")]
+        public IActionResult DangNhap()
+        {
+            return View();
+        }
+
+        [Route("/kiem-tra-dang-nhap")]
+        public async Task<IActionResult> KiemTraDangNhap([FromBody] Models.TaiKhoanGuiVe request)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var payload = new
+            {
+                taiKhoan = request.TaiKhoan,
+                matKhau = request.MatKhau
+            };
+            var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
+            var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync(_apiSettings.Url + "/login", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                return Json(new { success = false, message = "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin." });
+            }
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+            
+            if (result.success == true)
+            {
+                Response.Cookies.Append("accessToken", result.data.accessToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(15)
+                });
+
+                Response.Cookies.Append("refreshToken", result.data.refreshToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddDays(7)
+                });
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Đăng nhập thành công!"
+                });
+            }
+            else
+            {
+                return Json(new { success = false, message = result.message });
+            }  
+        }
+        
+        [Route("/duy-tri-dang-nhap")]
+        public async Task<IActionResult> CaplaiRefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return Json(new { success = false, message = "Đã hết hạn, yêu cầu đăng nhập lại!" });
+            }
+            var client = _httpClientFactory.CreateClient();
+            var payload = new
+            {
+                refreshToken = refreshToken
+            };
+            var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
+            var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(_apiSettings.Url + "/cap-lai-access-token", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                return Json(new { success = false, message = "Lỗi!" });
+            }
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+            if (result.success == false || result.success == null)
+            {
+                return Json(new { success = false, message = result.message });
+            }
+            else
+            {
+                Response.Cookies.Append("accessToken", result.data.accessToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(15)
+                });
+                return Json(new
+                {
+                    success = true,
+                    message = "Đã cấp lại Access Token!"
+                });
+            }
+        }
+    }
+}
