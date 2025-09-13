@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using WebIot.Helper;
 using WebIot.Models;
 
 namespace WebIot.Controllers
@@ -8,29 +9,25 @@ namespace WebIot.Controllers
     {
         private readonly ApiSettings _apiSettings;
         private readonly IHttpClientFactory _httpClientFactory;
-
-        public MainController(IHttpClientFactory httpClientFactory, IOptions<ApiSettings> apiSettings)
+        private readonly JWT_Helper _jWT_Helper;
+        public MainController(IHttpClientFactory httpClientFactory, IOptions<ApiSettings> apiSettings, JWT_Helper jWT_Helper)
         {
             _httpClientFactory = httpClientFactory;
             _apiSettings = apiSettings.Value;
+            _jWT_Helper = jWT_Helper;
         }
 
         [Route("/")]
-        public IActionResult Main()
+        public async Task<IActionResult> Main()
         {
-            var accessToken = Request.Cookies["accessToken"];
-            var refreshToken = Request.Cookies["refreshToken"];
-            if (string.IsNullOrEmpty(accessToken) && string.IsNullOrEmpty(refreshToken))
+            bool KetQua = await _jWT_Helper.KiemTraDangNhap();
+            if (KetQua)
             {
-                return RedirectToAction("DangNhap", "TaiKhoan");
-            }
-            else if (string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(refreshToken))
-            {
-                return RedirectToAction("CapLaiRefreshToken", "TaiKhoan");
+                return Redirect("/trang-chu");
             }
             else
             {
-                return Redirect("/trang-chu");
+                return Redirect("/dang-nhap");
             }
         }
     }

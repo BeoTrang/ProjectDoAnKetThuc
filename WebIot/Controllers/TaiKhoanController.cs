@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System.Runtime.InteropServices;
+using WebIot.Helper;
 using WebIot.Models;
 
 namespace WebIot.Controllers
@@ -11,17 +12,26 @@ namespace WebIot.Controllers
     {
         private readonly ApiSettings _apiSettings;
         private readonly IHttpClientFactory _httpClientFactory;
-
-        public TaiKhoanController(IHttpClientFactory httpClientFactory, IOptions<ApiSettings> apiSettings)
+        private readonly JWT_Helper _jWT_Helper;
+        public TaiKhoanController(IHttpClientFactory httpClientFactory, IOptions<ApiSettings> apiSettings, JWT_Helper jWT_Helper)
         {
             _httpClientFactory = httpClientFactory;
             _apiSettings = apiSettings.Value;
+            _jWT_Helper = jWT_Helper;
         }
 
         [Route("/dang-nhap")]
-        public IActionResult DangNhap()
+        public async Task<IActionResult> DangNhap()
         {
-            return View();
+            bool KetQua = await _jWT_Helper.KiemTraDangNhap();
+            if (KetQua)
+            {
+                return Redirect("/trang-chu");
+            }
+            else
+            {
+                return View();
+            }
         }
 
         [Route("/kiem-tra-dang-nhap")]
@@ -118,5 +128,43 @@ namespace WebIot.Controllers
                 });
             }
         }
+        //public ActionResult DangNhapLai()
+        //{
+        //    var refreshToken = Request.Cookies["refreshToken"];
+        //    if (string.IsNullOrEmpty(refreshToken))
+        //    {
+        //        return Json(new { success = false, message = "Đã hết hạn, yêu cầu đăng nhập lại!" });
+        //    }
+        //    var client = _httpClientFactory.CreateClient();
+        //    var payload = new
+        //    {
+        //        refreshToken = refreshToken
+        //    };
+        //    var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
+        //    var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+        //    var response = await client.PostAsync(_apiSettings.Url + "/cap-lai-access-token", content);
+        //    if (!response.IsSuccessStatusCode)
+        //    {
+        //        return Json(new { success = false, message = "Lỗi!" });
+        //    }
+
+        //    var responseBody = await response.Content.ReadAsStringAsync();
+        //    var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+        //    if (result.success == false || result.success == null)
+        //    {
+        //        return Json(new { success = false, message = result.message });
+        //    }
+        //    else
+        //    {
+        //        Response.Cookies.Append("accessToken", result.data.accessToken, new CookieOptions
+        //        {
+        //            HttpOnly = true,
+        //            Secure = true,
+        //            SameSite = SameSiteMode.Strict,
+        //            Expires = DateTimeOffset.UtcNow.AddMinutes(15)
+        //        });
+        //        return Redirect("/trang-chu");
+        //    }
+        //}
     }
 }
