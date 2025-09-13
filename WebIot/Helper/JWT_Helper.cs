@@ -64,6 +64,8 @@ namespace WebIot.Helper
                 var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
                 if (result.success == false || result.success == null)
                 {
+                    context.Response.Cookies.Delete("accessToken");
+                    context.Response.Cookies.Delete("refreshToken");
                     return false;
                 }
                 else
