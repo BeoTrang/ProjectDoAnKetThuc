@@ -14,7 +14,7 @@ var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
 //var cookieSettings = builder.Configuration.GetSection("CookieSettings");
 //string cookieDomain = cookieSettings.GetValue<string>("Domain");
 //string cookiePath = cookieSettings.GetValue<string>("Path");
-
+builder.Services.Configure<Key>(builder.Configuration.GetSection("Key"));
 
 builder.Services.AddAuthentication(options =>
 {

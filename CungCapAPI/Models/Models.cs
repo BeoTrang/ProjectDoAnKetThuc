@@ -21,4 +21,9 @@ namespace CungCapAPI.Models
         public string Email { get; set; }
         public string VaiTro { get; set; }
     }
+    [Keyless]
+    public class KetQuaCheckMatKhau
+    {
+        public int TrungKhop { get; set; }
+    }
 }

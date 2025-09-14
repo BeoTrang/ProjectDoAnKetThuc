@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CungCapAPI.Controllers
 {
@@ -16,19 +17,21 @@ namespace CungCapAPI.Controllers
     public class DangNhapController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly ApplicationDbContext SqlServer;
+        private readonly ApplicationDbContext _context;
         private readonly IRedisService _redis;
-        public DangNhapController(ApplicationDbContext context, IRedisService redis, IConfiguration configuration)
+        private readonly Key _key;
+        public DangNhapController(ApplicationDbContext context, IRedisService redis, IConfiguration configuration, IOptions<Key> key)
         {
-            SqlServer = context;
+            _context = context;
             _redis = redis;
             _configuration = configuration;
+            _key = key.Value;
         }
 
         [HttpPost("/login")]
         public async Task<IActionResult> Login([FromBody] Models.TaiKhoanGuiVe request)
         {
-            var user = await SqlServer.NguoiDungs.FirstOrDefaultAsync(u => u.TaiKhoan == request.TaiKhoan);
+            var user = await _context.NguoiDungs.FirstOrDefaultAsync(u => u.TaiKhoan == request.TaiKhoan);
             if (user == null)
             {
                 return Json(new
@@ -37,7 +40,19 @@ namespace CungCapAPI.Controllers
                     message = "Nhập sai tài khoản hoặc mật khẩu!"
                 });
             }
-            if (!PasswordHelper.KiemTraMatKhau(request.MatKhau, user.MatKhauMaHoa, user.MatKhauMuoi))
+
+            var check = _context.KetQuaCheckMatKhaus
+                .FromSqlRaw("EXEC SP_KiemTraMatKhau @NguoiDungId, @MatKhauCanCheck, @SuperKey",
+                    new SqlParameter("@NguoiDungId", user.NguoiDungId),
+                    new SqlParameter("@MatKhauCanCheck", request.MatKhau),
+                    new SqlParameter("@SuperKey", _key.KeyPepper)
+                )
+                .AsNoTracking()
+                .AsEnumerable()
+                .FirstOrDefault();
+
+
+            if (check.TrungKhop == 0)
             {
                 return Json(new
                 {
@@ -46,7 +61,8 @@ namespace CungCapAPI.Controllers
                 });
             }
 
-            var ClaimAccessToken = SqlServer.ThongTinNguoiDung
+
+            var ClaimAccessToken = _context.ThongTinNguoiDungs
                 .FromSqlRaw("EXEC SP_LayThongTinNguoiDungChoAccessToken @NguoiDungId",
                     new SqlParameter("@NguoiDungId", user.NguoiDungId)
                 )
@@ -85,7 +101,7 @@ namespace CungCapAPI.Controllers
                 });
             }
 
-            var ClaimAccessToken = SqlServer.ThongTinNguoiDung
+            var ClaimAccessToken = _context.ThongTinNguoiDungs
                 .FromSqlRaw("EXEC SP_LayThongTinNguoiDungChoAccessToken @NguoiDungId",
                     new SqlParameter("@NguoiDungId", NguoiDungId)
                 )

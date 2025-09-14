@@ -27,5 +27,6 @@
         public string email { get; set; }
         public string vaiTro { get; set; }
     }
+
     
 }
