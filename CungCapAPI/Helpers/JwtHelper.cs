@@ -1,16 +1,16 @@
-﻿using CungCapAPI.Models;
-using CungCapAPI.Service;
+﻿using CungCapAPI.Models.DTO;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace CungCapAPI.Helpers
 {
     public static class JwtHelper
     {
-        public static string GenerateAccessToken(Models.ThongTinNguoiDung thongTinNguoiDung ,  IConfiguration config)
+        public static string GenerateAccessToken(ThongTinNguoiDung thongTinNguoiDung ,  IConfiguration config)
         {
             var key = Encoding.ASCII.GetBytes(config["JWT:Key"]);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -20,6 +20,7 @@ namespace CungCapAPI.Helpers
                     new Claim("NguoiDungId", thongTinNguoiDung.NguoiDungId.ToString()),
                     new Claim("TenNguoiDung", thongTinNguoiDung.TenNguoiDung),
                     new Claim("Email", thongTinNguoiDung.Email),
+                    new Claim("SoDienThoai", thongTinNguoiDung.VaiTro),
                     new Claim("VaiTro", thongTinNguoiDung.VaiTro)
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(double.Parse(config["JWT:ExpireMinutes"])),

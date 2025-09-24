@@ -1,9 +1,13 @@
-using Microsoft.EntityFrameworkCore;
-using CungCapAPI.Models;
+using CungCapAPI.Application.Interfaces;
+using CungCapAPI.Application.Services;
+using CungCapAPI.Models.DichVuTrong;
+using CungCapAPI.Models.Redis;
+using CungCapAPI.Models.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
-using CungCapAPI.Service;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +18,9 @@ var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
 //var cookieSettings = builder.Configuration.GetSection("CookieSettings");
 //string cookieDomain = cookieSettings.GetValue<string>("Domain");
 //string cookiePath = cookieSettings.GetValue<string>("Path");
-builder.Services.Configure<Key>(builder.Configuration.GetSection("Key"));
+
+// Remove or replace this line, as it configures EF Core's internal Key type, which is not intended for DI or configuration.
+// builder.Services.Configure<Key>(builder.Configuration.GetSection("Key"));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -53,6 +59,8 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 });
 
 builder.Services.AddScoped<IRedisService, RedisService>();
+builder.Services.AddScoped<TaiKhoanRepository>();
+builder.Services.AddScoped<ITaiKhoanService, TaiKhoanService>();
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -67,6 +75,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
+
 }
 
 app.UseHttpsRedirection();

@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis;
 
-namespace CungCapAPI.Service
+namespace CungCapAPI.Models.Redis
 {
     public interface IRedisService
     {
