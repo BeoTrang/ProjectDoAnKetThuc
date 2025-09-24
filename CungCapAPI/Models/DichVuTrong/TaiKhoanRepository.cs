@@ -87,5 +87,27 @@ namespace CungCapAPI.Models.DichVuTrong
                 return 0;
             }
         }
+
+        public async Task<bool> DangKyTaiKhoan(DangKyTaiKhoan request, string KeyPepper)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<int>("EXEC SP_DangKyTaiKhoan @name, @email, @phone_number, @account_login, @password_login, @superKey",
+                    new SqlParameter("@name", request.name),
+                    new SqlParameter("@email", request.email),
+                    new SqlParameter("@phone_number", request.phone_number),
+                    new SqlParameter("@account_login", request.account_login),
+                    new SqlParameter("@password_login", request.password_login),
+                    new SqlParameter("@superKey", KeyPepper)
+                )
+                .ToListAsync();
+            if (result.FirstOrDefault() == 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

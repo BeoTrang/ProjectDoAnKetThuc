@@ -34,8 +34,56 @@ namespace WebIot.Controllers
             }
         }
 
+        [Route("/dang-ky")]
+        public ActionResult DangKy()
+        {
+            return View();
+        }
+
+        [Route("/dang-ky-tai-khoan")]
+        public async Task<IActionResult> DangKyTaiKhoan([FromBody] TaiKhoanDangKy request)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var payload = new
+            {
+                name = request.name,
+                email = request.email,
+                phone_number = request.phone_number,
+                account_login = request.account_login,
+                password_login = request.password_login
+            };
+            var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
+            var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/dang-ky-tai-khoan", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return Json(new { success = false, message = "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin." });
+            }
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+
+            if (result.success == true)
+            {
+                return Json(new
+                {
+                    success = true,
+                    message = result.message
+                });
+            }
+            else
+            {
+                return Json(new 
+                { 
+                    success = false, 
+                    message = result.message 
+                });
+            }
+        }
+
         [Route("/kiem-tra-dang-nhap")]
-        public async Task<IActionResult> KiemTraDangNhap([FromBody] Models.TaiKhoanGuiVe request)
+        public async Task<IActionResult> KiemTraDangNhap([FromBody] TaiKhoanGuiVe request)
         {
             var client = _httpClientFactory.CreateClient();
             var payload = new
@@ -46,7 +94,7 @@ namespace WebIot.Controllers
             var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
             var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync(_apiSettings.Url + "/login", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/dang-nhap", content);
             if (!response.IsSuccessStatusCode)
             {
                 return Json(new { success = false, message = "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin." });
@@ -100,7 +148,7 @@ namespace WebIot.Controllers
             };
             var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
             var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(_apiSettings.Url + "/cap-lai-access-token", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/cap-lai-access-token", content);
             if (!response.IsSuccessStatusCode)
             {
                 return Json(new { success = false, message = "Lỗi!" });

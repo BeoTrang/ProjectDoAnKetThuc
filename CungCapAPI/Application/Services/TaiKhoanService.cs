@@ -126,5 +126,10 @@ namespace CungCapAPI.Application.Services
         {
             return await _taiKhoanRepository.XoaRefreshToken(refreshToken);
         }
+        public async Task<bool> DangKyTaiKhoan(DangKyTaiKhoan request)
+        {
+            string KeyPepper = _config["Key:KeyPepper"] ?? "";
+            return await _taiKhoanRepository.DangKyTaiKhoan(request, KeyPepper);
+        }
     }
 }

@@ -58,6 +58,13 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     return ConnectionMultiplexer.Connect(config);
 });
 
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
+
 builder.Services.AddScoped<IRedisService, RedisService>();
 builder.Services.AddScoped<TaiKhoanRepository>();
 builder.Services.AddScoped<ITaiKhoanService, TaiKhoanService>();

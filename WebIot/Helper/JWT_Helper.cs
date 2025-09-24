@@ -23,7 +23,7 @@ namespace WebIot.Helper
             {
                 var client = _httpClientFactory.CreateClient();
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-                var response = await client.GetAsync(_apiSettings.Url + "/lay-thong-tin-nguoi-dung");
+                var response = await client.GetAsync(_apiSettings.Url + "/TaiKhoan/thong-tin-nguoi-dung");
                 if (response.IsSuccessStatusCode)
                 {
                     return true;
@@ -55,7 +55,7 @@ namespace WebIot.Helper
                 };
                 var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
                 var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
-                var response = await client.PostAsync(_apiSettings.Url + "/cap-lai-access-token", content);
+                var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/cap-lai-access-token", content);
                 if (!response.IsSuccessStatusCode)
                 {
                     return false;
@@ -101,7 +101,7 @@ namespace WebIot.Helper
                 };
                 var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
                 var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
-                var response = await client.PostAsync(_apiSettings.Url + "/cap-lai-access-token", content);
+                var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/cap-lai-access-token", content);
                 if (!response.IsSuccessStatusCode)
                 {
                     return false;

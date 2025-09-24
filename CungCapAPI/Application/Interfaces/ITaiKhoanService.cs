@@ -10,5 +10,6 @@ namespace CungCapAPI.Application.Interfaces
         Task<LoginResult<ThongTinNguoiDung>> LayThongTinNguoiDung(int NguoiDungId);
         Task<LoginResult<jwtTokens>> CapLaiAccessToken(string refreshToken);
         Task<bool> KiemTraTaiKhoanTonTai(string email, string phone_number, string account_login);
+        Task<bool> DangKyTaiKhoan(DangKyTaiKhoan request);
     }
 }

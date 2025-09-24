@@ -76,7 +76,7 @@ namespace CungCapAPI.Controllers
         [HttpGet("thong-tin-nguoi-dung")]
         public async Task<ActionResult> LayThongTinNguoiDung()
         {
-            int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId")!.Value);
+            int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
             var result = await _taiKhoanService.LayThongTinNguoiDung(NguoiDungId);
             return new JsonResult(new
             {
@@ -140,11 +140,23 @@ namespace CungCapAPI.Controllers
                 }
                 else
                 {
-                    return new JsonResult(new
+                    bool DangKy = await _taiKhoanService.DangKyTaiKhoan(request);
+                    if (DangKy == false)
                     {
-                        success = true,
-                        message = "Oke rồi đấy!"
-                    });
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "Đăng ký không thành công!"
+                        });
+                    }
+                    else
+                    {
+                        return new JsonResult(new
+                        {
+                            success = true,
+                            message = "Đăng ký thành công!"
+                        });
+                    }      
                 }
             }    
         }

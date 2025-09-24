@@ -5,6 +5,14 @@
         public string TaiKhoan { get; set; }
         public string MatKhau { get; set; }
     }
+    public class TaiKhoanDangKy
+    {
+        public string name { get; set; }
+        public string email { get; set; }
+        public string phone_number { get; set; }
+        public string account_login { get; set; }
+        public string password_login { get; set; }  
+    }
     public class PhanHoiApi<T>
     {
         public bool success { get; set; }
@@ -22,11 +30,10 @@
     }
     public class ThongTinNguoiDung
     {
-        public string nguoiDungId { get; set; }
-        public string tenNguoiDung { get; set; }
-        public string email { get; set; }
-        public string vaiTro { get; set; }
+        public int NguoiDungId { get; set; }
+        public string TenNguoiDung { get; set; }
+        public string Email { get; set; }
+        public string SoDienThoai { get; set; }
+        public string VaiTro { get; set; }
     }
-
-    
 }

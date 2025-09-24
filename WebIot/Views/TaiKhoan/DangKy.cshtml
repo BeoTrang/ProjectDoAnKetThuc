@@ -1,1 +1,70 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Đăng ký";
+    Layout = "~/Views/_Layout/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center align-items-center vh-100">
+        <div class="col-xl-3 col-lg-5 col-md-7 col-sm-8 col-11">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Đăng ký tài khoản</h3>
+
+                    <div id="CanhBao" class="alert d-none" role="alert"></div>
+
+                    <form id="DangKyForm" novalidate>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Họ và tên</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Nhập họ và tên" required>
+                            <div class="invalid-feedback">Vui lòng nhập họ và tên.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="text" class="form-control" id="email" name="email" placeholder="Nhập email" required>
+                            <div class="invalid-feedback">Vui lòng nhập email.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="Nhập số điện thoại" required>
+                            <div class="invalid-feedback">Vui lòng nhập số điện thoại.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="account_login" class="form-label">Tài khoản</label>
+                            <input type="text" class="form-control" id="account_login" name="account_login" placeholder="Nhập tài khoản" required>
+                            <div class="invalid-feedback">Vui lòng nhập tài khoản.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password_login" class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" id="password_login" name="password_login" placeholder="Nhập mật khẩu" required>
+                            <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="xacNhanMatKhau" class="form-label">Xác nhận mật khẩu</label>
+                            <input type="password" class="form-control" id="xacNhanMatKhau" name="xacNhanMatKhau" placeholder="Xác nhận mật khẩu" required>
+                            <div class="invalid-feedback">Vui lòng nhập xác nhận mật khẩu.</div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms">
+                            <label class="form-check-label" for="agreeTerms">Đồng ý với các điều khoản</label>
+                        </div>
+
+                        <button id="submitBtn" type="submit" class="btn btn-primary w-100">
+                            <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            <span id="btnText">Đăng ký tài khoản</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/content/js/TaiKhoan/DangKy.js"></script>
+}
