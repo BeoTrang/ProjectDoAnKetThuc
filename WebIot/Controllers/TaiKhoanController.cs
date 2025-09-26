@@ -20,6 +20,7 @@ namespace WebIot.Controllers
             _jWT_Helper = jWT_Helper;
         }
 
+        [HttpGet]
         [Route("/dang-nhap")]
         public async Task<IActionResult> DangNhap()
         {
@@ -34,12 +35,14 @@ namespace WebIot.Controllers
             }
         }
 
+        [HttpGet]
         [Route("/dang-ky")]
         public ActionResult DangKy()
         {
             return View();
         }
 
+        [HttpPost]
         [Route("/dang-ky-tai-khoan")]
         public async Task<IActionResult> DangKyTaiKhoan([FromBody] TaiKhoanDangKy request)
         {
@@ -82,6 +85,7 @@ namespace WebIot.Controllers
             }
         }
 
+        [HttpPost]
         [Route("/kiem-tra-dang-nhap")]
         public async Task<IActionResult> KiemTraDangNhap([FromBody] TaiKhoanGuiVe request)
         {
@@ -132,7 +136,8 @@ namespace WebIot.Controllers
                 return Json(new { success = false, message = result.message });
             }  
         }
-        
+
+        [HttpPost]                      
         [Route("/duy-tri-dang-nhap")]
         public async Task<IActionResult> CaplaiRefreshToken()
         {
@@ -173,6 +178,43 @@ namespace WebIot.Controllers
                 {
                     success = true,
                     message = "Đã cấp lại Access Token!"
+                });
+            }
+        }
+
+        [HttpPost]
+        [Route("/dang-xuat")]
+        public async Task<IActionResult> DangXuat()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            var client = _httpClientFactory.CreateClient();
+            var payload = new
+            {
+                refreshToken = refreshToken
+            };
+            var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
+            var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/dang-xuat", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                return Json(new { success = false, message = "Lỗi!" });
+            }
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+
+            if (result.success == false || result.success == null)
+            {
+                return Json(new { success = false, message = result.message });
+            }
+            else
+            {
+                Response.Cookies.Delete("accessToken");
+                Response.Cookies.Delete("refreshToken");
+                return Json(new
+                {
+                    success = true,
+                    message = "Đăng xuất thành công!"
                 });
             }
         }

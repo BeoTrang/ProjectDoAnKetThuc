@@ -1,2 +1,81 @@
-﻿body {
+﻿.chat-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
 }
+
+/* Sidebar mặc định */
+.sidebar {
+    width: 260px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease;
+    z-index: 1001;
+}
+
+    .sidebar.collapsed {
+        width: 70px;
+    }
+
+        .sidebar.collapsed .item-text {
+            display: none;
+        }
+
+/* Mobile: overlay */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px;
+        height: 100%;
+        transition: left 0.3s ease;
+    }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
+        display: none;
+        z-index: 1000;
+    }
+
+        .overlay.active {
+            display: block;
+        }
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* Khi sidebar thu gọn */
+.sidebar.collapsed .menu-item {
+    justify-content: center; /* căn giữa icon */
+    gap: 0; /* bỏ khoảng cách */
+}
+
+    .sidebar.collapsed .menu-item i {
+        font-size: 1.3rem; /* icon to hơn chút cho cân */
+    }
