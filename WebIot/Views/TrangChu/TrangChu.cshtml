@@ -10,38 +10,47 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <button class="btn btn-primary mb-3 w-100">
-            <i class="bi bi-plus"></i> <span class="item-text">New Chat</span>
-        </button>
         <div class="flex-grow-1">
-            <div class="menu-item">
-                <i class="bi bi-chat-left-text"></i>
-                <span class="item-text">Chat cũ 1</span>
-            </div>
-            <div class="menu-item">
-                <i class="bi bi-chat-left-text"></i>
-                <span class="item-text">Chat cũ 2</span>
-            </div>
+            <button class="btn menu-item w-100 text-decoration-none">
+                <i class="bi bi-house"></i>
+                <span class="item-text">Trang Chủ</span>
+            </button>
+            <button class="btn menu-item w-100 text-decoration-none">
+                <i class="bi bi-gear"></i>
+                <span class="item-text">Cài đặt</span>
+            </button>
+            <button class="btn menu-item w-100 text-decoration-none">
+                <i class="bi bi-gear"></i>
+                <span class="item-text">Cài đặt</span>
+            </button>
+            <button class="btn menu-item w-100 text-decoration-none">
+                <i class="bi bi-gear"></i>
+                <span class="item-text">Cài đặt</span>
+            </button>
+            <button class="btn menu-item w-100 text-decoration-none">
+                <i class="bi bi-gear"></i>
+                <span class="item-text">Cài đặt</span>
+            </button>
         </div>
         <div>
             <hr>
-            <div class="menu-item">
+            <button class="btn menu-item w-100 text-decoration-none">
                 <i class="bi bi-gear"></i>
                 <span class="item-text">Cài đặt</span>
-            </div>
+            </button>
         </div>
     </div>
 
     <!-- Main chat -->
     <div class="main">
-        <header class="py-3 mb-3 border-bottom">
+        <header class="py-2 mb-2 border-bottom">
             <div class="container-fluid d-grid gap-3 align-items-center" style="grid-template-columns: 1fr 2fr;">
                 <div class="dropdown">
-                    <!-- Desktop: toggle thu gọn -->
-                    <button class="toggle-btn d-none d-md-inline" id="toggleBtn">
-                        <i class="bi bi-layout-sidebar-inset-reverse icon-header"></i>
+                    @* Nút sidebar desktop *@
+                    <button class="btn d-none d-md-inline" id="toggleBtn">
+                        <i class="bi bi-layout-sidebar icon-header"></i>
                     </button>
-                    <!-- Mobile: toggle overlay -->
+                    @* Nút sidebar mobile *@
                     <button class="btn btn-outline-secondary d-md-none" id="mobileMenu">
                         <i class="bi bi-list"></i>
                     </button>

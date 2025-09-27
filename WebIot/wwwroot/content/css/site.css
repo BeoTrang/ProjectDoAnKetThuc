@@ -3,7 +3,9 @@
     height: 100vh;
     overflow: hidden;
 }
-
+.icon-header {
+    font-size: 1.1rem;
+}
 /* Sidebar mặc định */
 .sidebar {
     width: 260px;
@@ -68,6 +70,7 @@
     padding: 0.5rem 0;
     cursor: pointer;
     white-space: nowrap;
+    font-size: 1.1rem;
 }
 
 /* Khi sidebar thu gọn */
@@ -78,4 +81,17 @@
 
     .sidebar.collapsed .menu-item i {
         font-size: 1.3rem; /* icon to hơn chút cho cân */
+    }
+
+
+.sidebar button {
+    border: none;
+    border-radius: 0px;
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: none;
+}
+
+    .sidebar button:hover {
+        background-color: rgb(237, 226, 225);
     }
