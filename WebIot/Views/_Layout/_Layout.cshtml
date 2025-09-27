@@ -10,18 +10,102 @@
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="~/content/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/content/css/Layout/_Layout.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    @RenderBody()
+    <div class="chat-container">
+        <!-- Overlay cho mobile -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="flex-grow-1">
+                <button class="btn menu-item w-100 text-decoration-none" id="TrangChu">
+                    <i class="bi bi-house"></i>
+                    <span class="item-text">Trang Chủ</span>
+                </button>
+                <button class="btn menu-item w-100 text-decoration-none">
+                    <i class="bi bi-gear"></i>
+                    <span class="item-text">Cài đặt</span>
+                </button>
+                <button class="btn menu-item w-100 text-decoration-none">
+                    <i class="bi bi-gear"></i>
+                    <span class="item-text">Cài đặt</span>
+                </button>
+                <button class="btn menu-item w-100 text-decoration-none">
+                    <i class="bi bi-gear"></i>
+                    <span class="item-text">Cài đặt</span>
+                </button>
+                <button class="btn menu-item w-100 text-decoration-none">
+                    <i class="bi bi-gear"></i>
+                    <span class="item-text">Cài đặt</span>
+                </button>
+            </div>
+            <div>
+                <hr>
+                <button class="btn menu-item w-100 text-decoration-none" id="CaiDat">
+                    <i class="bi bi-gear"></i>
+                    <span class="item-text">Cài đặt</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main chat -->
+        <div class="main">
+            <header class="py-2 mb-2 border-bottom">
+                <div class="container-fluid d-grid gap-3 align-items-center" style="grid-template-columns: 1fr 2fr;">
+                    <div class="dropdown">
+                        @* Nút sidebar desktop *@
+                        <button class="btn d-none d-md-inline" id="toggleBtn">
+                            <i class="bi bi-layout-sidebar icon-header"></i>
+                        </button>
+                        @* Nút sidebar mobile *@
+                        <button class="btn btn-outline-secondary d-md-none" id="mobileMenu">
+                            <i class="bi bi-list"></i>
+                        </button>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-end">
+                        <div class="flex-shrink-0 dropdown">
+                            <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle icon-header"></i>
+                            </a>
+                            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-gear icon-header"></i> Cài đặt
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-person icon-header"></i> Hồ sơ
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <button class="dropdown-item" id="DangXuat">
+                                        <i class="bi bi-box-arrow-right icon-header"></i> Đăng xuất
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="main-body">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    
 
     <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js" asp-append-version="true"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="~/content/js/site.js" asp-append-version="true"></script>
+    <script src="~/content/js/Layout/_Layout.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
