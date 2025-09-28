@@ -21,32 +21,35 @@
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="flex-grow-1">
-                <button class="btn menu-item w-100 text-decoration-none" id="TrangChu">
+                <button class="btn menu-item w-100" id="TrangChu">
                     <i class="bi bi-house"></i>
                     <span class="item-text">Trang Chủ</span>
                 </button>
-                <button class="btn menu-item w-100 text-decoration-none">
+                <button class="btn menu-item w-100">
                     <i class="bi bi-gear"></i>
                     <span class="item-text">Cài đặt</span>
                 </button>
-                <button class="btn menu-item w-100 text-decoration-none">
+                <button class="btn menu-item w-100">
                     <i class="bi bi-gear"></i>
                     <span class="item-text">Cài đặt</span>
                 </button>
-                <button class="btn menu-item w-100 text-decoration-none">
+                <button class="btn menu-item w-100">
                     <i class="bi bi-gear"></i>
                     <span class="item-text">Cài đặt</span>
                 </button>
-                <button class="btn menu-item w-100 text-decoration-none">
+                <button class="btn menu-item w-100">
                     <i class="bi bi-gear"></i>
                     <span class="item-text">Cài đặt</span>
                 </button>
             </div>
             <div>
                 <hr>
-                <button class="btn menu-item w-100 text-decoration-none" id="CaiDat">
+                <button class="btn menu-item w-100" id="CaiDat">
                     <i class="bi bi-gear"></i>
                     <span class="item-text">Cài đặt</span>
+                </button>
+                <button class="btn menu-item w-100 text-center justify-content-center" id="toggleBtn">
+                    <i class="bi bi-layout-sidebar"></i>
                 </button>
             </div>
         </div>
@@ -56,10 +59,10 @@
             <header class="py-2 mb-2 border-bottom">
                 <div class="container-fluid d-grid gap-3 align-items-center" style="grid-template-columns: 1fr 2fr;">
                     <div class="dropdown">
-                        @* Nút sidebar desktop *@
+                        @* Nút sidebar desktop
                         <button class="btn d-none d-md-inline" id="toggleBtn">
                             <i class="bi bi-layout-sidebar icon-header"></i>
-                        </button>
+                        </button> *@
                         @* Nút sidebar mobile *@
                         <button class="btn btn-outline-secondary d-md-none" id="mobileMenu">
                             <i class="bi bi-list"></i>
@@ -93,7 +96,7 @@
                     </div>
                 </div>
             </header>
-            <div class="main-body">
+            <div class="main-content">
                 @RenderBody()
             </div>
         </div>

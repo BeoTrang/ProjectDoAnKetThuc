@@ -6,7 +6,7 @@
 .icon-header {
     font-size: 1.1rem;
 }
-/* Sidebar mặc định */
+
 .sidebar {
     width: 260px;
     background-color: #f8f9fa;
@@ -26,7 +26,6 @@
             display: none;
         }
 
-/* Mobile: overlay */
 @media (max-width: 768px) {
     .sidebar {
         position: fixed;
@@ -73,14 +72,13 @@
     font-size: 1.1rem;
 }
 
-/* Khi sidebar thu gọn */
 .sidebar.collapsed .menu-item {
-    justify-content: center; /* căn giữa icon */
-    gap: 0; /* bỏ khoảng cách */
+    justify-content: center;
+    gap: 0;
 }
 
     .sidebar.collapsed .menu-item i {
-        font-size: 1.3rem; /* icon to hơn chút cho cân */
+        font-size: 1.3rem;
     }
 
 
@@ -93,5 +91,5 @@
 }
 
     .sidebar button:hover {
-        background-color: rgb(237, 226, 225);
+        background-color: #e2e2e2;
     }
