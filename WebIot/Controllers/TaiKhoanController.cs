@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using System.Net.WebSockets;
 using System.Runtime.InteropServices;
 using WebIot.Helper;
 using WebIot.Models;
@@ -217,6 +218,27 @@ namespace WebIot.Controllers
                     message = "Đăng xuất thành công!"
                 });
             }
+        }
+
+        [HttpGet]
+        [Route("/lay-access-token")]
+        public async Task<IActionResult> LayAccessToken()
+        {
+            var accessToken = Request.Cookies["accessToken"];
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                bool capLai = await _jWT_Helper.CapLaiAccessToken();
+                if (!capLai)
+                {
+                    accessToken = "";
+                }
+                else
+                {
+
+                    accessToken = Request.Cookies["accessToken"];
+                }
+            }
+            return Json(new { accessToken = accessToken });
         }
     }
 }

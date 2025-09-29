@@ -69,5 +69,11 @@ namespace WebIot.Controllers
                 return View(viewModel);
             }
         }
+        [Route("/dashboard")]
+        public async Task<IActionResult> _Dashboard()
+        {
+
+            return View();
+        }
     }
 }
