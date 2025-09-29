@@ -37,6 +37,15 @@ namespace CungCapAPI.Models.DichVuTrong
                 .ToListAsync();
             return result.FirstOrDefault();
         }
+        public async Task<HoSoTaiKhoan> LayHoSoTaiKhoan(int NguoiDungId)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<HoSoTaiKhoan>("EXEC SP_HoSoTaiKhoan @NguoiDungId",
+                    new SqlParameter("@NguoiDungId", NguoiDungId)
+                )
+                .ToListAsync();
+            return result.FirstOrDefault();
+        }
 
         public async Task<int> KiemTraTaiKhoanTonTai(string email, string phone_number, string account_login)
         {

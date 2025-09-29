@@ -19,4 +19,13 @@ namespace CungCapAPI.Models.DTO
         public string SoDienThoai { get; set; }
         public string VaiTro { get; set; }
     }
+    public class  HoSoTaiKhoan
+    {
+        public string name { get; set; }
+        public string email { get; set; }
+        public string phone_number { get; set; }
+        public string account_login { get; set; }
+        public string tele_chat_id { get; set; }
+        public string tele_bot_id { get; set; }
+    }
 }

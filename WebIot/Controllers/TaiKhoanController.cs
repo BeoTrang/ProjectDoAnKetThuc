@@ -78,10 +78,10 @@ namespace WebIot.Controllers
             }
             else
             {
-                return Json(new 
-                { 
-                    success = false, 
-                    message = result.message 
+                return Json(new
+                {
+                    success = false,
+                    message = result.message
                 });
             }
         }
@@ -107,7 +107,7 @@ namespace WebIot.Controllers
 
             var responseBody = await response.Content.ReadAsStringAsync();
             var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
-            
+
             if (result.success == true)
             {
                 Response.Cookies.Append("accessToken", result.data.accessToken, new CookieOptions
@@ -135,10 +135,10 @@ namespace WebIot.Controllers
             else
             {
                 return Json(new { success = false, message = result.message });
-            }  
+            }
         }
 
-        [HttpPost]                      
+        [HttpPost]
         [Route("/duy-tri-dang-nhap")]
         public async Task<IActionResult> CaplaiRefreshToken()
         {
@@ -239,6 +239,52 @@ namespace WebIot.Controllers
                 }
             }
             return Json(new { accessToken = accessToken });
+        }
+
+        [Route("/ho-so-tai-khoan")]
+        public IActionResult HoSoTaiKhoan()
+        {
+            return View();
+        }
+        [Route("/lay-ho-so-tai-khoan")]
+        public async Task<IActionResult> LayHoSoTaiKhoan()
+        {
+            var accessToken = Request.Cookies["accessToken"];
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                bool capLai = await _jWT_Helper.CapLaiAccessToken();
+                if (!capLai)
+                {
+                    return Json(new { success = false, message = "Đã hết hạn, yêu cầu đăng nhập lại!" });
+                }
+                else
+                {
+                    accessToken = Request.Cookies["accessToken"];
+                }
+            }
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            var response = await client.GetAsync(_apiSettings.Url + "/TaiKhoan/lay-ho-so-tai-khoan");
+            if (!response.IsSuccessStatusCode)
+            {
+                return Json(new { success = false, message = "Lỗi!" });
+            }
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<HoSoTaiKhoan>>(responseBody);
+            if (result.success == false || result.success == null)
+            {
+                return Json(new { success = false, message = result.message });
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = true,
+                    message = "Lấy hồ sơ thành công!",
+                    data = result.data
+                });
+            }
         }
     }
 }

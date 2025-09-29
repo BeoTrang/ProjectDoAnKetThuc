@@ -85,6 +85,7 @@ namespace CungCapAPI.Controllers
                 data = result.data
             });
         }
+
         [HttpPost("cap-lai-access-token")]
         public async Task<ActionResult> CapLaiAccessToken([FromBody] RefreshRequest request)
         {
@@ -158,7 +159,20 @@ namespace CungCapAPI.Controllers
                         });
                     }      
                 }
-            }    
+            } 
+        }
+        [Authorize]
+        [HttpGet("lay-ho-so-tai-khoan")]
+        public async Task<ActionResult> LayHoSoTaiKhoan()
+        {
+            int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+            var result = await _taiKhoanService.LayHoSoTaiKhoan(NguoiDungId);
+            return new JsonResult(new
+            {
+                success = result.success,
+                message = result.message,
+                data = result.data
+            });
         }
     }
 }

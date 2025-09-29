@@ -75,6 +75,24 @@ namespace CungCapAPI.Application.Services
                 data = nguoiDung
             };
         }
+        public async Task<Request<HoSoTaiKhoan>> LayHoSoTaiKhoan(int nguoiDungId)
+        {
+            var hoSo = await _taiKhoanRepository.LayHoSoTaiKhoan(nguoiDungId);
+            if (hoSo == null)
+            {
+                return new Request<HoSoTaiKhoan>
+                {
+                    success = false,
+                    message = "Hồ sơ không tồn tại!"
+                };
+            }
+            return new Request<HoSoTaiKhoan>
+            {
+                success = true,
+                message = "Lấy hồ sơ thành công!",
+                data = hoSo
+            };
+        }
 
         public async Task<LoginResult<jwtTokens>> CapLaiAccessToken(string refreshToken)
         {

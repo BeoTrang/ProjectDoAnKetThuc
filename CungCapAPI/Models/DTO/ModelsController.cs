@@ -20,6 +20,14 @@
         public string message { get; set; } = string.Empty;
         public T data { get; set; }
     }
+
+    public class Request<T>
+    {
+        public bool success { get; set; }
+        public string message { get; set; } = string.Empty;
+        public T data { get; set; }
+    }
+
     public class jwtTokens
     {
         public string accessToken { get; set; }

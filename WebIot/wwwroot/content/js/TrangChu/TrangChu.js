@@ -30,11 +30,12 @@ $(document).ready(async function () {
         sidebar.addClass("collapsed");
     }
     showSpinner();
-    $('#main-content').load('/dashboard', function () {
+    $('#main-content').load('/ho-so-tai-khoan', function () {
         console.log("Đã load dashoard");
     });
+    await Init_HoSoTaiKhoan();
     hideSpinner();
-    Init_Dashboard();
+    
 });
 
 
@@ -105,12 +106,31 @@ $('#DangXuat').on("click", async function () {
     });
 });
 
-//Sidebar
-$('#TrangChu').on('click', async function () {
+$('#HoSo').on('click', async function () {
     showSpinner();
-    $('#main-content').load('/dashboard', function () {
+    $('#main-content').load('/ho-so-tai-khoan', function () {
         console.log("Đã load dashoard");
     });
+    await Init_HoSoTaiKhoan();
     hideSpinner();
-    Init_Dashboard();
 });
+
+//Sidebar
+
+$('#TrangChu').on('click', async function () {
+    try {
+        showSpinner();
+        $('#main-content').load('/dashboard', function () {
+            console.log("Đã load dashoard");
+        });
+        console.log("Đã load dashboard");
+        await Init_Dashboard();
+    } catch (err) {
+        console.error("Lỗi khi load:", err);
+    } finally {
+        hideSpinner();
+    }
+});
+
+
+
