@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CungCapAPI.Application.Interfaces;
-using CungCapAPI.Models.DTO;
+using ModelLibrary;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 
@@ -173,6 +173,38 @@ namespace CungCapAPI.Controllers
                 message = result.message,
                 data = result.data
             });
+        }
+
+        [Authorize]
+        [HttpPost("kiem-tra-va-doi-mat-khau")]
+        public async Task<ActionResult> KiemTraVaDoiMatKhau([FromBody] DoiMatKhau request)
+        {
+            int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+            var result = await _taiKhoanService.KiemTraVaDoiMatKhau(NguoiDungId, request.MatKhauCu, request.MatKhauMoi);
+            if (result == 0)
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Mật khẩu cũ không đúng!"
+                });
+            }
+            else if (result == 1)
+            {
+                return new JsonResult(new
+                {
+                    success = true,
+                    message = "Đổi mật khẩu thành công!"
+                });
+            }
+            else
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Đổi mật không thành công"
+                });
+            }
         }
     }
 }

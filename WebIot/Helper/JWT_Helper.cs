@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using ModelLibrary;
 using WebIot.Models;
 
 namespace WebIot.Helper
@@ -61,7 +62,7 @@ namespace WebIot.Helper
                     return false;
                 }
                 var responseBody = await response.Content.ReadAsStringAsync();
-                var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+                var result = System.Text.Json.JsonSerializer.Deserialize<Request<jwtTokens>>(responseBody);
                 if (result.success == false || result.success == null)
                 {
                     context.Response.Cookies.Delete("accessToken");
@@ -107,7 +108,7 @@ namespace WebIot.Helper
                     return false;
                 }
                 var responseBody = await response.Content.ReadAsStringAsync();
-                var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+                var result = System.Text.Json.JsonSerializer.Deserialize<Request<jwtTokens>>(responseBody);
                 if (result.success == false || result.success == null)
                 {
                     return false;

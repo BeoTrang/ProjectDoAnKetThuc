@@ -1,4 +1,5 @@
-﻿namespace WebIot.Models
+﻿using ModelLibrary;
+namespace WebIot.Models
 {
     public class TrangChu
     {

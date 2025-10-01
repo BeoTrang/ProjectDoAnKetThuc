@@ -1,9 +1,8 @@
-﻿using CungCapAPI.Models.DTO;
-using CungCapAPI.Models.Redis;
+﻿using CungCapAPI.Models.Redis;
 using CungCapAPI.Models.SqlServer;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using CungCapAPI.Application.Interfaces;
+using ModelLibrary;
 
 namespace CungCapAPI.Models.DichVuTrong
 {
@@ -116,6 +115,26 @@ namespace CungCapAPI.Models.DichVuTrong
             else
             {
                 return false;
+            }
+        }
+
+        public async Task<int> KiemTraVaDoiMatKhau(int NguoiDungId, string MatKhauCu, string MatKhauMoi, string KeyPepper)
+        {
+            try
+            {
+                var result = await _SqlServer.Database
+                .SqlQueryRaw<int>("EXEC SP_KiemTraVaDoiMatKhau @NguoiDungId, @MatKhauCu, @MatKhauMoi, @superKey",
+                    new SqlParameter("@NguoiDungId", NguoiDungId),
+                    new SqlParameter("@MatKhauCu", MatKhauCu),
+                    new SqlParameter("@MatKhauMoi", MatKhauMoi),
+                    new SqlParameter("@superKey", KeyPepper)
+                )
+                .ToListAsync();
+                return result.FirstOrDefault();
+            }
+            catch
+            {
+                return -1;
             }
         }
     }

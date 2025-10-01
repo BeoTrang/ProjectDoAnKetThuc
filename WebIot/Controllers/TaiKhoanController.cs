@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
-using System.Net.WebSockets;
-using System.Runtime.InteropServices;
 using WebIot.Helper;
 using WebIot.Models;
+using ModelLibrary;
 
 namespace WebIot.Controllers
 {
@@ -45,7 +42,7 @@ namespace WebIot.Controllers
 
         [HttpPost]
         [Route("/dang-ky-tai-khoan")]
-        public async Task<IActionResult> DangKyTaiKhoan([FromBody] TaiKhoanDangKy request)
+        public async Task<IActionResult> DangKyTaiKhoan([FromBody] DangKyTaiKhoan request)
         {
             var client = _httpClientFactory.CreateClient();
             var payload = new
@@ -66,7 +63,7 @@ namespace WebIot.Controllers
             }
 
             var responseBody = await response.Content.ReadAsStringAsync();
-            var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+            var result = System.Text.Json.JsonSerializer.Deserialize<Request<jwtTokens>>(responseBody);
 
             if (result.success == true)
             {
@@ -106,7 +103,7 @@ namespace WebIot.Controllers
             }
 
             var responseBody = await response.Content.ReadAsStringAsync();
-            var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+            var result = System.Text.Json.JsonSerializer.Deserialize<Request<jwtTokens>>(responseBody);
 
             if (result.success == true)
             {
@@ -161,7 +158,7 @@ namespace WebIot.Controllers
             }
 
             var responseBody = await response.Content.ReadAsStringAsync();
-            var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+            var result = System.Text.Json.JsonSerializer.Deserialize<Request<jwtTokens>>(responseBody);
             if (result.success == false || result.success == null)
             {
                 return Json(new { success = false, message = result.message });
@@ -202,7 +199,7 @@ namespace WebIot.Controllers
                 return Json(new { success = false, message = "Lỗi!" });
             }
             var responseBody = await response.Content.ReadAsStringAsync();
-            var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<JWT>>(responseBody);
+            var result = System.Text.Json.JsonSerializer.Deserialize<Request<jwtTokens>>(responseBody);
 
             if (result.success == false || result.success == null)
             {
@@ -271,7 +268,7 @@ namespace WebIot.Controllers
                 return Json(new { success = false, message = "Lỗi!" });
             }
             var responseBody = await response.Content.ReadAsStringAsync();
-            var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<HoSoTaiKhoan>>(responseBody);
+            var result = System.Text.Json.JsonSerializer.Deserialize<Request<HoSoTaiKhoan>>(responseBody);
             if (result.success == false || result.success == null)
             {
                 return Json(new { success = false, message = result.message });
@@ -286,5 +283,10 @@ namespace WebIot.Controllers
                 });
             }
         }
+        //[Route("/kiem-tra-va-doi-mat-khau")]
+        //public async Task<IActionResult> KiemTraVaDoiMatKhau([FromBody]DoiMatKhau request)
+        //{
+
+        //}
     }
 }

@@ -1,4 +1,10 @@
-﻿namespace CungCapAPI.Models.DTO
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ModelLibrary
 {
     public class ResultBool
     {
@@ -11,8 +17,8 @@
 
     public class LoginRequest
     {
-        public string TaiKhoan { get; set; } 
-        public string MatKhau { get; set; } 
+        public string TaiKhoan { get; set; }
+        public string MatKhau { get; set; }
     }
     public class LoginResult<T>
     {

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using WebIot.Helper;
+using ModelLibrary;
 using WebIot.Models;
 
 namespace WebIot.Controllers
@@ -57,7 +58,7 @@ namespace WebIot.Controllers
                     return RedirectToAction("DangNhap", "TaiKhoan");
                 }
                 var responseBody = await response.Content.ReadAsStringAsync();
-                var result = System.Text.Json.JsonSerializer.Deserialize<PhanHoiApi<ThongTinNguoiDung>>(responseBody);
+                var result = System.Text.Json.JsonSerializer.Deserialize<Request<ThongTinNguoiDung>>(responseBody);
                 if (result.success == true)
                 {
                     var ThongTinNguoiDung = result.data;

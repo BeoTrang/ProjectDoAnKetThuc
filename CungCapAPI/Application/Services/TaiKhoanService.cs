@@ -1,7 +1,8 @@
 ﻿using CungCapAPI.Application.Interfaces;
 using CungCapAPI.Helpers;
 using CungCapAPI.Models.DichVuTrong;
-using CungCapAPI.Models.DTO;
+using ModelLibrary;
+
 
 namespace CungCapAPI.Application.Services
 {
@@ -148,6 +149,11 @@ namespace CungCapAPI.Application.Services
         {
             string KeyPepper = _config["Key:KeyPepper"] ?? "";
             return await _taiKhoanRepository.DangKyTaiKhoan(request, KeyPepper);
+        }
+        public async Task<int> KiemTraVaDoiMatKhau(int NguoiDungId, string MatKhauCu, string MatKhauMoi)
+        {
+            string KeyPepper = _config["Key:KeyPepper"] ?? "";
+            return await _taiKhoanRepository.KiemTraVaDoiMatKhau(NguoiDungId, MatKhauCu, MatKhauMoi, KeyPepper);
         }
     }
 }
