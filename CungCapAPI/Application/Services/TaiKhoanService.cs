@@ -155,5 +155,30 @@ namespace CungCapAPI.Application.Services
             string KeyPepper = _config["Key:KeyPepper"] ?? "";
             return await _taiKhoanRepository.KiemTraVaDoiMatKhau(NguoiDungId, MatKhauCu, MatKhauMoi, KeyPepper);
         }
+
+        public async Task<bool> DoiThongTinNguoiDung(int NguoiDungId, CaiDatThongTinTaiKhoan model)
+        {
+            var result = await _taiKhoanRepository.DoiThongTinNguoiDung(NguoiDungId, model);
+            if (result != 1)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public async Task<bool> DoiThongTinTelegram(int NguoiDungId, CaiDatTelegram model)
+        {
+            var result = await _taiKhoanRepository.DoiThongTinTelegram(NguoiDungId, model);
+            if (result != 1)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }

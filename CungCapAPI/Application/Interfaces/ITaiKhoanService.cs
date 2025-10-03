@@ -13,5 +13,8 @@ namespace CungCapAPI.Application.Interfaces
         Task<bool> DangKyTaiKhoan(DangKyTaiKhoan request);
         Task<Request<HoSoTaiKhoan>> LayHoSoTaiKhoan(int nguoiDungId);
         Task<int> KiemTraVaDoiMatKhau(int NguoiDungId, string MatKhauCu, string MatKhauMoi);
+        Task<bool> DoiThongTinTelegram(int NguoiDungId, CaiDatTelegram model);
+        Task<bool> DoiThongTinNguoiDung(int NguoiDungId, CaiDatThongTinTaiKhoan model);
+
     }
 }

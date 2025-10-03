@@ -28,7 +28,19 @@
     }
     public class DoiMatKhau
     {
-        public string MatKhauCu { get; set; }
-        public string MatKhauMoi { get; set; }
+        public string matKhauCu { get; set; }
+        public string matKhauMoi { get; set; }
+    }
+    public class CaiDatTelegram
+    {
+        public string chatId { get; set; }
+        public string botId { get; set; }
+    }
+    public class CaiDatThongTinTaiKhoan
+    {
+        public string hoVaTen { get; set; }
+        public string email { get; set; }
+        public string soDienThoai { get; set; }
+        public string taiKhoanDangNhap { get; set; }
     }
 }

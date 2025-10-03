@@ -180,7 +180,7 @@ namespace CungCapAPI.Controllers
         public async Task<ActionResult> KiemTraVaDoiMatKhau([FromBody] DoiMatKhau request)
         {
             int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
-            var result = await _taiKhoanService.KiemTraVaDoiMatKhau(NguoiDungId, request.MatKhauCu, request.MatKhauMoi);
+            var result = await _taiKhoanService.KiemTraVaDoiMatKhau(NguoiDungId, request.matKhauCu, request.matKhauMoi);
             if (result == 0)
             {
                 return new JsonResult(new
@@ -203,6 +203,52 @@ namespace CungCapAPI.Controllers
                 {
                     success = false,
                     message = "Đổi mật không thành công"
+                });
+            }
+        }
+        [Authorize]
+        [HttpPost("doi-thong-tin-nguoi-dung")]
+        public async Task<IActionResult> DoiThongTinNguoiDung([FromBody] CaiDatThongTinTaiKhoan request)
+        {
+            int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+            var result = await _taiKhoanService.DoiThongTinNguoiDung(NguoiDungId, request);
+            if (result == false)
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Đã có tài khoản khác sử dụng thông tin bạn vừa điền!"
+                });
+            }
+            else
+            {
+                return new JsonResult(new
+                { 
+                    success = true,
+                    message = "Chỉnh sửa thành công!"
+                });
+            }
+        }
+        [Authorize]
+        [HttpPost("doi-thong-tin-telegram")]
+        public async Task<IActionResult> DoiThongTinTelegram([FromBody] CaiDatTelegram request)
+        {
+            int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+            var result = await _taiKhoanService.DoiThongTinTelegram(NguoiDungId, request);
+            if (result == false)
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Đã có tài khoản khác sử dụng thông tin bạn vừa điền!"
+                });
+            }
+            else
+            {
+                return new JsonResult(new
+                {
+                    success = true,
+                    message = "Chỉnh sửa thành công!"
                 });
             }
         }

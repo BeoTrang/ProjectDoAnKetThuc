@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using WebIot.Helper;
 using WebIot.Models;
 using ModelLibrary;
+using Newtonsoft.Json;
 
 namespace WebIot.Controllers
 {
@@ -283,10 +284,122 @@ namespace WebIot.Controllers
                 });
             }
         }
-        //[Route("/kiem-tra-va-doi-mat-khau")]
-        //public async Task<IActionResult> KiemTraVaDoiMatKhau([FromBody]DoiMatKhau request)
-        //{
+        [Route("/kiem-tra-va-doi-mat-khau")]
+        public async Task<IActionResult> KiemTraVaDoiMatKhau([FromBody] DoiMatKhau request)
+        {
+            var accessToken = Request.Cookies["accessToken"];
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                bool capLai = await _jWT_Helper.CapLaiAccessToken();
+                if (!capLai)
+                {
+                    return Json(new { success = false, message = "Đã hết hạn, yêu cầu đăng nhập lại!" });
+                }
+                else
+                {
+                    accessToken = Request.Cookies["accessToken"];
+                }
+            }
 
-        //}
+            var payload = new
+            {
+                matKhauCu = request.matKhauCu,
+                matKhauMoi = request.matKhauMoi
+            };
+
+            var client = _httpClientFactory.CreateClient();
+            var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
+            var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/kiem-tra-va-doi-mat-khau", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                return Json(new { success = false, message = "Lỗi hệ thống, thử lại sau!" });
+            }
+            else
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var result = System.Text.Json.JsonSerializer.Deserialize<Request<HoSoTaiKhoan>>(responseBody);
+                return Json(new
+                {
+                    success = result.success,
+                    message = result.message
+                });
+            }
+        }
+        [Route("/doi-thong-tin-nguoi-dung")]
+        public async Task<IActionResult> DoiThongTinNguoiDung([FromBody] CaiDatThongTinTaiKhoan model)
+        {
+            var accessToken = Request.Cookies["accessToken"];
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                bool capLai = await _jWT_Helper.CapLaiAccessToken();
+                if (!capLai)
+                {
+                    return Json(new { success = false, message = "Đã hết hạn, yêu cầu đăng nhập lại!" });
+                }
+                else
+                {
+                    accessToken = Request.Cookies["accessToken"];
+                }
+            }
+
+            var payload = JsonConvert.SerializeObject(model);
+            var client = _httpClientFactory.CreateClient();
+            var content = new System.Net.Http.StringContent(payload, System.Text.Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/doi-thong-tin-nguoi-dung", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                return Json(new { success = false, message = "Lỗi hệ thống, thử lại sau!" });
+            }
+            else
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var result = System.Text.Json.JsonSerializer.Deserialize<Request<HoSoTaiKhoan>>(responseBody);
+                return Json(new
+                {
+                    success = result.success,
+                    message = result.message
+                });
+            }
+        }
+        [Route("/doi-thong-tin-telegram")]
+        public async Task<IActionResult> DoiThongTinTelegram([FromBody] CaiDatTelegram model)
+        {
+            var accessToken = Request.Cookies["accessToken"];
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                bool capLai = await _jWT_Helper.CapLaiAccessToken();
+                if (!capLai)
+                {
+                    return Json(new { success = false, message = "Đã hết hạn, yêu cầu đăng nhập lại!" });
+                }
+                else
+                {
+                    accessToken = Request.Cookies["accessToken"];
+                }
+            }
+
+            var payload = JsonConvert.SerializeObject(model);
+            var client = _httpClientFactory.CreateClient();
+            var content = new System.Net.Http.StringContent(payload, System.Text.Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/doi-thong-tin-telegram", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                return Json(new { success = false, message = "Lỗi hệ thống, thử lại sau!" });
+            }
+            else
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var result = System.Text.Json.JsonSerializer.Deserialize<Request<HoSoTaiKhoan>>(responseBody);
+                return Json(new
+                {
+                    success = result.success,
+                    message = result.message
+                });
+            }
+        }
     }
 }

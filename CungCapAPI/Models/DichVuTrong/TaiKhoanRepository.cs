@@ -3,6 +3,7 @@ using CungCapAPI.Models.SqlServer;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using ModelLibrary;
+using System.Linq;
 
 namespace CungCapAPI.Models.DichVuTrong
 {
@@ -135,6 +136,46 @@ namespace CungCapAPI.Models.DichVuTrong
             catch
             {
                 return -1;
+            }
+        }
+
+        public async Task<int> DoiThongTinTelegram(int NguoiDungId, CaiDatTelegram model)
+        {
+            try
+            {
+                var result = await _SqlServer.Database
+                .SqlQueryRaw<int>("EXEC SP_DoiThongTinTelegram @NguoiDungId, @ChatId, @BotId",
+                    new SqlParameter("@NguoiDungId", NguoiDungId),
+                    new SqlParameter("@ChatId", model.chatId),
+                    new SqlParameter("@BotId", model.botId)
+                )
+                .ToListAsync();
+                return result.FirstOrDefault();
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        public async Task<int> DoiThongTinNguoiDung(int NguoiDungId, CaiDatThongTinTaiKhoan model)
+        {
+            try
+            {
+                var result = await _SqlServer.Database
+                .SqlQueryRaw<int>("EXEC SP_DoiThongTinNguoiDung @NguoiDungId, @HoVaTen, @Email, @SoDienThoai, @TaiKhoanDangNhap",
+                    new SqlParameter("@NguoiDungId", NguoiDungId),
+                    new SqlParameter("@HoVaTen", model.hoVaTen),
+                    new SqlParameter("@Email", model.email),
+                    new SqlParameter("@SoDienThoai", model.soDienThoai),
+                    new SqlParameter("@TaiKhoanDangNhap", model.taiKhoanDangNhap)
+                )
+                .ToListAsync();
+                return result.FirstOrDefault();
+            }
+            catch
+            {
+                return 0;
             }
         }
     }
