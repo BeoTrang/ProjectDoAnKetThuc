@@ -16,10 +16,6 @@
         $('#tele_chat_id').val(info.tele_chat_id || "");
         $('#tele_bot_id').val(info.tele_bot_id || "");
 
-
-
-        //const DoiMatKhauForm = $('#DoiMatKhauForm');
-
         $('#DoiMatKhauForm').submit(async function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -83,6 +79,9 @@
                                 text: "Đổi mật khẩu thành công!",
                                 icon: "success"
                             });
+                            matKhauCu.val('');
+                            matKhauMoi1.val('');
+                            matKhauMoi2.val('');
                         }
                     } catch (error) {
                         Swal.fire({
