@@ -3,13 +3,14 @@ using CungCapAPI.Application.Services;
 using CungCapAPI.Models.DichVuTrong;
 using CungCapAPI.Models.Redis;
 using CungCapAPI.Models.SqlServer;
+using CungCapAPI.MQTT;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
+using ModelLibrary;
 using StackExchange.Redis;
 using System.Text;
-using ModelLibrary;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtSettings = builder.Configuration.GetSection("JWT");
@@ -77,6 +78,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
+builder.Services.AddSingleton<MqttService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -86,6 +89,9 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 
 }
+
+var mqttService = app.Services.GetRequiredService<MqttService>();
+await mqttService.ConnectAsync();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

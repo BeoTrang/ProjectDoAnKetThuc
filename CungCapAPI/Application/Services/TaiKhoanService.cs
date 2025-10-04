@@ -11,7 +11,7 @@ namespace CungCapAPI.Application.Services
         private readonly TaiKhoanRepository _taiKhoanRepository;
         private readonly IConfiguration _config;
 
-        public TaiKhoanService(TaiKhoanRepository taiKhoanRepository,IConfiguration config)
+        public TaiKhoanService(TaiKhoanRepository taiKhoanRepository, IConfiguration config)
         {
             _taiKhoanRepository = taiKhoanRepository;
             _config = config;
