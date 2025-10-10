@@ -17,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 // ===== JWT =====
 var jwtSettings = builder.Configuration.GetSection("JWT");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
+var domain = builder.Configuration.GetSection("Domain");
 
 // ===== Authentication =====
 builder.Services.AddAuthentication(options =>
@@ -58,7 +59,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://localhost:7190")
+        policy.WithOrigins(domain["Name"])
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
