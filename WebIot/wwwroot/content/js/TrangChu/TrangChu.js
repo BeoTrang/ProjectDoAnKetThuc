@@ -29,12 +29,18 @@ $(document).ready(async function () {
     if (isCollapsed) {
         sidebar.addClass("collapsed");
     }
-    showSpinner();
-    $('#main-content').load('/ho-so-tai-khoan', async function () {
-        console.log("Đã load hồ sơ");
-        await Init_HoSoTaiKhoan();  // chạy sau khi HTML đã load
+    try {
+        showSpinner();
+        $('#main-content').load('/dashboard', function () {
+            console.log("Đã load dashoard");
+        });
+        console.log("Đã load dashboard");
+        await Init_Dashboard();
+    } catch (err) {
+        console.error("Lỗi khi load:", err);
+    } finally {
         hideSpinner();
-    });
+    }
     
 });
 
@@ -110,7 +116,7 @@ $('#HoSo').on('click', function () {
     showSpinner();
     $('#main-content').load('/ho-so-tai-khoan', async function () {
         console.log("Đã load hồ sơ");
-        await Init_HoSoTaiKhoan();  // chạy sau khi HTML đã load
+        await Init_HoSoTaiKhoan(); 
         hideSpinner();
     });
 });

@@ -1,29 +1,24 @@
-using CungCapAPI.Application.Interfaces;
+﻿using CungCapAPI.Application.Interfaces;
 using CungCapAPI.Application.Services;
+using CungCapAPI.Hubs;
 using CungCapAPI.Models.DichVuTrong;
 using CungCapAPI.Models.Redis;
 using CungCapAPI.Models.SqlServer;
 using CungCapAPI.MQTT;
+using CungCapAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
-using ModelLibrary;
 using StackExchange.Redis;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ===== JWT =====
 var jwtSettings = builder.Configuration.GetSection("JWT");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
 
-
-//var cookieSettings = builder.Configuration.GetSection("CookieSettings");
-//string cookieDomain = cookieSettings.GetValue<string>("Domain");
-//string cookiePath = cookieSettings.GetValue<string>("Path");
-
-// Remove or replace this line, as it configures EF Core's internal Key type, which is not intended for DI or configuration.
-// builder.Services.Configure<Key>(builder.Configuration.GetSection("Key"));
-
+// ===== Authentication =====
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -42,43 +37,56 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
-    //options.Events = new JwtBearerEvents
-    //{
-    //    OnMessageReceived = context =>
-    //    {
-    //        if (context.Request.Cookies.ContainsKey("access_token"))
-    //        {
-    //            context.Token = context.Request.Cookies["access_token"];
-    //        }
-    //        return Task.CompletedTask;
-    //    }
-    //};
+
+    // Cho phép token truyền qua query khi kết nối SignalR
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/deviceHub"))
+                context.Token = accessToken;
+
+            return Task.CompletedTask;
+        }
+    };
 });
+
+// ===== CORS =====
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("https://localhost:7190")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+// ===== Services =====
+builder.Services.AddSignalR();
+builder.Services.AddControllers().AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.PropertyNamingPolicy = null;
+});
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<IRedisService, RedisService>();
+builder.Services.AddScoped<TaiKhoanRepository>();
+builder.Services.AddScoped<ITaiKhoanService, TaiKhoanService>();
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var config = builder.Configuration.GetSection("Redis")["Configuration"];
     return ConnectionMultiplexer.Connect(config);
 });
+builder.Services.AddSingleton<InfluxService>();
+builder.Services.AddSingleton<MqttService>();
+builder.Services.AddDbContext<ApplicationDbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
-
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNamingPolicy = null;
-    });
-
-builder.Services.AddScoped<IRedisService, RedisService>();
-builder.Services.AddScoped<TaiKhoanRepository>();
-builder.Services.AddScoped<ITaiKhoanService, TaiKhoanService>();
-builder.Services.AddAuthorization();
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
-
-builder.Services.AddSingleton<MqttService>();
 
 var app = builder.Build();
 
@@ -87,16 +95,24 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
-
 }
 
 var mqttService = app.Services.GetRequiredService<MqttService>();
 await mqttService.ConnectAsync();
 
 app.UseHttpsRedirection();
+app.UseRouting();
+
+// ⚠️ Bắt buộc đặt ở đây
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<DeviceHub>("/deviceHub").RequireCors("AllowFrontend");
+});
 
 app.Run();

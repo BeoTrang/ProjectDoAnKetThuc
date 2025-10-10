@@ -76,5 +76,14 @@ namespace WebIot.Controllers
 
             return View();
         }
+        [Route("/lay-url-api")]
+        public async Task<IActionResult> LayUrlSignalR()
+        {
+            return Json(new
+            {
+                success = true,
+                data = _apiSettings.Url
+            });
+        }
     }
 }
