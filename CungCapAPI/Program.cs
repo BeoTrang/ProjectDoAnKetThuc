@@ -73,9 +73,11 @@ builder.Services.AddControllers().AddJsonOptions(o =>
     o.JsonSerializerOptions.PropertyNamingPolicy = null;
 });
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<IRedisService, RedisService>();
+builder.Services.AddSingleton<IRedisService, RedisService>();
 builder.Services.AddScoped<TaiKhoanRepository>();
+builder.Services.AddScoped<ThietBiRepository>();
 builder.Services.AddScoped<ITaiKhoanService, TaiKhoanService>();
+builder.Services.AddScoped<IThietBiService, ThietBiService>();
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var config = builder.Configuration.GetSection("Redis")["Configuration"];

@@ -47,4 +47,11 @@ namespace ModelLibrary
         public string account_login { get; set; }
         public string password_login { get; set; }
     }
+
+    public class Request1
+    {
+        public bool success { get; set; }
+        public string message { get; set; } = string.Empty;
+        public Object data { get; set; }
+    }
 }

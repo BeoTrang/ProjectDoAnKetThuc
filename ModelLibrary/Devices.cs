@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 
 namespace ModelLibrary
 {
+    public class KiemTraQuyenThietBi
+    {
+        public int deviceId { get; set; }
+    }
     public class Devices
     {
         public string id { get; set; }
         public string type { get; set; }
+        public string status { get; set; }
         public DateTime timestamp { get; set; }
     }
     public class AX01 <TData, TRelay> : Devices
@@ -33,4 +38,13 @@ namespace ModelLibrary
         public int relay4 { get; set; }
 
     }
+
+    public class DanhSachThietBi
+    {
+        public int DeviceId { get; set; }
+        public string DeviceName { get; set; }
+        public string DeviceType { get; set; }
+    }
+
+
 }

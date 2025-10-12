@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using ModelLibrary;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using WebIot.Helper;
-using ModelLibrary;
 using WebIot.Models;
 
 namespace WebIot.Controllers
@@ -31,32 +34,10 @@ namespace WebIot.Controllers
             else
             {
                 var accessToken = Request.Cookies["accessToken"];
-                if (string.IsNullOrEmpty(accessToken))
-                {
-                    var refreshToken = Request.Cookies["refreshToken"];
-                    var capLaiAccessToken = _httpClientFactory.CreateClient();
-                    var payload = new
-                    {
-                        refreshToken = refreshToken
-                    };
-                    var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
-                    var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
-
-
-                    var response1 = await capLaiAccessToken.PostAsync(_apiSettings.Url + "/TaiKhoan/cap-lai-access-token", content);
-                    return RedirectToAction("DangNhap", "TaiKhoan");
-                }
-
                 var client = _httpClientFactory.CreateClient();
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
                 var response = await client.GetAsync(_apiSettings.Url + "/TaiKhoan/thong-tin-nguoi-dung");
-                if (!response.IsSuccessStatusCode)
-                {
-                    Response.Cookies.Delete("accessToken");
-                    Response.Cookies.Delete("refreshToken");
-                    return RedirectToAction("DangNhap", "TaiKhoan");
-                }
                 var responseBody = await response.Content.ReadAsStringAsync();
                 var result = System.Text.Json.JsonSerializer.Deserialize<Request<ThongTinNguoiDung>>(responseBody);
                 if (result.success == true)
@@ -73,8 +54,17 @@ namespace WebIot.Controllers
         [Route("/dashboard")]
         public async Task<IActionResult> _Dashboard()
         {
+            bool KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap)
+            {
+                return Redirect("/dang-nhap");
+            }
+            else
+            {
+                var accessToken = Request.Cookies["accessToken"];
 
-            return View();
+                return View();
+            }
         }
         [Route("/lay-url-api")]
         public async Task<IActionResult> LayUrlSignalR()
@@ -85,5 +75,46 @@ namespace WebIot.Controllers
                 data = _apiSettings.Url
             });
         }
+
+        [HttpPost]
+        [Route("/lay-du-lieu-thiet-bi")]
+        public async Task<IActionResult> LayDuLieuThietBi([FromBody] KiemTraQuyenThietBi request)
+        {
+            bool KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap) return NotFound();
+
+            var accessToken = Request.Cookies["accessToken"];
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            // Gọi API check quyền
+            var payload = new { deviceId = request.deviceId };
+            var content = new StringContent(
+                Newtonsoft.Json.JsonConvert.SerializeObject(payload),
+                System.Text.Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await client.PostAsync(_apiSettings.Url + "/ThietBi/kiem-tra-quyen-thiet-bi", content);
+            if (!response.IsSuccessStatusCode)
+                return Json(new { success = false, message = "Lỗi hệ thống!" });
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            // Deserialize thành JObject dynamic
+            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
+            
+            var responseClient = new
+            {
+                success = result.success,
+                message = result.message,
+                data = result.data
+            };
+
+            string json = JsonConvert.SerializeObject(responseClient);
+            return Content(json, "application/json");
+        }
+
     }
 }

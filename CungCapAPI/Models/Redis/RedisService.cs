@@ -22,7 +22,10 @@ namespace CungCapAPI.Models.Redis
 
         public async Task SetAsync(string key, string value, TimeSpan? expiry = null)
         {
-            await _db.StringSetAsync(key, value, expiry);
+            if (expiry.HasValue)
+                await _db.StringSetAsync(key, value, expiry);
+            else
+                await _db.StringSetAsync(key, value);
         }
 
         public async Task<string> GetAsync(string key)
