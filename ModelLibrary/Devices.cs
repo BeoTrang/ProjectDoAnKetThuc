@@ -46,5 +46,9 @@ namespace ModelLibrary
         public string DeviceType { get; set; }
     }
 
-
+    public class LayViewThietBi
+    {
+        public int deviceId { get; set; }
+        public string deviceType { get; set; }
+    }
 }

@@ -1,0 +1,107 @@
+﻿@model ModelLibrary.AX01<ModelLibrary.DHT22, ModelLibrary.Relay4>
+<link href="~/content/css/Device/AX01.css" rel="stylesheet" />
+
+<div class="card device-card">
+    <div class="card-body">
+
+        <!-- Header -->
+        <div class="device-header mb-3">
+            <div>
+                <h4 class="mb-0">Thiết bị <span class="text-primary">AX01</span></h4>
+                <small class="text-muted">ID: <strong>@Model.id</strong></small>
+            </div>
+            <div>
+                <!-- Dùng class .status-online hoặc .status-offline -->
+                @if (Model.status == "1")
+                {
+                    <span class="status-badge status-online">🟢 Online</span>
+                }
+                else
+                {
+                    <span class="status-badge status-offline">🔴 Offline</span>
+                }
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Sensor Info -->
+        <div class="row mb-4">
+            <div class="col-md-6 text-center">
+                <div class="small text-muted">Nhiệt độ</div>
+                <div class="sensor-value text-danger">@Model.data.tem</div>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="small text-muted">Độ ẩm</div>
+                <div class="sensor-value text-primary">@Model.data.hum</div>
+            </div>
+        </div>
+
+        <!-- Relay Controls -->
+        <h6 class="fw-semibold mb-3">Relay điều khiển</h6>
+        <div class="relay-section">
+            <div class="relay-item">
+                <span class="relay-name">Relay 1</span>
+                <label class="switch mb-0">
+                    @if (Model.relays.relay1 == 1)
+                    {
+                        <input type="checkbox" checked>
+                    }
+                    else
+                    {
+                        <input type="checkbox">
+                    }
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="relay-item">
+                <span class="relay-name">Relay 2</span>
+                <label class="switch mb-0">
+                    @if (Model.relays.relay2 == 1)
+                    {
+                        <input type="checkbox" checked>
+                    }
+                    else
+                    {
+                        <input type="checkbox">
+                    }
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="relay-item">
+                <span class="relay-name">Relay 3</span>
+                <label class="switch mb-0">
+                    @if (Model.relays.relay3 == 1)
+                    {
+                        <input type="checkbox" checked>
+                    }
+                    else
+                    {
+                        <input type="checkbox">
+                    }
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="relay-item">
+                <span class="relay-name">Relay 4</span>
+                <label class="switch mb-0">
+                    @if (Model.relays.relay4 == 1)
+                    {
+                        <input type="checkbox" checked>
+                    }
+                    else
+                    {
+                        <input type="checkbox">
+                    }
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <hr>
+        <div class="text-muted small">
+            <div>Thời gian cập nhật: <span>@Model.timestamp</span></div>
+        </div>
+
+    </div>
+</div>

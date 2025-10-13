@@ -46,7 +46,18 @@ namespace CungCapAPI.Controllers
                 });
             }
         }
-        
-
+        [Authorize]
+        [HttpGet("lay-danh-sach-thiet-bi")]
+        public async Task<ActionResult> LayDanhSachThietBi()
+        {
+            int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+            List<DanhSachThietBi> result = await _thietBiService.LayDanhSachThietBi(NguoiDungId);
+            return new JsonResult(new
+            {
+                success = true,
+                message = "Ok",
+                data = result
+            });
+        }
     }
 }

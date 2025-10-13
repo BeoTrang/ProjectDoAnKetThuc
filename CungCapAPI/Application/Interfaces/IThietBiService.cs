@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using ModelLibrary;
+using Newtonsoft.Json.Linq;
 
 namespace CungCapAPI.Application.Interfaces
 {
@@ -6,5 +7,6 @@ namespace CungCapAPI.Application.Interfaces
     {
         Task<bool> KiemTraQuyenThietBi(int NguoiDungId, int DeviceId);
         Task<JObject> LayDuLieuThietBi(int DeviceId);
+        Task<List<DanhSachThietBi>> LayDanhSachThietBi(int NguoiDungId);
     }
 }

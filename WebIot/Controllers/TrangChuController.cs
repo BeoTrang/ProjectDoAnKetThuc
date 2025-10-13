@@ -76,45 +76,7 @@ namespace WebIot.Controllers
             });
         }
 
-        [HttpPost]
-        [Route("/lay-du-lieu-thiet-bi")]
-        public async Task<IActionResult> LayDuLieuThietBi([FromBody] KiemTraQuyenThietBi request)
-        {
-            bool KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
-            if (!KiemTraDangNhap) return NotFound();
-
-            var accessToken = Request.Cookies["accessToken"];
-            var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-
-            // Gọi API check quyền
-            var payload = new { deviceId = request.deviceId };
-            var content = new StringContent(
-                Newtonsoft.Json.JsonConvert.SerializeObject(payload),
-                System.Text.Encoding.UTF8,
-                "application/json"
-            );
-
-            var response = await client.PostAsync(_apiSettings.Url + "/ThietBi/kiem-tra-quyen-thiet-bi", content);
-            if (!response.IsSuccessStatusCode)
-                return Json(new { success = false, message = "Lỗi hệ thống!" });
-
-            var responseBody = await response.Content.ReadAsStringAsync();
-
-            // Deserialize thành JObject dynamic
-            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
-            
-            var responseClient = new
-            {
-                success = result.success,
-                message = result.message,
-                data = result.data
-            };
-
-            string json = JsonConvert.SerializeObject(responseClient);
-            return Content(json, "application/json");
-        }
+        
 
     }
 }

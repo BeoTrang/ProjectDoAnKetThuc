@@ -11,14 +11,14 @@ async function LayAccessToken() {
 
 async function Init_Dashboard() {
     let accessToken = await LayAccessToken();
-
+    
     const res = await fetch("/lay-url-api", {
         method: "GET"
     });
     const json = await res.json();
 
     const url = `${json.data}/deviceHub?access_token=${accessToken}`;
-
+    LayDanhSachThietBi();
     if (!connection) {
         connection = new signalR.HubConnectionBuilder()
             .withUrl(url)
@@ -51,6 +51,34 @@ async function Init_Dashboard() {
     }
     
 }
+
+async function LayDanhSachThietBi() {
+    const res = await fetch("/lay-danh-sach-thiet-bi", {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json' }
+    });
+
+    const json = await res.json();
+    const data = json.data;
+    console.log(data);
+    var dashboard = $('#main-content');
+
+    for (const device of data) {
+        const viewRes = await fetch("/view-cho-thiet-bi", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                deviceId: device.deviceId,
+                deviceType: device.deviceType
+            })
+        });
+
+        const html = await viewRes.text();
+        console.log(device);
+        dashboard.append(html);
+    }
+}
+
 
 
 

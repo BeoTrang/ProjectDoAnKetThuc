@@ -34,6 +34,10 @@ namespace CungCapAPI.Application.Services
 
             return dataObj;
         }
-
+        public async Task<List<DanhSachThietBi>> LayDanhSachThietBi(int NguoiDungId)
+        {
+            List<DanhSachThietBi> result = await _thietBiRepository.DanhSachThietBi(NguoiDungId);
+            return result;
+        }
     }
 }
