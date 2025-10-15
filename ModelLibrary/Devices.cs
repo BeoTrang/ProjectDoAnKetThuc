@@ -10,11 +10,20 @@ namespace ModelLibrary
     {
         public int deviceId { get; set; }
     }
+    public class Device
+    {
+        public int id { get; set; }
+        public string type { get; set; }
+        public string name { get; set; }
+        public string status { get; set; }
+    }
     public class Devices
     {
         public string id { get; set; }
         public string type { get; set; }
+        public string name { get; set; }
         public string status { get; set; }
+        public string firmware { get; set; }
         public DateTime timestamp { get; set; }
     }
     public class AX01 <TData, TRelay> : Devices

@@ -26,14 +26,14 @@ namespace WebIot.Controllers
         [Route("/trang-chu")]
         public async Task<IActionResult> TrangChu()
         {
-            bool KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
-            if (!KiemTraDangNhap)
+            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap.success)
             {
                 return Redirect("/dang-nhap");
             }
             else
             {
-                var accessToken = Request.Cookies["accessToken"];
+                var accessToken = KiemTraDangNhap.accessToken;
                 var client = _httpClientFactory.CreateClient();
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
@@ -54,14 +54,14 @@ namespace WebIot.Controllers
         [Route("/dashboard")]
         public async Task<IActionResult> _Dashboard()
         {
-            bool KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
-            if (!KiemTraDangNhap)
+            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap.success)
             {
                 return Redirect("/dang-nhap");
             }
             else
             {
-                var accessToken = Request.Cookies["accessToken"];
+                var accessToken = KiemTraDangNhap.accessToken;
 
                 return View();
             }

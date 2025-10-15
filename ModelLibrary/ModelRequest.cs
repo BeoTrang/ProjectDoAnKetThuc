@@ -43,4 +43,9 @@
         public string soDienThoai { get; set; }
         public string taiKhoanDangNhap { get; set; }
     }
+    public class KiemTraJWT
+    {
+        public bool success { get; set; }
+        public string accessToken { get; set; }
+    }
 }

@@ -43,6 +43,15 @@ namespace CungCapAPI.Models.DichVuTrong
                 return false;
             }
         }
+        public async Task<Device> LayThongTinThietBi(int DeviceId)
+        {
+                var result = await _SqlServer.Database
+                .SqlQueryRaw<Device>("EXEC SP_LayThongTinThietBi @DeviceId",
+                    new SqlParameter("@DeviceId", DeviceId)
+                )
+                .ToListAsync();
+            return result.FirstOrDefault();
+        }
         public async Task<string> LayDataThietBi(int DeviceId)
         {
             var data = await _Redis.GetAsync($"device:{DeviceId}:data");

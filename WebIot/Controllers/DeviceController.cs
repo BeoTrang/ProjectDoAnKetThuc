@@ -25,8 +25,8 @@ namespace WebIot.Controllers
         [Route("/lay-danh-sach-thiet-bi")]
         public async Task<IActionResult> LayDanhSachThietBi()
         {
-            bool KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
-            if (!KiemTraDangNhap)
+            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap.success)
             {
                 return Json(new
                 {
@@ -36,7 +36,7 @@ namespace WebIot.Controllers
             }
             else
             {
-                var accessToken = Request.Cookies["accessToken"];
+                var accessToken = KiemTraDangNhap.accessToken;
                 var client = _httpClientFactory.CreateClient();
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
@@ -62,10 +62,10 @@ namespace WebIot.Controllers
         [Route("/lay-du-lieu-thiet-bi")]
         public async Task<IActionResult> LayDuLieuThietBi([FromBody] KiemTraQuyenThietBi request)
         {
-            bool KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
-            if (!KiemTraDangNhap) return NotFound();
+            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap.success) return NotFound();
 
-            var accessToken = Request.Cookies["accessToken"];
+            var accessToken = KiemTraDangNhap.accessToken;
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
@@ -119,7 +119,7 @@ namespace WebIot.Controllers
 
             var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
 
-            var AX01 = result.data?.ToObject<AX01<DHT22, Relay4>>();
+             var AX01 = result.data?.ToObject<AX01<DHT22, Relay4>>();
 
             return AX01;
         }

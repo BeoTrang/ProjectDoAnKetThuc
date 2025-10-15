@@ -23,8 +23,8 @@ namespace WebIot.Controllers
         [Route("/dang-nhap")]
         public async Task<IActionResult> DangNhap()
         {
-            bool KetQua = await _jWT_Helper.KiemTraDangNhap();
-            if (KetQua)
+            KiemTraJWT KetQua = await _jWT_Helper.KiemTraDangNhap();
+            if (KetQua.success)
             {
                 return Redirect("/trang-chu");
             }
@@ -225,8 +225,8 @@ namespace WebIot.Controllers
             var accessToken = Request.Cookies["accessToken"];
             if (string.IsNullOrEmpty(accessToken))
             {
-                bool capLai = await _jWT_Helper.CapLaiAccessToken();
-                if (!capLai)
+                KiemTraJWT capLai = await _jWT_Helper.CapLaiAccessToken();
+                if (!capLai.success)
                 {
                     accessToken = "";
                 }
@@ -250,8 +250,8 @@ namespace WebIot.Controllers
             var accessToken = Request.Cookies["accessToken"];
             if (string.IsNullOrEmpty(accessToken))
             {
-                bool capLai = await _jWT_Helper.CapLaiAccessToken();
-                if (!capLai)
+                KiemTraJWT capLai = await _jWT_Helper.CapLaiAccessToken();
+                if (!capLai.success)
                 {
                     return Json(new { success = false, message = "Đã hết hạn, yêu cầu đăng nhập lại!" });
                 }
@@ -290,8 +290,8 @@ namespace WebIot.Controllers
             var accessToken = Request.Cookies["accessToken"];
             if (string.IsNullOrEmpty(accessToken))
             {
-                bool capLai = await _jWT_Helper.CapLaiAccessToken();
-                if (!capLai)
+                KiemTraJWT capLai = await _jWT_Helper.CapLaiAccessToken();
+                if (!capLai.success)
                 {
                     return Json(new { success = false, message = "Đã hết hạn, yêu cầu đăng nhập lại!" });
                 }
@@ -333,8 +333,8 @@ namespace WebIot.Controllers
             var accessToken = Request.Cookies["accessToken"];
             if (string.IsNullOrEmpty(accessToken))
             {
-                bool capLai = await _jWT_Helper.CapLaiAccessToken();
-                if (!capLai)
+                KiemTraJWT capLai = await _jWT_Helper.CapLaiAccessToken();
+                if (!capLai.success)
                 {
                     return Json(new { success = false, message = "Đã hết hạn, yêu cầu đăng nhập lại!" });
                 }
@@ -370,8 +370,8 @@ namespace WebIot.Controllers
             var accessToken = Request.Cookies["accessToken"];
             if (string.IsNullOrEmpty(accessToken))
             {
-                bool capLai = await _jWT_Helper.CapLaiAccessToken();
-                if (!capLai)
+                KiemTraJWT capLai = await _jWT_Helper.CapLaiAccessToken();
+                if (!capLai.success)
                 {
                     return Json(new { success = false, message = "Đã hết hạn, yêu cầu đăng nhập lại!" });
                 }

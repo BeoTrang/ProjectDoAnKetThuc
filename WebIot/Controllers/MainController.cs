@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using ModelLibrary;
 using WebIot.Helper;
 using WebIot.Models;
 
@@ -20,8 +21,8 @@ namespace WebIot.Controllers
         [Route("/")]
         public async Task<IActionResult> Main()
         {
-            bool KetQua = await _jWT_Helper.KiemTraDangNhap();
-            if (KetQua)
+            KiemTraJWT KetQua = await _jWT_Helper.KiemTraDangNhap();
+            if (KetQua.success)
             {
                 return Redirect("/trang-chu");
             }

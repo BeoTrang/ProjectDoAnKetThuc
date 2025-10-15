@@ -23,16 +23,20 @@ namespace CungCapAPI.Application.Services
         {
             string dataJson = await _thietBiRepository.LayDataThietBi(DeviceId);
             string statusJson = await _thietBiRepository.LayStatusThietBi(DeviceId);
+            Device info = await _thietBiRepository.LayThongTinThietBi(DeviceId);
 
-            var dataObj = string.IsNullOrEmpty(dataJson) ? new JObject() : JObject.Parse(dataJson);
-            var statusObj = string.IsNullOrEmpty(statusJson) ? new JObject() : JObject.Parse(statusJson);
+            JObject data = string.IsNullOrEmpty(dataJson) ? new JObject() : JObject.Parse(dataJson);
+            JObject status = string.IsNullOrEmpty(statusJson) ? new JObject() : JObject.Parse(statusJson);
 
-            dataObj.Merge(statusObj, new JsonMergeSettings
+            data.Merge(status, new JsonMergeSettings
             {
                 MergeArrayHandling = MergeArrayHandling.Merge
             });
 
-            return dataObj;
+            data["status"] = status["status"];
+            data["name"] = info.name;
+
+            return data;
         }
         public async Task<List<DanhSachThietBi>> LayDanhSachThietBi(int NguoiDungId)
         {
