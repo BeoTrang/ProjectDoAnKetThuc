@@ -42,7 +42,8 @@ async function Init_Dashboard() {
 
         connection.on("DeviceStatus", (payload) => {
             console.log("📦 Status nhận được:", payload);
-
+            const data = JSON.parse(payload);
+            InsertStatus(data);
         }); 
         connection.on("ConnectionExpired", msg => {
             console.warn("⏰ " + msg);
@@ -71,11 +72,51 @@ async function Init_Dashboard() {
 }
 
 async function InsertDataAX01(data) {
-    console.log("Test: ", data);
-    $(`#tem_${data.id}`).text(data.data.tem)
-    $(`#hum_${data.id}`).text(data.data.hum);
+    console.log("Data: ", data);
+
+    const ELtem = $(`#tem_${data.id}`);
+    const ELhum = $(`#hum_${data.id}`);
+    const ELtime = $(`#time_${data.id}`);
+
+    ELtem.text(data.data.tem);
+    ELhum.text(data.data.hum);
+    ELtime.text(data.timestamp);
+
+    const relays = data.relays;
+
+    const ELrelay1 = $(`#relay1_${data.id}`);
+    const ELrelay2 = $(`#relay2_${data.id}`);
+    const ELrelay3 = $(`#relay3_${data.id}`);
+    const ELrelay4 = $(`#relay4_${data.id}`);
+
+
+    ELrelay1.prop("checked", relays.relay1 === 1);
+    ELrelay2.prop("checked", relays.relay2 === 1);
+    ELrelay3.prop("checked", relays.relay3 === 1);
+    ELrelay4.prop("checked", relays.relay4 === 1);
 }
 
+
+async function InsertStatus(data) {
+    console.log("Status: ", data);
+    const status = $(`#status_${data.id}`);
+    if (!status) {
+        console.log("Không tìm thấy status");
+    }
+    console.log("Status: ",data.status);
+    if (data.status == "1") {
+        console.log("Thiết bị online");
+        status.text("Online")
+            .removeClass("bg-secondary")
+            .addClass("bg-success");
+    }
+    else if (data.status == "0") {
+        console.log("Thiết bị offline");
+        status.text("Offline")
+            .removeClass("bg-success")
+            .addClass("bg-secondary");
+    }
+}
 async function LayDanhSachThietBi() {
     const res = await fetch("/lay-danh-sach-thiet-bi", {
         method: "GET",
