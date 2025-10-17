@@ -22,7 +22,7 @@ namespace CungCapAPI.Helpers
                     new Claim("SoDienThoai", thongTinNguoiDung.VaiTro),
                     new Claim("VaiTro", thongTinNguoiDung.VaiTro)
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(double.Parse(config["JWT:ExpireMinutes"])),
+                Expires = DateTime.UtcNow.AddMinutes(5),
                 Issuer = config["JWT:Issuer"],
                 Audience = config["JWT:Audience"],
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

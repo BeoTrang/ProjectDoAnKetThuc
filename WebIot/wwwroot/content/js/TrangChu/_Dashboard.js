@@ -17,11 +17,13 @@ async function Init_Dashboard() {
     });
     const json = await res.json();
 
-    const url = `${json.data}/deviceHub?access_token=${accessToken}`;
+    const url = `${json.data}/deviceHub`;
     LayDanhSachThietBi();
     if (!connection) {
         connection = new signalR.HubConnectionBuilder()
-            .withUrl(url)
+            .withUrl(url, {
+                accessTokenFactory: () => accessToken
+            })
             .configureLogging(signalR.LogLevel.Information)
             .build();
         connection.on("JoinedGroup", () => {
@@ -37,7 +39,23 @@ async function Init_Dashboard() {
         connection.on("DeviceStatus", (payload) => {
             console.log("📦 Status nhận được:", payload);
 
+        }); 
+        // Nhận event hết hạn
+        connection.on("ConnectionExpired", msg => {
+            console.warn("⏰ " + msg);
+            alert(msg);
+
+            // Ngắt kết nối ngay
+            connection.stop();
         });
+
+        // Nhận event server yêu cầu ngắt
+        connection.on("forceDisconnect", () => {
+            console.warn("⚠️ Server yêu cầu ngắt kết nối");
+            connection.stop();
+        });
+
+
         try {
             await connection.start();
             console.log("✅ Connected to SignalR");
