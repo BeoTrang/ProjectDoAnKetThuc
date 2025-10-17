@@ -31,8 +31,12 @@ async function Init_Dashboard() {
         });
 
         connection.on("DeviceData", (payload) => {
-            var data = JSON.parse(payload);
-            console.log("📦 Data nhận được:", data);
+            const data = JSON.parse(payload);
+            switch (data.type) {
+                case "AX01":
+                    InsertDataAX01(data);
+                    break;
+            }
 
         });
 
@@ -40,16 +44,13 @@ async function Init_Dashboard() {
             console.log("📦 Status nhận được:", payload);
 
         }); 
-        // Nhận event hết hạn
         connection.on("ConnectionExpired", msg => {
             console.warn("⏰ " + msg);
             alert(msg);
 
-            // Ngắt kết nối ngay
             connection.stop();
         });
 
-        // Nhận event server yêu cầu ngắt
         connection.on("forceDisconnect", () => {
             console.warn("⚠️ Server yêu cầu ngắt kết nối");
             connection.stop();
@@ -67,7 +68,12 @@ async function Init_Dashboard() {
             console.error("❌ Lỗi khi kết nối SignalR:", err);
         }
     }
-    
+}
+
+async function InsertDataAX01(data) {
+    console.log("Test: ", data);
+    $(`#tem_${data.id}`).text(data.data.tem)
+    $(`#hum_${data.id}`).text(data.data.hum);
 }
 
 async function LayDanhSachThietBi() {
