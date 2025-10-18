@@ -136,6 +136,7 @@ $(document).on('change', '.relaySwitch', async function () {
                 showConfirmButton: false,
                 timer: 1000
             });
+            el.prop("checked", oldState === "1");
         }
         console.log(data);
         
