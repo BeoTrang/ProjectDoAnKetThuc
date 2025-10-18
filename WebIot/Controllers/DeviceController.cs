@@ -84,7 +84,6 @@ namespace WebIot.Controllers
 
             var responseBody = await response.Content.ReadAsStringAsync();
 
-            // Deserialize thành JObject dynamic
             var result = Newtonsoft.Json.JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
 
             var responseClient = new
@@ -134,6 +133,45 @@ namespace WebIot.Controllers
                 return PartialView("AX01", model);
             }
             return BadRequest("Loại thiết bị không hợp lệ");
+        }
+        [HttpPost]
+        [Route("/dieu-khien-thiet-bi")]
+        public async Task<ActionResult> DieuKhienThietBi([FromBody] DieuKhienThietBi request)
+        {
+            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap.success) return NotFound();
+            var accessToken = KiemTraDangNhap.accessToken;
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            // Gọi API check quyền
+            var payload = new 
+            { 
+                deviceId = request.deviceId ,
+                payload = request.payload
+            };
+            var content = new StringContent(
+                Newtonsoft.Json.JsonConvert.SerializeObject(payload),
+                System.Text.Encoding.UTF8,
+                "application/json"
+            );
+            var response = await client.PostAsync(_apiSettings.Url + "/ThietBi/dieu-khien-thiet-bi", content);
+            if (!response.IsSuccessStatusCode)
+                return Json(new { success = false, message = "Lỗi hệ thống!" });
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var result = JsonConvert.DeserializeObject<Request<jwtTokens>>(responseBody);
+
+            var responseClient = new
+            {
+                success = result.success,
+                message = result.message
+            };
+
+            string json = JsonConvert.SerializeObject(responseClient);
+            return Content(json, "application/json");
         }
     }
 }

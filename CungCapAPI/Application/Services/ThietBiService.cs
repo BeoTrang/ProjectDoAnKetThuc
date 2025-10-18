@@ -14,7 +14,7 @@ namespace CungCapAPI.Application.Services
         {
             _thietBiRepository = thietBiRepository;
         }
-        public async Task<bool> KiemTraQuyenThietBi(int NguoiDungId, int DeviceId)
+        public async Task<string> KiemTraQuyenThietBi(int NguoiDungId, int DeviceId)
         {
             var result = await _thietBiRepository.KiemTraQuyenThietBi(NguoiDungId, DeviceId);
             return result;
@@ -42,6 +42,11 @@ namespace CungCapAPI.Application.Services
         {
             List<DanhSachThietBi> result = await _thietBiRepository.DanhSachThietBi(NguoiDungId);
             return result;
+        }
+        public async Task<Device> LayThongTinThietBi(int DeviceId)
+        {
+            Device info = await _thietBiRepository.LayThongTinThietBi(DeviceId);
+            return info;
         }
     }
 }

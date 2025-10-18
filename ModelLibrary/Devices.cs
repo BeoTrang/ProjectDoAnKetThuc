@@ -10,6 +10,13 @@ namespace ModelLibrary
     {
         public int deviceId { get; set; }
     }
+
+    public class DieuKhienThietBi
+    {
+        public int deviceId { get; set; }
+        public string payload { get; set; }
+        public int state { get; set; }
+    }
     public class Device
     {
         public int id { get; set; }

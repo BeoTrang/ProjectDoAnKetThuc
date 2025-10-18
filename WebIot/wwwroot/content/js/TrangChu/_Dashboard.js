@@ -96,6 +96,55 @@ async function InsertDataAX01(data) {
     ELrelay4.prop("checked", relays.relay4 === 1);
 }
 
+$(document).on('change', '.relaySwitch', async function () {
+    const el = $(this);
+    const id = el.attr('id');
+    const [relayName, deviceId] = id.split('_');
+    const newState = el.prop('checked') ? "1" : "0"; 
+    const oldState = newState === "1" ? "0" : "1"; 
+
+    console.log("relayName:", relayName);
+    console.log("deviceId:", deviceId);
+    console.log("Trạng thái mới:", newState);
+
+    const payload = JSON.stringify({ [relayName]: newState });
+
+    try {
+        const res = await fetch("/dieu-khien-thiet-bi", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                deviceId: deviceId,
+                payload: payload
+            })
+        });
+        data = await res.json();
+        if (data.success) {
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Điều khiển thành công!",
+                showConfirmButton: false,
+                timer: 1000
+            });
+        }
+        else {
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: data.message,
+                showConfirmButton: false,
+                timer: 1000
+            });
+        }
+        console.log(data);
+        
+    } catch (err) {
+        el.prop("checked", oldState === "1");
+    }
+});
+
+
 
 async function InsertStatus(data) {
     console.log("Status: ", data);

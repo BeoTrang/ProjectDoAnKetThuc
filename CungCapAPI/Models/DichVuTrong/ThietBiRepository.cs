@@ -26,22 +26,15 @@ namespace CungCapAPI.Models.DichVuTrong
                 .ToListAsync();
             return result;
         }
-        public async Task<bool> KiemTraQuyenThietBi(int NguoiDungId, int DeviceId)
+        public async Task<string> KiemTraQuyenThietBi(int NguoiDungId, int DeviceId)
         {
             var result = await _SqlServer.Database
-                .SqlQueryRaw<int>("EXEC SP_KiemTraQuyenThietBi @NguoiDungId, @DeviceId",
+                .SqlQueryRaw<string>("EXEC SP_KiemTraQuyenThietBi @NguoiDungId, @DeviceId",
                     new SqlParameter("@NguoiDungId", NguoiDungId),
                     new SqlParameter("@DeviceId", DeviceId)
                 )
                 .ToListAsync();
-            if (result.FirstOrDefault() == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return result.FirstOrDefault();
         }
         public async Task<Device> LayThongTinThietBi(int DeviceId)
         {

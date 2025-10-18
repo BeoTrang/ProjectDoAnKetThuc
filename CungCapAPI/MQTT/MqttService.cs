@@ -120,16 +120,16 @@ namespace CungCapAPI.MQTT
             await _mqttClient.ConnectAsync(_options);
         }
 
-        public async Task PublishAsync(string topic, string message)
+        public async Task PublishAsync(string topic, string payload)
         {
             var appMsg = new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
-                .WithPayload(message)
+                .WithPayload(payload)
                 .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
                 .Build();
 
             await _mqttClient.PublishAsync(appMsg);
-            Console.WriteLine($"📤 Published to {topic}: {message}");
+            Console.WriteLine($"📤 Published to {topic}: {payload}");
         }
     }
 }
