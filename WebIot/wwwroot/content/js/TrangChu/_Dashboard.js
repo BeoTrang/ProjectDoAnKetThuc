@@ -129,6 +129,7 @@ $(document).on('change', '.relaySwitch', async function () {
             });
         }
         else {
+            el.prop("checked", oldState === "1");
             Swal.fire({
                 position: "top-end",
                 icon: "error",
@@ -136,7 +137,7 @@ $(document).on('change', '.relaySwitch', async function () {
                 showConfirmButton: false,
                 timer: 1000
             });
-            el.prop("checked", oldState === "1");
+            
         }
         console.log(data);
         
