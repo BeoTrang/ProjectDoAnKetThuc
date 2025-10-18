@@ -9,5 +9,6 @@ namespace CungCapAPI.Application.Interfaces
         Task<JObject> LayDuLieuThietBi(int DeviceId);
         Task<List<DanhSachThietBi>> LayDanhSachThietBi(int NguoiDungId);
         Task<Device> LayThongTinThietBi(int DeviceId);
+        Task<bool> TrangThaiThietBi(int DeviceId);
     }
 }

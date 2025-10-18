@@ -48,5 +48,20 @@ namespace CungCapAPI.Application.Services
             Device info = await _thietBiRepository.LayThongTinThietBi(DeviceId);
             return info;
         }
+        public async Task<bool> TrangThaiThietBi(int DeviceId)
+        {
+            string statusJson = await _thietBiRepository.LayStatusThietBi(DeviceId);
+            JObject status = string.IsNullOrEmpty(statusJson) ? new JObject() : JObject.Parse(statusJson);
+
+            string statusValue = status.Value<string>("status");
+            if (statusValue == "1")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

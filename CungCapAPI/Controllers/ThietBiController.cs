@@ -73,25 +73,40 @@ namespace CungCapAPI.Controllers
                 int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
                 string QuyenAdmin = User.FindFirst("VaiTro").Value;
                 string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, request.deviceId);
-                if (Quyen == "full" || QuyenAdmin == "Admin")
+
+                bool status = await _thietBiService.TrangThaiThietBi(request.deviceId);
+
+                if (status == true)
                 {
-                    var info = await _thietBiService.LayThongTinThietBi(request.deviceId);
-                    string topic = "esp/" + info.type + "/" + request.deviceId + "/control";
-                    await _mqttService.PublishAsync(topic, request.payload);
-                    return new JsonResult(new
+                    if (Quyen == "full" || QuyenAdmin == "Admin")
                     {
-                        success = true,
-                        message = "Ok",
-                    });
+                        var info = await _thietBiService.LayThongTinThietBi(request.deviceId);
+                        string topic = "esp/" + info.type + "/" + request.deviceId + "/control";
+                        await _mqttService.PublishAsync(topic, request.payload);
+                        return new JsonResult(new
+                        {
+                            success = true,
+                            message = "Ok",
+                        });
+                    }
+                    else
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "Bạn không có quyền điều khiển thiết bị!",
+                        });
+                    }
                 }
                 else
                 {
                     return new JsonResult(new
                     {
                         success = false,
-                        message = "Bạn không có quyền điều khiển thiết bị!",
+                        message = "Không điều khiển được thiết bị offline!",
                     });
                 }
+                
             }
             catch
             {
