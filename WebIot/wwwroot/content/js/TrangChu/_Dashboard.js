@@ -136,12 +136,12 @@ $(document).on('change', '.relaySwitch', async function () {
                 showConfirmButton: false,
                 timer: 1000
             });
-            el.prop("checked", oldState === "1");
+            setTimeout(() => el.prop("checked", oldState === "1"), 50);
         }
         console.log(data);
         
     } catch (err) {
-        el.prop("checked", oldState === "1");
+        setTimeout(() => el.prop("checked", oldState === "1"), 50);
     }
 });
 
