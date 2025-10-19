@@ -96,7 +96,7 @@ namespace WebIot.Controllers
             string json = JsonConvert.SerializeObject(responseClient);
             return Content(json, "application/json");
         }
-        public async Task<AX01<DHT22, Relay4>> LayModelAX01(int deviceId)
+        public async Task<AX01<DHT22, Relay4, Name_AX01>> LayModelAX01(int deviceId)
         {
             var accessToken = Request.Cookies["accessToken"];
             var client = _httpClientFactory.CreateClient();
@@ -118,7 +118,7 @@ namespace WebIot.Controllers
 
             var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
 
-             var AX01 = result.data?.ToObject<AX01<DHT22, Relay4>>();
+            var AX01 = result.data?.ToObject<AX01<DHT22, Relay4, Name_AX01>>();
 
             return AX01;
         }
@@ -145,7 +145,6 @@ namespace WebIot.Controllers
             client.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            // Gọi API check quyền
             var payload = new 
             { 
                 deviceId = request.deviceId ,

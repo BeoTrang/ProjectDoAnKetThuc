@@ -35,7 +35,7 @@ namespace CungCapAPI.Services
             switch (type)
             {
                 case "AX01":
-                    var ax01 = JsonConvert.DeserializeObject<AX01<DHT22, Relay4>>(payload);
+                    var ax01 = JsonConvert.DeserializeObject<AX01<DHT22, Relay4, Name_AX01>>(payload);
                     var writeApi = _client.GetWriteApiAsync();
                     var point = PointData
                         .Measurement("sensor_data")

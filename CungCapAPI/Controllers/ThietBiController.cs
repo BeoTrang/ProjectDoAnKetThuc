@@ -25,29 +25,40 @@ namespace CungCapAPI.Controllers
         [HttpPost("kiem-tra-quyen-thiet-bi")]
         public async Task<ActionResult> KiemTraQuyenThietBi([FromBody]KiemTraQuyenThietBi request)
         {
-            int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
-            string QuyenAdmin = User.FindFirst("VaiTro").Value;
-            string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, request.deviceId);
-            if (Quyen == "full" || Quyen == "view" || QuyenAdmin == "Admin")
+            try
             {
-                JObject data = await _thietBiService.LayDuLieuThietBi(request.deviceId);
-                var response = new
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string QuyenAdmin = User.FindFirst("VaiTro").Value;
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, request.deviceId);
+                if (Quyen == "full" || Quyen == "view" || QuyenAdmin == "Admin")
                 {
-                    success = true,
-                    message = "Ok",                    
-                    data = data
-                };
+                    JObject data = await _thietBiService.LayDuLieuThietBi(request.deviceId);
+                    var response = new
+                    {
+                        success = true,
+                        message = "Ok",
+                        data = data
+                    };
 
-                string json = JsonConvert.SerializeObject(response);
+                    string json = JsonConvert.SerializeObject(response);
 
-                return Content(json, "application/json");
+                    return Content(json, "application/json");
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Ko"
+                    });
+                }
             }
-            else
+            catch
             {
                 return new JsonResult(new
                 {
                     success = false,
-                    message = "Ko"
+                    message = "Lỗi hệ thống!"
                 });
             }
         }
@@ -55,14 +66,25 @@ namespace CungCapAPI.Controllers
         [HttpGet("lay-danh-sach-thiet-bi")]
         public async Task<ActionResult> LayDanhSachThietBi()
         {
-            int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
-            List<DanhSachThietBi> result = await _thietBiService.LayDanhSachThietBi(NguoiDungId);
-            return new JsonResult(new
+            try
             {
-                success = true,
-                message = "Ok",
-                data = result
-            });
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                List<DanhSachThietBi> result = await _thietBiService.LayDanhSachThietBi(NguoiDungId);
+                return new JsonResult(new
+                {
+                    success = true,
+                    message = "Ok",
+                    data = result
+                });
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
         }
         [Authorize]
         [HttpPost("dieu-khien-thiet-bi")]

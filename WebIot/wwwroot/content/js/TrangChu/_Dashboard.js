@@ -45,17 +45,6 @@ async function Init_Dashboard() {
             const data = JSON.parse(payload);
             InsertStatus(data);
         }); 
-        connection.on("ConnectionExpired", msg => {
-            console.warn("⏰ " + msg);
-            alert(msg);
-
-            connection.stop();
-        });
-
-        connection.on("forceDisconnect", () => {
-            console.warn("⚠️ Server yêu cầu ngắt kết nối");
-            connection.stop();
-        });
 
 
         try {

@@ -38,9 +38,18 @@ namespace CungCapAPI.Models.DichVuTrong
         }
         public async Task<Device> LayThongTinThietBi(int DeviceId)
         {
-                var result = await _SqlServer.Database
+            var result = await _SqlServer.Database
                 .SqlQueryRaw<Device>("EXEC SP_LayThongTinThietBi @DeviceId",
                     new SqlParameter("@DeviceId", DeviceId)
+                )
+                .ToListAsync();
+            return result.FirstOrDefault();
+        }
+        public async Task<Name_AX01> LayTenAX01(int deviceid)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<Name_AX01>("EXEC SP_LayTenAX01 @DeviceId",
+                    new SqlParameter("@DeviceId", deviceid)
                 )
                 .ToListAsync();
             return result.FirstOrDefault();

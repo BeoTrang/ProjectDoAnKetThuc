@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,13 +35,21 @@ namespace ModelLibrary
         public string firmware { get; set; }
         public DateTime timestamp { get; set; }
     }
-    public class AX01 <TData, TRelay> : Devices
+    public class AX01 <TData, TRelay, TName> : Devices
     {
         public TData data { get; set; }
         public TRelay relays { get; set; }
+        public TName names { get; set; }
     }
 
-
+    public class Name_AX01
+    {
+        public string master { get; set; }
+        public string relay1 { get; set; }
+        public string relay2 { get; set; }
+        public string relay3 { get; set; }
+        public string relay4 { get; set; }
+    }
 
     public class DHT22
     {

@@ -1,11 +1,11 @@
-﻿@model ModelLibrary.AX01<ModelLibrary.DHT22, ModelLibrary.Relay4>
+﻿@model ModelLibrary.AX01<ModelLibrary.DHT22, ModelLibrary.Relay4, ModelLibrary.Name_AX01>
 
 <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
     <div class="card shadow-lg border-0 rounded-4 overflow-hidden" data-deviceid = "@Model.id">
         <!-- Header -->
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2 px-3">
             <div>
-                <h6 class="mb-0 fw-bold">@Model.name</h6>
+                <h6 class="mb-0 fw-bold">@Model.names.master</h6>
                 <small>ID: <strong>@Model.id</strong> | Loại: <strong>@Model.type</strong></small>
             </div>
             <div id="status">
@@ -51,25 +51,25 @@
 
                 <div class="list-group list-group-flush">
                     <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
-                        <div><i class="fa-solid fa-power-off text-danger me-2"></i>Relay 1</div>
+                        <div><i class="fa-solid fa-power-off text-danger me-2"></i>@Model.names.relay1</div>
                         <div class="form-check form-switch">
                             <input class="form-check-input relaySwitch" id="relay1_@Model.id" type="checkbox" @(Model.relays.relay1 == 1 ? "checked" : "")>
                         </div>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
-                        <div><i class="fa-solid fa-power-off text-danger me-2"></i>Relay 2</div>
+                        <div><i class="fa-solid fa-power-off text-danger me-2"></i>@Model.names.relay2</div>
                         <div class="form-check form-switch">
                             <input class="form-check-input relaySwitch" id="relay2_@Model.id" type="checkbox" @(Model.relays.relay2 == 1 ? "checked" : "")>
                         </div>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
-                        <div><i class="fa-solid fa-power-off text-danger me-2"></i>Relay 3</div>
+                        <div><i class="fa-solid fa-power-off text-danger me-2"></i>@Model.names.relay3</div>
                         <div class="form-check form-switch">
                             <input class="form-check-input relaySwitch" id="relay3_@Model.id" type="checkbox" @(Model.relays.relay3 == 1 ? "checked" : "")>
                         </div>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
-                        <div><i class="fa-solid fa-power-off text-danger me-2"></i>Relay 4</div>
+                        <div><i class="fa-solid fa-power-off text-danger me-2"></i>@Model.names.relay4</div>
                         <div class="form-check form-switch">
                             <input class="form-check-input relaySwitch" id="relay4_@Model.id" type="checkbox" @(Model.relays.relay4 == 1 ? "checked" : "")>
                         </div>

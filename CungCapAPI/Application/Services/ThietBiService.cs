@@ -24,6 +24,7 @@ namespace CungCapAPI.Application.Services
             string dataJson = await _thietBiRepository.LayDataThietBi(DeviceId);
             string statusJson = await _thietBiRepository.LayStatusThietBi(DeviceId);
             Device info = await _thietBiRepository.LayThongTinThietBi(DeviceId);
+            
 
             JObject data = string.IsNullOrEmpty(dataJson) ? new JObject() : JObject.Parse(dataJson);
             JObject status = string.IsNullOrEmpty(statusJson) ? new JObject() : JObject.Parse(statusJson);
@@ -33,8 +34,17 @@ namespace CungCapAPI.Application.Services
                 MergeArrayHandling = MergeArrayHandling.Merge
             });
 
+             
+
+            if (info.type == "AX01")
+            {
+                Name_AX01 name = await _thietBiRepository.LayTenAX01(DeviceId);
+                var nameJson = JObject.FromObject(name);
+                data["names"] = nameJson;
+            }
+            
             data["status"] = status["status"];
-            data["name"] = info.name;
+            
 
             return data;
         }
