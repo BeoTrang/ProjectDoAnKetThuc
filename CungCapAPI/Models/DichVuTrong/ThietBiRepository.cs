@@ -26,6 +26,7 @@ namespace CungCapAPI.Models.DichVuTrong
                 .ToListAsync();
             return result;
         }
+
         public async Task<string> KiemTraQuyenThietBi(int NguoiDungId, int DeviceId)
         {
             var result = await _SqlServer.Database
@@ -54,6 +55,7 @@ namespace CungCapAPI.Models.DichVuTrong
                 .ToListAsync();
             return result.FirstOrDefault();
         }
+
         public async Task<string> LayDataThietBi(int DeviceId)
         {
             var data = await _Redis.GetAsync($"device:{DeviceId}:data");

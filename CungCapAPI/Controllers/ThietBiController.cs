@@ -139,5 +139,55 @@ namespace CungCapAPI.Controllers
                 });
             }
         }
+        [Authorize]
+        [HttpGet("lay-ten-thiet-bi/{deviceid}")]
+        public async Task<ActionResult> LayTenThietBi(int deviceid)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string QuyenAdmin = User.FindFirst("VaiTro").Value;
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, deviceid);
+
+                if (Quyen == "full" || QuyenAdmin == "Admin")
+                {
+                    var info = await _thietBiService.LayThongTinThietBi(deviceid);
+                    if (info.type == "AX01")
+                    {
+                        Name_AX01 name = await _thietBiService.LayTenThietBi(deviceid);
+
+
+                        return new JsonResult(new
+                        {
+                            success = true,
+                            data = name,
+                            message = "Ok",
+                        });
+                    }
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Lỗi hệ thống!"
+                    });
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Bạn không có quyền cài đặt thiết bị!",
+                    });
+                }
+
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!",
+                });
+            }
+        }
     }
 }

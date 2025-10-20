@@ -44,6 +44,7 @@ namespace ModelLibrary
 
     public class Name_AX01
     {
+        public string type { get; set; }
         public string master { get; set; }
         public string relay1 { get; set; }
         public string relay2 { get; set; }

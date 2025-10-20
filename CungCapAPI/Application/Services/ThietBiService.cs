@@ -73,5 +73,11 @@ namespace CungCapAPI.Application.Services
                 return false;
             }
         }
+
+        public async Task<Name_AX01> LayTenThietBi(int deviceid)
+        {
+            Name_AX01 name = await _thietBiRepository.LayTenAX01(deviceid);
+            return name;
+        }
     }
 }

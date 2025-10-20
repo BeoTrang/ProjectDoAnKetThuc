@@ -3,8 +3,6 @@ using Microsoft.Extensions.Options;
 using ModelLibrary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 using WebIot.Helper;
 using WebIot.Models;
 
@@ -70,7 +68,6 @@ namespace WebIot.Controllers
             client.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            // Gọi API check quyền
             var payload = new { deviceId = request.deviceId };
             var content = new StringContent(
                 Newtonsoft.Json.JsonConvert.SerializeObject(payload),
@@ -134,22 +131,75 @@ namespace WebIot.Controllers
             }
             return BadRequest("Loại thiết bị không hợp lệ");
         }
-        [HttpPost]
-        [Route("/dieu-khien-thiet-bi")]
-        public async Task<ActionResult> DieuKhienThietBi([FromBody] DieuKhienThietBi request)
+
+        [HttpGet]
+        [Route("/thong-tin-thiet-bi/{deviceid}")]
+        public async Task<ActionResult> SettingThietBi(int deviceid)
         {
             KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
             if (!KiemTraDangNhap.success) return NotFound();
+
             var accessToken = KiemTraDangNhap.accessToken;
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            var payload = new 
-            { 
-                deviceId = request.deviceId ,
+            var response = await client.GetAsync(_apiSettings.Url + $"/ThietBi/lay-ten-thiet-bi/{deviceid}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var result = JsonConvert.DeserializeObject<Request<Name_AX01>>(responseBody);
+            var model = result.data;
+
+            if (!result.success)
+            {
+                var responseClient = new
+                {
+                    success = result.success,
+                    message = result.message
+                };
+
+                string json = JsonConvert.SerializeObject(responseClient);
+                return Content(json, "application/json");
+            }
+
+            if (result.data.type == "AX01")
+            {
+                return PartialView("AX01_Settings", model);
+            }
+            return NotFound();
+        }
+
+
+
+
+
+        [HttpPost]
+        [Route("/dieu-khien-thiet-bi")]
+        public async Task<ActionResult> DieuKhienThietBi([FromBody] DieuKhienThietBi request)
+        {
+            if (request == null)
+            {
+                var responseError = new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống"
+                };
+                string jsonError = JsonConvert.SerializeObject(responseError);
+                return Content(jsonError, "application/json");
+            }
+            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap.success) return NotFound();
+            var payload = new
+            {
+                deviceId = request.deviceId,
                 payload = request.payload
             };
+            var accessToken = KiemTraDangNhap.accessToken;
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            
             var content = new StringContent(
                 Newtonsoft.Json.JsonConvert.SerializeObject(payload),
                 System.Text.Encoding.UTF8,

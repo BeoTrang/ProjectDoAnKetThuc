@@ -10,6 +10,7 @@ async function LayAccessToken() {
 }
 
 async function Init_Dashboard() {
+    $('#main-content').empty();
     let accessToken = await LayAccessToken();
     
     const res = await fetch("/lay-url-api", {
@@ -96,9 +97,10 @@ $(document).on('change', '.relaySwitch', async function () {
     console.log("deviceId:", deviceId);
     console.log("Trạng thái mới:", newState);
 
-    const payload = JSON.stringify({ [relayName]: newState });
+    
 
     try {
+        const payload = JSON.stringify({ [relayName]: newState });
         const res = await fetch("/dieu-khien-thiet-bi", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -134,6 +136,51 @@ $(document).on('change', '.relaySwitch', async function () {
     }
 });
 
+$(document).on('click', '.device-setting', async function () {
+    showSpinner();
+    const el = $(this);
+    const id = el.attr('id');
+
+    try {
+        const res = await fetch(`/thong-tin-thiet-bi/${id}`, {
+            method: "GET"
+        });
+
+        const contentType = res.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+            // Nếu API trả JSON
+            const data = await res.json();
+
+            if (!data.success) {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: data.message,
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+                return;
+            }
+        } else {
+            // Nếu API trả HTML (PartialView)
+            const html = await res.text();
+            $('#main-content').empty().append(html);
+        }
+    } catch (err) {
+        console.error(err);
+        Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Lỗi hệ thống",
+            showConfirmButton: false,
+            timer: 1000
+        });
+    } finally {
+        hideSpinner();
+    }
+});
+
 
 
 async function InsertStatus(data) {
@@ -156,6 +203,7 @@ async function InsertStatus(data) {
             .addClass("bg-secondary");
     }
 }
+
 async function LayDanhSachThietBi() {
     const res = await fetch("/lay-danh-sach-thiet-bi", {
         method: "GET",
@@ -178,7 +226,6 @@ async function LayDanhSachThietBi() {
         });
 
         const html = await viewRes.text();
-        console.log(device);
         dashboard.append(html);
     }
 }
