@@ -42,8 +42,9 @@ namespace ModelLibrary
         public TName names { get; set; }
     }
 
-    public class Name_AX01
+    public class Name_AX01  
     {
+        public int id { get; set; }
         public string type { get; set; }
         public string master { get; set; }
         public string relay1 { get; set; }
@@ -77,5 +78,11 @@ namespace ModelLibrary
     {
         public int deviceId { get; set; }
         public string deviceType { get; set; }
+    }
+    public class LuuTenThietBi
+    {
+        public int deviceid { get; set; }
+        public string master { get; set; }
+        public string nameConfig { get; set; }
     }
 }

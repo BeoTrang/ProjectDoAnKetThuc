@@ -241,7 +241,10 @@
         });
 
     } catch (err) {
-        console.error("Không thể lấy hồ sơ:", err);
-        alert("Có lỗi xảy ra khi tải hồ sơ. Vui lòng thử lại.");
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Có lỗi xảy ra khi tải hồ sơ. Vui lòng thử lại!"
+        });
     }
 };

@@ -44,6 +44,7 @@ namespace CungCapAPI.Models.DichVuTrong
                     new SqlParameter("@DeviceId", DeviceId)
                 )
                 .ToListAsync();
+                
             return result.FirstOrDefault();
         }
         public async Task<Name_AX01> LayTenAX01(int deviceid)

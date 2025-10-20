@@ -222,5 +222,12 @@ namespace WebIot.Controllers
             string json = JsonConvert.SerializeObject(responseClient);
             return Content(json, "application/json");
         }
+
+        //[HttpPost]
+        //[Route("/luu-ten-thiet-bi")]
+        //public async Task<ActionResult> LuuTenThietBi([FromBody] LuuTenThietBi request)
+        //{
+
+        //}
     }
 }

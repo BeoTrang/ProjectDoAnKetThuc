@@ -149,7 +149,6 @@ $(document).on('click', '.device-setting', async function () {
         const contentType = res.headers.get("content-type");
 
         if (contentType && contentType.includes("application/json")) {
-            // Nếu API trả JSON
             const data = await res.json();
 
             if (!data.success) {
@@ -163,9 +162,9 @@ $(document).on('click', '.device-setting', async function () {
                 return;
             }
         } else {
-            // Nếu API trả HTML (PartialView)
             const html = await res.text();
             $('#main-content').empty().append(html);
+            Init_SettingThietBi();
         }
     } catch (err) {
         console.error(err);

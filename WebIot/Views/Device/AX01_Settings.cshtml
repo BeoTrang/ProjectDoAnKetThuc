@@ -7,9 +7,12 @@
                     <h3 class="card-title text-center mb-4">Thay đổi tên thiết bị</h3>
 
                     <form id="AX01SettingForm" novalidate>
+
+                        <input type="hidden" id="deviceid" value="@Model.id" />
+
                         <div class="mb-3">
                             <label for="name" class="form-label">Tên thiết bị</label>
-                            <input type="text" class="form-control" id="name" value="@Model.master" name="name" placeholder="Nhập tên thiết bị" required>
+                            <input type="text" class="form-control" id="master" value="@Model.type" name="name" placeholder="Nhập tên thiết bị" required>
                             <div class="invalid-feedback">Vui lòng nhập tên thiết bị.</div>
                         </div>
 
@@ -38,8 +41,8 @@
                         </div>
 
                         <button id="submitAX01" type="submit" class="btn btn-primary w-100">
-                            <span id="btnSpinnerThongTin" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                            <span id="btnTextThongTin">Lưu chỉnh sửa</span>
+                            <span id="btnSpinnerAX01" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            <span id="btnTextAX01">Lưu chỉnh sửa</span>
                         </button>
                     </form>
                 </div>
