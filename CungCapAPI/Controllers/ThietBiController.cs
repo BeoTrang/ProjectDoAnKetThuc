@@ -189,5 +189,54 @@ namespace CungCapAPI.Controllers
                 });
             }
         }
+        [Authorize]
+        [HttpPost("luu-ten-thiet-bi")]
+        public async Task<ActionResult> LuuTenThietBi([FromBody] LuuTenThietBi request)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string QuyenAdmin = User.FindFirst("VaiTro").Value;
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, request.deviceid);
+                if (Quyen == "full" || QuyenAdmin == "Admin")
+                {
+                    var KetQua = await _thietBiService.LuuTenThietBi(request);
+                    if (KetQua)
+                    {
+                        return new JsonResult(new
+                        {
+                            success = true,
+                            message = "Chỉnh sửa thành công!"
+                        });
+                    }
+                    else
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "Lỗi hệ thống!"
+                        });
+                    }
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Bạn không có quyền chỉnh sửa!"
+                    });
+                }
+
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
     }
 }

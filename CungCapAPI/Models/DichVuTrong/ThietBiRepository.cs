@@ -67,5 +67,25 @@ namespace CungCapAPI.Models.DichVuTrong
             var data = await _Redis.GetAsync($"device:{DeviceId}:status");
             return data;
         }
+
+        public async Task<bool> LuuTenThietBi(LuuTenThietBi model)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<int>("EXEC SP_LuuTenThietBi @DeviceId, @master, @json",
+                    new SqlParameter("@DeviceId", model.deviceid),
+                    new SqlParameter("@master", model.master),
+                    new SqlParameter("@json", model.nameConfig)
+                )
+                .ToListAsync();
+            int KetQua = result.FirstOrDefault();
+            if (KetQua == 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

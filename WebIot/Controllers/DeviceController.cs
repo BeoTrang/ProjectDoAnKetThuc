@@ -223,11 +223,67 @@ namespace WebIot.Controllers
             return Content(json, "application/json");
         }
 
-        //[HttpPost]
-        //[Route("/luu-ten-thiet-bi")]
-        //public async Task<ActionResult> LuuTenThietBi([FromBody] LuuTenThietBi request)
-        //{
+        [HttpPost]
+        [Route("/luu-ten-thiet-bi")]
+        public async Task<ActionResult> LuuTenThietBi([FromBody] LuuTenThietBi request)
+        {
+            try
+            {
+                KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+                if (!KiemTraDangNhap.success) 
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Đã hết hạn đăng nhập!"
+                    });
+                var accessToken = KiemTraDangNhap.accessToken;
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                if (request == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Lỗi hệ thống!"
+                    });
+                }
+                var payload = new
+                {
+                    deviceid = request.deviceid,
+                    master = request.master,
+                    nameConfig = request.nameConfig
+                };
+                var content = new StringContent(
+                    JsonConvert.SerializeObject(payload),
+                    System.Text.Encoding.UTF8,
+                    "application/json"
+                );
 
-        //}
+                var response = await client.PostAsync(_apiSettings.Url + "/ThietBi/luu-ten-thiet-bi", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                
+                if (!response.IsSuccessStatusCode)
+                    return Json(new { success = false, message = "Lỗi hệ thống!" });
+
+                var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
+
+                return Json(new
+                {
+                    success = result.success,
+                    message = result.message
+                });
+
+            }
+            catch
+            {
+                return Json(new 
+                { 
+                    success = false, 
+                    message = "Lỗi hệ thống!" 
+                });
+            }
+        }
     }
 }

@@ -49,17 +49,36 @@
                         relay3: relay3.val().trim(),
                         relay4: relay4.val().trim()
                     };
-
                     const res = await fetch('/luu-ten-thiet-bi', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             deviceid: deviceid.val(),
                             master: master.val().trim(),
-                            nameConfig: json
+                            nameConfig: JSON.stringify(json)
                         })
                     });
-
+                    const request = await res.json();
+                    if (request.success) {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: request.message,
+                            showConfirmButton: false,
+                            timer: 1000
+                        });
+                        return;
+                    }
+                    else {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: request.message,
+                            showConfirmButton: false,
+                            timer: 1000
+                        });
+                        return;
+                    }
 
                     console.log(json);
                 }

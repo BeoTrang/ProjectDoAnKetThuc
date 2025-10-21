@@ -11,5 +11,6 @@ namespace CungCapAPI.Application.Interfaces
         Task<Device> LayThongTinThietBi(int DeviceId);
         Task<bool> TrangThaiThietBi(int DeviceId);
         Task<Name_AX01> LayTenThietBi(int deviceid);
+        Task<bool> LuuTenThietBi(LuuTenThietBi model);
     }
 }
