@@ -50,13 +50,25 @@ async function LayAccessToken() {
 function ComeBack() {
     $(document).on("visibilitychange", async function () {
         if (document.visibilityState === "visible") {
-            console.log("📱 Tab/app quay lại foreground — kiểm tra kết nối...");
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Đã kết nối lại!",
+                showConfirmButton: false,
+                timer: 1000
+            });
             await ReconnectSignalR();
         }
     });
 
     $(window).on("focus", async function () {
-        console.log("🪟 Cửa sổ được focus lại — kiểm tra kết nối...");
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Đã kết nối lại!",
+            showConfirmButton: false,
+            timer: 1000
+        });
         await ReconnectSignalR();
     });
 }
@@ -125,6 +137,13 @@ async function ReconnectSignalR() {
             })
             .configureLogging(signalR.LogLevel.Information)
             .build();
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Đã kết nối lại!",
+            showConfirmButton: false,
+            timer: 1000
+        });
         await connection.start();
         await connection.invoke("JoinGroup");
         connection.on("DeviceData", (payload) => {
