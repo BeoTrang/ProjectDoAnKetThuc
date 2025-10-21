@@ -127,6 +127,22 @@ async function ReconnectSignalR() {
             .build();
         await connection.start();
         await connection.invoke("JoinGroup");
+        connection.on("DeviceData", (payload) => {
+            const data = JSON.parse(payload);
+            switch (data.type) {
+                case "AX01":
+                    InsertDataAX01(data);
+                    break;
+            }
+
+        });
+
+
+        connection.on("DeviceStatus", (payload) => {
+            console.log("📦 Status nhận được:", payload);
+            const data = JSON.parse(payload);
+            InsertStatus(data);
+        });
     }
 }
 
