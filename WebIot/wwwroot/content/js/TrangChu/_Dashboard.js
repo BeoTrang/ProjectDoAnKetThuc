@@ -17,6 +17,7 @@ async function Init_Dashboard() {
     else {
         await LayDanhSachThietBi();
         startConnection();
+        ComeBack();
     }
     
 }
