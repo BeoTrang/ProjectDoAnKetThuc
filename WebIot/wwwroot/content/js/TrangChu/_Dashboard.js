@@ -118,6 +118,55 @@ async function ReconnectSignalR() {
     });
 }
 
+window.addEventListener('online', async () => {
+    console.log("🌐 Mạng đã có lại — kiểm tra kết nối SignalR...");
+    await HandleNetworkRestore();
+});
+
+window.addEventListener('offline', () => {
+    console.warn("🚫 Mất kết nối mạng — SignalR sẽ tạm dừng hoạt động");
+    Swal.fire({
+        position: "top-end",
+        icon: "warning",
+        title: "Mất kết nối mạng!",
+        showConfirmButton: false,
+        timer: 1500
+    });
+});
+
+async function HandleNetworkRestore() {
+    if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+        console.log("🔁 Đang thử kết nối lại SignalR sau khi có mạng...");
+        try {
+            await LayAccessToken();
+            if (!accessToken) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Đã hết hạn đăng nhập, yêu cầu đăng nhập lại!"
+                });
+                return;
+            }
+
+            await ConnectSignalR();
+
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Đã kết nối lại sau khi có mạng!",
+                showConfirmButton: false,
+                timer: 1000
+            });
+        } catch (err) {
+            console.error("❌ Lỗi khi reconnect sau khi có mạng:", err);
+        }
+    }
+}
+
+
+
+
+
 
 
 async function InsertDataAX01(data) {
