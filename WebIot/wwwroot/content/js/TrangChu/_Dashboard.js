@@ -1,12 +1,13 @@
 ﻿let connection;
-let accessToken;
-let url;
+let accessToken = '';
+let url = '';
 
 async function Init_Dashboard() {
     $('#main-content').empty();
     await LayUrl();
     await LayAccessToken();
-    if (accessToken == '') {
+
+    if (!accessToken) {
         Swal.fire({
             icon: "error",
             title: "Oops...",
@@ -14,20 +15,15 @@ async function Init_Dashboard() {
         });
         return;
     }
-    else {
-        await LayDanhSachThietBi();
-        startConnection();
-        ComeBack();
-    }
-    
+
+    await LayDanhSachThietBi();
+    await ConnectSignalR();
+    BindReconnectOnFocus();
 }
 
 async function LayUrl() {
-    const res = await fetch("/lay-url-api", {
-        method: "GET"
-    });
+    const res = await fetch("/lay-url-api");
     const json = await res.json();
-
     url = `${json.data}/deviceHub`;
 }
 
@@ -37,97 +33,72 @@ async function LayAccessToken() {
         credentials: "include"
     });
     const data = await res.json();
-    if (data.success) {
-        accessToken = await data.accessToken;
+    accessToken = data.success ? data.accessToken : '';
+}
+
+async function ConnectSignalR() {
+    if (connection && connection.state === signalR.HubConnectionState.Connected) {
+        console.log("⚙️ SignalR đã kết nối");
         return;
     }
-    else {
-        accessToken = '';
-        return;
+
+    if (connection) {
+        await connection.stop();
+    }
+
+    connection = new signalR.HubConnectionBuilder()
+        .withUrl(url, { accessTokenFactory: () => accessToken })
+        .configureLogging(signalR.LogLevel.Information)
+        .withAutomaticReconnect([0, 2000, 5000, 10000])
+        .build();
+
+    connection.on("JoinedGroup", () => console.log("✅ Đã tham gia group"));
+    connection.on("DeviceData", payload => {
+        const data = JSON.parse(payload);
+        if (data.type === "AX01") InsertDataAX01(data);
+    });
+    connection.on("DeviceStatus", payload => {
+        const data = JSON.parse(payload);
+        InsertStatus(data);
+    });
+
+    connection.onreconnecting(() => console.warn("⚠️ Mất kết nối, đang thử reconnect..."));
+    connection.onreconnected(() => console.log("🔁 Đã reconnect thành công!"));
+    connection.onclose(err => console.warn("🔌 Kết nối bị đóng:", err));
+
+    try {
+        await connection.start();
+        console.log("✅ Connected to SignalR");
+        await connection.invoke("JoinGroup");
+        console.log("📡 Đã join group");
+    } catch (err) {
+        console.error("❌ Lỗi kết nối SignalR:", err);
     }
 }
 
-function ComeBack() {
-    $(document).on("visibilitychange", async function () {
+function BindReconnectOnFocus() {
+    $(document).on("visibilitychange", async () => {
         if (document.visibilityState === "visible") {
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: "Đã kết nối lại!",
-                showConfirmButton: false,
-                timer: 1000
-            });
+            console.log("📱 App quay lại foreground");
             await ReconnectSignalR();
         }
     });
 
-    $(window).on("focus", async function () {
-        Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Đã kết nối lại!",
-            showConfirmButton: false,
-            timer: 1000
-        });
+    $(window).on("focus", async () => {
+        console.log("🪟 Cửa sổ được focus lại");
         await ReconnectSignalR();
     });
 }
 
-async function startConnection() {
-    if (!connection) {
-        connection = new signalR.HubConnectionBuilder()
-            .withUrl(url, {
-                accessTokenFactory: () => accessToken
-            })
-            .configureLogging(signalR.LogLevel.Information)
-            .withAutomaticReconnect([0, 2000, 5000, 10000])
-            .build();
-        connection.on("JoinedGroup", () => {
-            console.log("✅ Đã tham gia group");
-        });
-
-        connection.on("DeviceData", (payload) => {
-            const data = JSON.parse(payload);
-            switch (data.type) {
-                case "AX01":
-                    InsertDataAX01(data);
-                    break;
-            }
-
-        });
-
-
-        connection.on("DeviceStatus", (payload) => {
-            console.log("📦 Status nhận được:", payload);
-            const data = JSON.parse(payload);
-            InsertStatus(data);
-        });
-
-        connection.onclose(error => {
-
-            setTimeout(() => ReconnectSignalR(), 5000);
-        });
-
-        try {
-            await connection.start();
-            console.log("✅ Connected to SignalR");
-
-            await connection.invoke("JoinGroup");
-            console.log("📡 Đã join group");
-
-        } catch (err) {
-            console.error("❌ Lỗi khi kết nối SignalR:", err);
-        }
-    }
-}
-
 async function ReconnectSignalR() {
     if (connection && connection.state === signalR.HubConnectionState.Connected) {
-        console.log("⚙️ SignalR đã sẵn sàng");
+        console.log("✅ SignalR vẫn đang hoạt động");
         return;
     }
-    LayAccessToken();
-    if (accessToken == '') {
+
+    await LayAccessToken();
+
+    if (!accessToken) {
         Swal.fire({
             icon: "error",
             title: "Oops...",
@@ -135,41 +106,18 @@ async function ReconnectSignalR() {
         });
         return;
     }
-    else {
-        connection = new signalR.HubConnectionBuilder()
-            .withUrl(url, {
-                accessTokenFactory: () => accessToken
-            })
-            .configureLogging(signalR.LogLevel.Information)
-            .withAutomaticReconnect([0, 2000, 5000, 10000])
-            .build();
-        Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Đã kết nối lại!",
-            showConfirmButton: false,
-            timer: 1000
-        });
-        await connection.start();
-        await connection.invoke("JoinGroup");
-        connection.on("DeviceData", (payload) => {
-            const data = JSON.parse(payload);
-            switch (data.type) {
-                case "AX01":
-                    InsertDataAX01(data);
-                    break;
-            }
 
-        });
+    await ConnectSignalR();
 
-
-        connection.on("DeviceStatus", (payload) => {
-            console.log("📦 Status nhận được:", payload);
-            const data = JSON.parse(payload);
-            InsertStatus(data);
-        });
-    }
+    Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Đã kết nối lại!",
+        showConfirmButton: false,
+        timer: 1000
+    });
 }
+
 
 
 async function InsertDataAX01(data) {
