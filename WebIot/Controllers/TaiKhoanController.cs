@@ -230,7 +230,8 @@ namespace WebIot.Controllers
                     message = "Đã hết hạn đăng nhập!"
                 });
 
-            var accessToken = KiemTraDangNhap.accessToken;
+            KiemTraJWT CapLai = await _jWT_Helper.CapLaiAccessToken();
+            var accessToken = CapLai.accessToken;
             
             return Json(new 
             { 
