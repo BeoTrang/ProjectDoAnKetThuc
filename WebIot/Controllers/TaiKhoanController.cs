@@ -222,21 +222,22 @@ namespace WebIot.Controllers
         [Route("/lay-access-token")]
         public async Task<IActionResult> LayAccessToken()
         {
-            var accessToken = Request.Cookies["accessToken"];
-            if (string.IsNullOrEmpty(accessToken))
-            {
-                KiemTraJWT capLai = await _jWT_Helper.CapLaiAccessToken();
-                if (!capLai.success)
+            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap.success)
+                return Json(new
                 {
-                    accessToken = "";
-                }
-                else
-                {
+                    success = false,
+                    message = "Đã hết hạn đăng nhập!"
+                });
 
-                    accessToken = Request.Cookies["accessToken"];
-                }
-            }
-            return Json(new { accessToken = accessToken });
+            var accessToken = KiemTraDangNhap.accessToken;
+            
+            return Json(new 
+            { 
+                success = true,
+                message = "Ok",
+                accessToken = accessToken 
+            });
         }
 
         [Route("/ho-so-tai-khoan")]

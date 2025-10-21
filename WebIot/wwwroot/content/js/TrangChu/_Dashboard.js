@@ -1,4 +1,34 @@
 ﻿let connection;
+let accessToken;
+let url;
+
+async function Init_Dashboard() {
+    $('#main-content').empty();
+    await LayUrl();
+    await LayAccessToken();
+    if (accessToken == '') {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Đã hết hạn đăng nhập, yêu cầu đăng nhập lại!"
+        });
+        return;
+    }
+    else {
+        await LayDanhSachThietBi();
+        startConnection();
+    }
+    
+}
+
+async function LayUrl() {
+    const res = await fetch("/lay-url-api", {
+        method: "GET"
+    });
+    const json = await res.json();
+
+    url = `${json.data}/deviceHub`;
+}
 
 async function LayAccessToken() {
     const res = await fetch("/lay-access-token", {
@@ -6,20 +36,17 @@ async function LayAccessToken() {
         credentials: "include"
     });
     const data = await res.json();
-    return data.accessToken;
+    if (data.success) {
+        accessToken = await data.accessToken;
+        return;
+    }
+    else {
+        accessToken = '';
+        return;
+    }
 }
 
-async function Init_Dashboard() {
-    $('#main-content').empty();
-    let accessToken = await LayAccessToken();
-    
-    const res = await fetch("/lay-url-api", {
-        method: "GET"
-    });
-    const json = await res.json();
-
-    const url = `${json.data}/deviceHub`;
-    LayDanhSachThietBi();
+async function startConnection() {
     if (!connection) {
         connection = new signalR.HubConnectionBuilder()
             .withUrl(url, {
@@ -41,12 +68,17 @@ async function Init_Dashboard() {
 
         });
 
+
         connection.on("DeviceStatus", (payload) => {
             console.log("📦 Status nhận được:", payload);
             const data = JSON.parse(payload);
             InsertStatus(data);
-        }); 
+        });
 
+        connection.onclose(error => {
+
+            setTimeout(() => ReconnectSignalR(), 5000);
+        });
 
         try {
             await connection.start();
@@ -60,6 +92,29 @@ async function Init_Dashboard() {
         }
     }
 }
+
+async function ReconnectSignalR() {
+    LayAccessToken();
+    if (accessToken == '') {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Đã hết hạn đăng nhập, yêu cầu đăng nhập lại!"
+        });
+        return;
+    }
+    else {
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl(url, {
+                accessTokenFactory: () => accessToken
+            })
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+        await connection.start();
+        await connection.invoke("JoinGroup");
+    }
+}
+
 
 async function InsertDataAX01(data) {
     console.log("Data: ", data);
