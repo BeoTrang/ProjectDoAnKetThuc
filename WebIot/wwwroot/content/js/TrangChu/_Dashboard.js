@@ -80,6 +80,7 @@ async function startConnection() {
                 accessTokenFactory: () => accessToken
             })
             .configureLogging(signalR.LogLevel.Information)
+            .withAutomaticReconnect([0, 2000, 5000, 10000])
             .build();
         connection.on("JoinedGroup", () => {
             console.log("✅ Đã tham gia group");
@@ -121,6 +122,10 @@ async function startConnection() {
 }
 
 async function ReconnectSignalR() {
+    if (connection && connection.state === signalR.HubConnectionState.Connected) {
+        console.log("⚙️ SignalR đã sẵn sàng");
+        return;
+    }
     LayAccessToken();
     if (accessToken == '') {
         Swal.fire({
@@ -136,6 +141,7 @@ async function ReconnectSignalR() {
                 accessTokenFactory: () => accessToken
             })
             .configureLogging(signalR.LogLevel.Information)
+            .withAutomaticReconnect([0, 2000, 5000, 10000])
             .build();
         Swal.fire({
             position: "top-end",
