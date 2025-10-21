@@ -46,6 +46,20 @@ async function LayAccessToken() {
     }
 }
 
+function ComeBack() {
+    $(document).on("visibilitychange", async function () {
+        if (document.visibilityState === "visible") {
+            console.log("📱 Tab/app quay lại foreground — kiểm tra kết nối...");
+            await ReconnectSignalR();
+        }
+    });
+
+    $(window).on("focus", async function () {
+        console.log("🪟 Cửa sổ được focus lại — kiểm tra kết nối...");
+        await ReconnectSignalR();
+    });
+}
+
 async function startConnection() {
     if (!connection) {
         connection = new signalR.HubConnectionBuilder()
