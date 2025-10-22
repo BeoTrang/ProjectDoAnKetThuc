@@ -169,6 +169,55 @@ namespace WebIot.Controllers
             return NotFound();
         }
 
+        [HttpGet]
+        [Route("/du-lieu-thiet-bi-moi-nhat/{type}/{deviceid}")]
+        public async Task<ActionResult> LayDuLieuMoiNhat(string type, int deviceid)
+        {
+            try
+            {
+                KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+                if (!KiemTraDangNhap.success)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Hết hạn đăng nhập!"
+                    });
+                }
+                if (type == "AX01")
+                {
+                    var model = await LayModelAX01(deviceid);
+                    if (model == null)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Không có thiết bị nào!"
+                        });
+                    }
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Oke!",
+                        data = model
+                    });
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    message = "Không có thiết bị nào!"
+                });
+            }
+            catch
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
 
 
 

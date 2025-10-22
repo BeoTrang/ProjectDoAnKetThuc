@@ -76,16 +76,19 @@ async function ConnectSignalR() {
 function BindReconnectOnFocus() {
     $(document).on("visibilitychange", async () => {
         if (document.visibilityState === "visible") {
+            await CapNhatDuLieuMoiNhat();
             await ReconnectSignalR();
         }
     });
 
     $(window).on("focus", async () => {
+        await CapNhatDuLieuMoiNhat();
         await ReconnectSignalR();
     });
 }
 
 async function ReconnectSignalR() {
+    
     if (connection && connection.state === signalR.HubConnectionState.Connected) {
         console.log("SignalR vẫn đang hoạt động");
         return;
@@ -314,6 +317,30 @@ async function LayDanhSachThietBi() {
         const html = await viewRes.text();
         dashboard.append(html);
     }
+}
+
+async function CapNhatDuLieuMoiNhat() {
+    const res = await fetch("/lay-danh-sach-thiet-bi", {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json' }
+    });
+
+    const json = await res.json();
+    const data = json.data;
+
+    for (const device of data) {
+        const dulieu = await fetch(`/du-lieu-thiet-bi-moi-nhat/${device.deviceType}/${device.deviceId}`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const deviceData = await dulieu.json();
+
+        if (device.deviceType == "AX01") {
+            InsertDataAX01(deviceData.data);
+        }
+    }
+
 }
 
 
