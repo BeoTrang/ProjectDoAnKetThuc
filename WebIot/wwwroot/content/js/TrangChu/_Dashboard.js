@@ -38,7 +38,6 @@ async function LayAccessToken() {
 
 async function ConnectSignalR() {
     if (connection && connection.state === signalR.HubConnectionState.Connected) {
-        console.log("⚙️ SignalR đã kết nối");
         return;
     }
 
@@ -52,7 +51,7 @@ async function ConnectSignalR() {
         .withAutomaticReconnect([0, 2000, 5000, 10000])
         .build();
 
-    connection.on("JoinedGroup", () => console.log("✅ Đã tham gia group"));
+    connection.on("JoinedGroup", () => console.log("Đã tham gia group"));
     connection.on("DeviceData", payload => {
         const data = JSON.parse(payload);
         if (data.type === "AX01") InsertDataAX01(data);
@@ -62,37 +61,33 @@ async function ConnectSignalR() {
         InsertStatus(data);
     });
 
-    connection.onreconnecting(() => console.warn("⚠️ Mất kết nối, đang thử reconnect..."));
-    connection.onreconnected(() => console.log("🔁 Đã reconnect thành công!"));
-    connection.onclose(err => console.warn("🔌 Kết nối bị đóng:", err));
+    connection.onreconnecting(() => console.warn("Mất kết nối, đang thử reconnect..."));
+    connection.onreconnected(() => console.log("Đã reconnect thành công!"));
+    connection.onclose(err => console.warn("Kết nối bị đóng:", err));
 
     try {
         await connection.start();
-        console.log("✅ Connected to SignalR");
         await connection.invoke("JoinGroup");
-        console.log("📡 Đã join group");
     } catch (err) {
-        console.error("❌ Lỗi kết nối SignalR:", err);
+        console.error("Lỗi kết nối SignalR:", err);
     }
 }
 
 function BindReconnectOnFocus() {
     $(document).on("visibilitychange", async () => {
         if (document.visibilityState === "visible") {
-            console.log("📱 App quay lại foreground");
             await ReconnectSignalR();
         }
     });
 
     $(window).on("focus", async () => {
-        console.log("🪟 Cửa sổ được focus lại");
         await ReconnectSignalR();
     });
 }
 
 async function ReconnectSignalR() {
     if (connection && connection.state === signalR.HubConnectionState.Connected) {
-        console.log("✅ SignalR vẫn đang hoạt động");
+        console.log("SignalR vẫn đang hoạt động");
         return;
     }
 
@@ -118,13 +113,13 @@ async function ReconnectSignalR() {
     });
 }
 
-window.addEventListener('online', async () => {
-    console.log("🌐 Mạng đã có lại — kiểm tra kết nối SignalR...");
+$(window).on('online', async function () {
+    console.log("Mạng đã có lại — kiểm tra kết nối SignalR...");
     await HandleNetworkRestore();
 });
 
-window.addEventListener('offline', () => {
-    console.warn("🚫 Mất kết nối mạng — SignalR sẽ tạm dừng hoạt động");
+$(window).on('offline', function () {
+    console.warn("Mất kết nối mạng — SignalR sẽ tạm dừng hoạt động");
     Swal.fire({
         position: "top-end",
         icon: "warning",
@@ -133,6 +128,7 @@ window.addEventListener('offline', () => {
         timer: 1500
     });
 });
+
 
 async function HandleNetworkRestore() {
     if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
@@ -158,7 +154,7 @@ async function HandleNetworkRestore() {
                 timer: 1000
             });
         } catch (err) {
-            console.error("❌ Lỗi khi reconnect sau khi có mạng:", err);
+            console.error("Lỗi khi reconnect sau khi có mạng:", err);
         }
     }
 }
@@ -170,8 +166,6 @@ async function HandleNetworkRestore() {
 
 
 async function InsertDataAX01(data) {
-    console.log("Data: ", data);
-
     const ELtem = $(`#tem_${data.id}`);
     const ELhum = $(`#hum_${data.id}`);
     const ELtime = $(`#time_${data.id}`);
@@ -200,12 +194,6 @@ $(document).on('change', '.relaySwitch', async function () {
     const [relayName, deviceId] = id.split('_');
     const newState = el.prop('checked') ? "1" : "0"; 
     const oldState = newState === "1" ? "0" : "1"; 
-
-    console.log("relayName:", relayName);
-    console.log("deviceId:", deviceId);
-    console.log("Trạng thái mới:", newState);
-
-    
 
     try {
         const payload = JSON.stringify({ [relayName]: newState });
@@ -237,7 +225,6 @@ $(document).on('change', '.relaySwitch', async function () {
             });
             setTimeout(() => el.prop("checked", oldState === "1"), 50);
         }
-        console.log(data);
         
     } catch (err) {
         setTimeout(() => el.prop("checked", oldState === "1"), 50);
@@ -291,20 +278,13 @@ $(document).on('click', '.device-setting', async function () {
 
 
 async function InsertStatus(data) {
-    console.log("Status: ", data);
     const status = $(`#status_${data.id}`);
-    if (!status) {
-        console.log("Không tìm thấy status");
-    }
-    console.log("Status: ",data.status);
     if (data.status == "1") {
-        console.log("Thiết bị online");
         status.text("Online")
             .removeClass("bg-secondary")
             .addClass("bg-success");
     }
     else if (data.status == "0") {
-        console.log("Thiết bị offline");
         status.text("Offline")
             .removeClass("bg-success")
             .addClass("bg-secondary");
@@ -319,7 +299,6 @@ async function LayDanhSachThietBi() {
 
     const json = await res.json();
     const data = json.data;
-    console.log(data);
     var dashboard = $('#main-content');
 
     for (const device of data) {

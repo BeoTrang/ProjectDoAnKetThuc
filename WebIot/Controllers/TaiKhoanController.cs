@@ -259,7 +259,7 @@ namespace WebIot.Controllers
                 }
                 else
                 {
-                    accessToken = Request.Cookies["accessToken"];
+                    accessToken = capLai.accessToken;
                 }
             }
             var client = _httpClientFactory.CreateClient();
@@ -299,7 +299,7 @@ namespace WebIot.Controllers
                 }
                 else
                 {
-                    accessToken = Request.Cookies["accessToken"];
+                    accessToken = capLai.accessToken;
                 }
             }
 
@@ -342,7 +342,7 @@ namespace WebIot.Controllers
                 }
                 else
                 {
-                    accessToken = Request.Cookies["accessToken"];
+                    accessToken = capLai.accessToken;
                 }
             }
 
@@ -379,7 +379,7 @@ namespace WebIot.Controllers
                 }
                 else
                 {
-                    accessToken = Request.Cookies["accessToken"];
+                    accessToken = capLai.accessToken;
                 }
             }
 

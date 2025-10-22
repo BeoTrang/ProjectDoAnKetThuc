@@ -45,7 +45,6 @@ $(document).ready(async function () {
 });
 
 
-//Header
 $('#DangXuat').on("click", async function () {
     const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -121,8 +120,6 @@ $('#HoSo').on('click', function () {
     });
 });
 
-
-//Sidebar
 
 $('#TrangChu').on('click', async function () {
     try {
