@@ -30,11 +30,9 @@ namespace CungCapAPI.Application.Services
                 };
             }
 
-            //Tạo access token và refresh token
             var accessToken = JwtHelper.GenerateAccessToken(user, _config);
             var refreshToken = JwtHelper.GenerateRefreshToken();    
 
-            //Lưu refresh token vào Redis với thời gian hết hạn là 7 ngày
             var result = await _taiKhoanRepository.LuuRefreshToken(user.NguoiDungId, refreshToken, TimeSpan.FromDays(7));
             if (!result)
             {

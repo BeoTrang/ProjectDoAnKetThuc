@@ -1,11 +1,14 @@
-﻿using CungCapAPI.Application.Interfaces;
+﻿using Azure.Core;
+using CungCapAPI.Application.Interfaces;
 using CungCapAPI.Application.Services;
 using CungCapAPI.MQTT;
+using CungCapAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ModelLibrary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CungCapAPI.Controllers
 {
@@ -15,10 +18,12 @@ namespace CungCapAPI.Controllers
     {
         private readonly IThietBiService _thietBiService;
         private readonly MqttService _mqttService;
-        public ThietBiController(IThietBiService thietBiService, MqttService mqttService)
+        private readonly InfluxService _influxService;
+        public ThietBiController(IThietBiService thietBiService, MqttService mqttService, InfluxService influxService)
         {
             _thietBiService = thietBiService;
             _mqttService = mqttService;
+            _influxService = influxService;
         }
 
         [Authorize]
@@ -238,5 +243,84 @@ namespace CungCapAPI.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("lich-su-thiet-bi")]
+        public async Task<ActionResult> LichSuDuLieuThietBi([FromBody] HistorySearch model)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string QuyenAdmin = User.FindFirst("VaiTro").Value;
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, model.deviceId);
+                if (Quyen == "full" || Quyen == "view" || QuyenAdmin == "Admin")
+                {
+                    var info = await _thietBiService.LayThongTinThietBi(model.deviceId);
+                    model.type = info.type;
+                    var data = await _influxService.LichSuDuLieuThietBi(model);
+                    return new JsonResult(new
+                    {
+                        success = true,
+                        message = "Đăng xuất thành công!",
+                        data = data
+                    });
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Bạn không có quyền chỉnh sửa!"
+                    });
+                }   
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            } 
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("thong-tin-thiet-bi/{deviceid}")]
+        public async Task<ActionResult> ThongTinThietBi(int deviceid)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string QuyenAdmin = User.FindFirst("VaiTro").Value;
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, deviceid);
+                if (Quyen == "full" || Quyen =="view" || QuyenAdmin == "Admin")
+                {
+                    var info = await _thietBiService.LayThongTinThietBi(deviceid);
+                    return new JsonResult(new
+                    {
+                        success = true,
+                        message = "Đăng xuất thành công!",
+                        data = info
+                    });
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Bạn không có quyền chỉnh sửa!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
     }
 }

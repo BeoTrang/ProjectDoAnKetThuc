@@ -272,6 +272,7 @@ namespace WebIot.Controllers
             return Content(json, "application/json");
         }
 
+
         [HttpPost]
         [Route("/luu-ten-thiet-bi")]
         public async Task<ActionResult> LuuTenThietBi([FromBody] LuuTenThietBi request)
@@ -332,6 +333,122 @@ namespace WebIot.Controllers
                     success = false, 
                     message = "Lỗi hệ thống!" 
                 });
+            }
+        }
+
+        [HttpPost]
+        [Route("/lay-lich-su-du-lieu-thiet-bi")]
+        public async Task<ActionResult> LayLichSuDuLieuThietBi([FromBody] HistorySearch request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    var responseError = new
+                    {
+                        success = false,
+                        message = "Lỗi hệ thống"
+                    };
+                    string jsonError = JsonConvert.SerializeObject(responseError);
+                    return Content(jsonError, "application/json");
+                }
+                KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+                if (!KiemTraDangNhap.success)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Đã hết hạn đăng nhập!"
+                    });
+                }
+
+                var payload = new
+                {
+                    deviceId = request.deviceId,
+                    typePick = request.typePick,
+                    pickTime= request.pickTime,
+                    startUTC = request.startUTC,
+                    endUTC = request.endUTC
+                };
+                var accessToken = KiemTraDangNhap.accessToken;
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+
+                var content = new StringContent(
+                    Newtonsoft.Json.JsonConvert.SerializeObject(payload),
+                    System.Text.Encoding.UTF8,
+                    "application/json"
+                );
+                var response = await client.PostAsync(_apiSettings.Url + "/Thietbi/lich-su-thiet-bi", content);
+                if (!response.IsSuccessStatusCode)
+                    return Json(new { success = false, message = "Lỗi hệ thống!" });
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                var result = JsonConvert.DeserializeObject<Request<List<object>>>(responseBody);
+
+                var responseClient = new
+                {
+                    success = result.success,
+                    message = result.message,
+                    data = result.data
+                };
+
+                string json = JsonConvert.SerializeObject(responseClient);
+                return Content(json, "application/json");
+            }
+            catch
+            {
+                var responseClient = new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                };
+
+                string json = JsonConvert.SerializeObject(responseClient);
+                return Content(json, "application/json");
+            }
+        }
+
+        [HttpGet]
+        [Route("/device-history/{deviceid}")]
+        public async Task<ActionResult> ViewLichSuThietBi(int deviceid)
+        {
+            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap.success)
+                return Json(new
+                {
+                    success = false,
+                    message = "Đã hết hạn đăng nhập!"
+                });
+            var accessToken = KiemTraDangNhap.accessToken;
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            var response = await client.GetAsync(_apiSettings.Url + $"/ThietBi/thong-tin-thiet-bi/{deviceid}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var result = JsonConvert.DeserializeObject<Request<Device>>(responseBody);
+            
+
+            if (!result.success)
+            {
+                var responseClient = new
+                {
+                    success = result.success,
+                    message = result.message
+                };
+
+                string json = JsonConvert.SerializeObject(responseClient);
+                return Content(json, "application/json");
+            }
+            else
+            {
+                var model = result.data;
+                return PartialView("_HistoryDevice", model);
             }
         }
     }

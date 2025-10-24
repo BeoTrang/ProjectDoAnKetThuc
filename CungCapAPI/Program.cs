@@ -101,6 +101,7 @@ if (app.Environment.IsDevelopment())
 }
 
 var mqttService = app.Services.GetRequiredService<MqttService>();
+
 await mqttService.ConnectAsync();
 
 app.UseHttpsRedirection();

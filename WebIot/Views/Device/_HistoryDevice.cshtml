@@ -1,0 +1,40 @@
+﻿@model ModelLibrary.Device
+<div class="history">
+    <div class="option d-flex">
+        <input type="hidden" id="deviceId" value="@Model.id" />
+        <input type="hidden" id="deviceType" value="@Model.type" />
+        <select class="form-select" aria-label="Default select example" id="pickTime">
+            <option value="-1h" selected>1 giờ qua</option>
+            <option value="-3h">3 giờ qua</option>
+            <option value="-6h">6 giờ qua</option>
+            <option value="-12h">12 giờ qua</option>
+            <option value="-24h">24 giờ qua</option>
+            <option value="-2d">2 ngày qua</option>
+            <option value="-7d">7 ngày qua</option>
+            <option value="-15d">15 ngày qua</option>
+            <option value="-30d">30 ngày qua</option>
+        </select>
+        @if(Model.type == "AX01")
+        {
+            <div class="d-flex">
+                <div class="form-check me-3">
+                    <input class="form-check-input" type="radio" name="pickType" id="pickType1" value="TemHum" checked>
+                    <label class="form-check-label" for="pickType1">Độ ẩm và nhiệt độ</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="pickType" id="pickType2" value="Relay">
+                    <label class="form-check-label" for="pickType2">Trạng thái Relay</label>
+                </div>
+            </div>
+
+        }
+        <button class="btn btn-primary" id="TaoBieuDo">
+            Tạo biểu đồ
+        </button>
+    </div>
+    @* <div class="container-fluid" id="historyChart">
+
+    </div> *@
+    <canvas id="historyChart" width="400" height="200"></canvas>
+
+</div>

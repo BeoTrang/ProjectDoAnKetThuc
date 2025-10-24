@@ -93,7 +93,7 @@ async function ReconnectSignalR() {
         console.log("SignalR vẫn đang hoạt động");
         return;
     }
-
+    await CapNhatDuLieuMoiNhat();
     await LayAccessToken();
 
     if (!accessToken) {
@@ -118,7 +118,7 @@ async function ReconnectSignalR() {
 
 $(window).on('online', async function () {
     console.log("Mạng đã có lại — kiểm tra kết nối SignalR...");
-    await HandleNetworkRestore();
+    await KetNoiMang();
 });
 
 $(window).on('offline', function () {
@@ -128,12 +128,12 @@ $(window).on('offline', function () {
         icon: "warning",
         title: "Mất kết nối mạng!",
         showConfirmButton: false,
-        timer: 1500
+        timer: 1000
     });
 });
 
 
-async function HandleNetworkRestore() {
+async function KetNoiMang() {
     if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
         console.log("🔁 Đang thử kết nối lại SignalR sau khi có mạng...");
         try {
@@ -274,6 +274,51 @@ $(document).on('click', '.device-setting', async function () {
             timer: 1000
         });
     } finally {
+        hideSpinner();
+    }
+});
+
+$(document).on('click', '.device-history', async function () {
+    showSpinner();
+    const el = $(this);
+    const id = el.attr('id');
+
+    console.log(id);
+    try {
+        const res = await fetch(`/device-history/${id}`, {
+            method: "GET"
+        });
+
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            const data = await res.json();
+
+            if (!data.success) {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: data.message,
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+                return;
+            }
+        } else {
+            const html = await res.text();
+            $('#main-content').empty().append(html);
+            Init_HistoryDevice();
+        }
+    }
+    catch {
+        Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Lỗi hệ thống",
+            showConfirmButton: false,
+            timer: 1000
+        });
+    }
+    finally {
         hideSpinner();
     }
 });

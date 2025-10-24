@@ -85,4 +85,14 @@ namespace ModelLibrary
         public string master { get; set; }
         public string nameConfig { get; set; }
     }
+
+    public class HistorySearch  
+    {
+        public int deviceId { get; set; }
+        public string typePick { get; set; } = "";
+        public string type { get; set; } = "";
+        public string pickTime { get; set; } = "";
+        public DateTime startUTC { get; set; }
+        public DateTime endUTC { get; set; }
+    }
 }
