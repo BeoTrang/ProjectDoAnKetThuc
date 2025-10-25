@@ -140,3 +140,11 @@
         transform: rotate(360deg);
     }
 }
+
+
+.Khung-History {
+    height: 500px;
+}
+#historyChart {
+    height: 500px;
+}

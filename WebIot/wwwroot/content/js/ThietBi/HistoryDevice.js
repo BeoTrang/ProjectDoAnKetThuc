@@ -56,7 +56,24 @@
                         },
                         options: {
                             responsive: true,
-                            scales: { y: { beginAtZero: true } }
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        maxRotation: 90,   // xoay 45 độ thay vì 90 cho dễ đọc
+                                        minRotation: 90,
+                                        color: 'black',
+                                        font: {
+                                            size: 10       // tăng kích thước chữ
+                                        },
+                                        autoSkip: true,    // tự động ẩn bớt nhãn khi quá nhiều
+                                        maxTicksLimit: 10  // tối đa 10 nhãn trên trục X
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
                         }
                     });
                 }

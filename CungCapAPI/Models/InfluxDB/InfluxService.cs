@@ -86,39 +86,39 @@ namespace CungCapAPI.Services
                 {
                     case "-1h":
                         time = "range(start: -1h)";
-                        aggregateWindow = "|> aggregateWindow(every: 10s, fn: mean, createEmpty: false)";
+                        aggregateWindow = "|> aggregateWindow(every: 5m, fn: mean, createEmpty: false)";
                         break;
                     case "-3h":
                         time = "range(start: -3h)";
-                        aggregateWindow = "|> aggregateWindow(every: 15s, fn: mean, createEmpty: false)";
+                        aggregateWindow = "|> aggregateWindow(every: 10m, fn: mean, createEmpty: false)";
                         break;
                     case "-6h":
                         time = "range(start: -6h)";
-                        aggregateWindow = "|> aggregateWindow(every: 30s, fn: mean, createEmpty: false)";
+                        aggregateWindow = "|> aggregateWindow(every: 15m, fn: mean, createEmpty: false)";
                         break;
                     case "-12h":
                         time = "range(start: -12h)";
-                        aggregateWindow = "|> aggregateWindow(every: 30s, fn: mean, createEmpty: false)";
+                        aggregateWindow = "|> aggregateWindow(every: 30m, fn: mean, createEmpty: false)";
                         break;
                     case "-24h":
                         time = "range(start: -24h)";
-                        aggregateWindow = "|> aggregateWindow(every: 2m, fn: mean, createEmpty: false)";
+                        aggregateWindow = "|> aggregateWindow(every: 30m, fn: mean, createEmpty: false)";
                         break;
                     case "-2d":
                         time = "range(start: -2d)";
-                        aggregateWindow = "|> aggregateWindow(every: 3m, fn: mean, createEmpty: false)";
+                        aggregateWindow = "|> aggregateWindow(every: 30m, fn: mean, createEmpty: false)";
                         break;
                     case "-7d":
                         time = "range(start: -7d)";
-                        aggregateWindow = "|> aggregateWindow(every: 5m, fn: mean, createEmpty: false)";
+                        aggregateWindow = "|> aggregateWindow(every: 1h, fn: mean, createEmpty: false)";
                         break;
                     case "-15d":
                         time = "range(start: -15d)";
-                        aggregateWindow = "|> aggregateWindow(every: 10m, fn: mean, createEmpty: false)";
+                        aggregateWindow = "|> aggregateWindow(every: 3h, fn: mean, createEmpty: false)";
                         break;
                     case "-30d":
                         time = "range(start: -30d)";
-                        aggregateWindow = "|> aggregateWindow(every: 3h, fn: mean, createEmpty: false)";
+                        aggregateWindow = "|> aggregateWindow(every: 6h, fn: mean, createEmpty: false)";
                         break;
                     default:
                         return null;
