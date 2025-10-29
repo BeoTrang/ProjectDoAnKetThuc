@@ -14,7 +14,7 @@
 
             if (deviceType == "AX01") {
                 const pickTime = $('#pickTime option:selected').val();
-                const pickType = $('input[name="pickType"]').val();
+                const pickType = $('input[name="pickType"]:checked').val();
 
                 console.log(deviceId);
                 console.log(deviceType);
