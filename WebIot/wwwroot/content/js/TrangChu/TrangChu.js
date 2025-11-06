@@ -62,7 +62,7 @@ $('#DangXuat').on("click", async function () {
         reverseButtons: true
     }).then(async (result) => {
         if (result.isConfirmed) {
-            const res = await fetch("/dang-xuat", {
+            const res = await fetch("/api/dang-xuat", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

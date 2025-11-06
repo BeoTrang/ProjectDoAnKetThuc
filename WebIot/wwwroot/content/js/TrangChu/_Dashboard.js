@@ -22,13 +22,13 @@ async function Init_Dashboard() {
 }
 
 async function LayUrl() {
-    const res = await fetch("/lay-url-api");
+    const res = await fetch("/api/lay-url-api");
     const json = await res.json();
     url = `${json.data}/deviceHub`;
 }
 
 async function LayAccessToken() {
-    const res = await fetch("/lay-access-token", {
+    const res = await fetch("/api/lay-access-token", {
         method: "GET",
         credentials: "include"
     });
@@ -200,7 +200,7 @@ $(document).on('change', '.relaySwitch', async function () {
 
     try {
         const payload = JSON.stringify({ [relayName]: newState });
-        const res = await fetch("/dieu-khien-thiet-bi", {
+        const res = await fetch("/api/dieu-khien-thiet-bi", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -240,7 +240,7 @@ $(document).on('click', '.device-setting', async function () {
     const id = el.attr('id');
 
     try {
-        const res = await fetch(`/thong-tin-thiet-bi/${id}`, {
+        const res = await fetch(`/api/thong-tin-thiet-bi/${id}`, {
             method: "GET"
         });
 
@@ -340,7 +340,7 @@ async function InsertStatus(data) {
 }
 
 async function LayDanhSachThietBi() {
-    const res = await fetch("/lay-danh-sach-thiet-bi", {
+    const res = await fetch("/api/lay-danh-sach-thiet-bi", {
         method: "GET",
         headers: { 'Content-Type': 'application/json' }
     });
@@ -365,7 +365,7 @@ async function LayDanhSachThietBi() {
 }
 
 async function CapNhatDuLieuMoiNhat() {
-    const res = await fetch("/lay-danh-sach-thiet-bi", {
+    const res = await fetch("/api/lay-danh-sach-thiet-bi", {
         method: "GET",
         headers: { 'Content-Type': 'application/json' }
     });
@@ -374,7 +374,7 @@ async function CapNhatDuLieuMoiNhat() {
     const data = json.data;
 
     for (const device of data) {
-        const dulieu = await fetch(`/du-lieu-thiet-bi-moi-nhat/${device.deviceType}/${device.deviceId}`, {
+        const dulieu = await fetch(`/api/du-lieu-thiet-bi-moi-nhat/${device.deviceType}/${device.deviceId}`, {
             method: "GET",
             headers: { 'Content-Type': 'application/json' }
         });

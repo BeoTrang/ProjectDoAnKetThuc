@@ -57,7 +57,7 @@ DangKyForm.submit(async function (e) {
     SetLoading(true);
 
     try {
-        const res = await fetch("/dang-ky-tai-khoan", {
+        const res = await fetch("/api/dang-ky-tai-khoan", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

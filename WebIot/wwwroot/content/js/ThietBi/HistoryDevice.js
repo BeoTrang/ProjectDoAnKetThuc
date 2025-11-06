@@ -21,7 +21,7 @@
                 console.log(pickTime);
                 console.log(pickType);
 
-                const res = await fetch("/lay-lich-su-du-lieu-thiet-bi", {
+                const res = await fetch("/api/lay-lich-su-du-lieu-thiet-bi", {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -67,7 +67,6 @@
                                             size: 14  
                                         },
                                         autoSkip: true
-                                        //maxTicksLimit: 13 
                                     }
                                 },
                                 y: {

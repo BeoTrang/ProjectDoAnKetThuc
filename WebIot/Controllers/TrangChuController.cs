@@ -37,7 +37,7 @@ namespace WebIot.Controllers
                 var client = _httpClientFactory.CreateClient();
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await client.GetAsync(_apiSettings.Url + "/TaiKhoan/thong-tin-nguoi-dung");
+                var response = await client.GetAsync(_apiSettings.Url + "/tai-khoan/thong-tin-nguoi-dung");
                 var responseBody = await response.Content.ReadAsStringAsync();
                 var result = System.Text.Json.JsonSerializer.Deserialize<Request<ThongTinNguoiDung>>(responseBody);
                 if (result.success == true)
@@ -51,6 +51,7 @@ namespace WebIot.Controllers
                 return View(viewModel);
             }
         }
+
         [Route("/dashboard")]
         public async Task<IActionResult> _Dashboard()
         {
@@ -66,7 +67,8 @@ namespace WebIot.Controllers
                 return View();
             }
         }
-        [Route("/lay-url-api")]
+
+        [Route("/api/lay-url-api")]
         public async Task<IActionResult> LayUrlSignalR()
         {
             return Json(new

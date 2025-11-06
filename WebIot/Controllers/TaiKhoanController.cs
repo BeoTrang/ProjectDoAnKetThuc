@@ -42,7 +42,7 @@ namespace WebIot.Controllers
         }
 
         [HttpPost]
-        [Route("/dang-ky-tai-khoan")]
+        [Route("/api/dang-ky-tai-khoan")]
         public async Task<IActionResult> DangKyTaiKhoan([FromBody] DangKyTaiKhoan request)
         {
             var client = _httpClientFactory.CreateClient();
@@ -56,7 +56,7 @@ namespace WebIot.Controllers
             };
             var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
             var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/dang-ky-tai-khoan", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/tai-khoan/dang-ky-tai-khoan", content);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -85,7 +85,7 @@ namespace WebIot.Controllers
         }
 
         [HttpPost]
-        [Route("/kiem-tra-dang-nhap")]
+        [Route("/api/kiem-tra-dang-nhap")]
         public async Task<IActionResult> KiemTraDangNhap([FromBody] TaiKhoanGuiVe request)
         {
             var client = _httpClientFactory.CreateClient();
@@ -97,7 +97,7 @@ namespace WebIot.Controllers
             var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
             var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/dang-nhap", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/tai-khoan/dang-nhap", content);
             if (!response.IsSuccessStatusCode)
             {
                 return Json(new { success = false, message = "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin." });
@@ -137,7 +137,7 @@ namespace WebIot.Controllers
         }
 
         [HttpPost]
-        [Route("/duy-tri-dang-nhap")]
+        [Route("/api/duy-tri-dang-nhap")]
         public async Task<IActionResult> CaplaiRefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
@@ -152,7 +152,7 @@ namespace WebIot.Controllers
             };
             var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
             var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/cap-lai-access-token", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/tai-khoan/cap-lai-access-token", content);
             if (!response.IsSuccessStatusCode)
             {
                 return Json(new { success = false, message = "Lỗi!" });
@@ -182,7 +182,7 @@ namespace WebIot.Controllers
         }
 
         [HttpPost]
-        [Route("/dang-xuat")]
+        [Route("/api/dang-xuat")]
         public async Task<IActionResult> DangXuat()
         {
             var refreshToken = Request.Cookies["refreshToken"];
@@ -194,7 +194,7 @@ namespace WebIot.Controllers
             };
             var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
             var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/dang-xuat", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/tai-khoan/dang-xuat", content);
             if (!response.IsSuccessStatusCode)
             {
                 return Json(new { success = false, message = "Lỗi!" });
@@ -219,7 +219,7 @@ namespace WebIot.Controllers
         }
 
         [HttpGet]
-        [Route("/lay-access-token")]
+        [Route("/api/lay-access-token")]
         public async Task<IActionResult> LayAccessToken()
         {
             KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
@@ -246,7 +246,8 @@ namespace WebIot.Controllers
         {
             return View();
         }
-        [Route("/lay-ho-so-tai-khoan")]
+
+        [Route("/api/lay-ho-so-tai-khoan")]
         public async Task<IActionResult> LayHoSoTaiKhoan()
         {
             var accessToken = Request.Cookies["accessToken"];
@@ -265,7 +266,7 @@ namespace WebIot.Controllers
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await client.GetAsync(_apiSettings.Url + "/TaiKhoan/lay-ho-so-tai-khoan");
+            var response = await client.GetAsync(_apiSettings.Url + "/tai-khoan/lay-ho-so-tai-khoan");
             if (!response.IsSuccessStatusCode)
             {
                 return Json(new { success = false, message = "Lỗi!" });
@@ -286,7 +287,8 @@ namespace WebIot.Controllers
                 });
             }
         }
-        [Route("/kiem-tra-va-doi-mat-khau")]
+
+        [Route("/api/kiem-tra-va-doi-mat-khau")]
         public async Task<IActionResult> KiemTraVaDoiMatKhau([FromBody] DoiMatKhau request)
         {
             var accessToken = Request.Cookies["accessToken"];
@@ -313,7 +315,7 @@ namespace WebIot.Controllers
             var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
             var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/kiem-tra-va-doi-mat-khau", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/tai-khoan/kiem-tra-va-doi-mat-khau", content);
             if (!response.IsSuccessStatusCode)
             {
                 return Json(new { success = false, message = "Lỗi hệ thống, thử lại sau!" });
@@ -329,7 +331,7 @@ namespace WebIot.Controllers
                 });
             }
         }
-        [Route("/doi-thong-tin-nguoi-dung")]
+        [Route("/api/doi-thong-tin-nguoi-dung")]
         public async Task<IActionResult> DoiThongTinNguoiDung([FromBody] CaiDatThongTinTaiKhoan model)
         {
             var accessToken = Request.Cookies["accessToken"];
@@ -350,7 +352,7 @@ namespace WebIot.Controllers
             var client = _httpClientFactory.CreateClient();
             var content = new System.Net.Http.StringContent(payload, System.Text.Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/doi-thong-tin-nguoi-dung", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/tai-khoan/doi-thong-tin-nguoi-dung", content);
             if (!response.IsSuccessStatusCode)
             {
                 return Json(new { success = false, message = "Lỗi hệ thống, thử lại sau!" });
@@ -366,7 +368,7 @@ namespace WebIot.Controllers
                 });
             }
         }
-        [Route("/doi-thong-tin-telegram")]
+        [Route("/api/doi-thong-tin-telegram")]
         public async Task<IActionResult> DoiThongTinTelegram([FromBody] CaiDatTelegram model)
         {
             var accessToken = Request.Cookies["accessToken"];
@@ -387,7 +389,7 @@ namespace WebIot.Controllers
             var client = _httpClientFactory.CreateClient();
             var content = new System.Net.Http.StringContent(payload, System.Text.Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/doi-thong-tin-telegram", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/tai-khoan/doi-thong-tin-telegram", content);
             if (!response.IsSuccessStatusCode)
             {
                 return Json(new { success = false, message = "Lỗi hệ thống, thử lại sau!" });

@@ -32,7 +32,7 @@ DangNhapForm.submit(async function (e) {
     SetLoading(true);
 
     try {
-        const res = await fetch("/kiem-tra-dang-nhap", {
+        const res = await fetch("/api/kiem-tra-dang-nhap", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -41,7 +41,7 @@ namespace WebIot.Helper
                     client.DefaultRequestHeaders.Authorization =
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                    response = await client.GetAsync(_apiSettings.Url + "/TaiKhoan/thong-tin-nguoi-dung");
+                    response = await client.GetAsync(_apiSettings.Url + "/tai-khoan/thong-tin-nguoi-dung");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -92,7 +92,7 @@ namespace WebIot.Helper
             var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
             var content = new System.Net.Http.StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync(_apiSettings.Url + "/TaiKhoan/cap-lai-access-token", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/tai-khoan/cap-lai-access-token", content);
 
             if (!response.IsSuccessStatusCode)
             {

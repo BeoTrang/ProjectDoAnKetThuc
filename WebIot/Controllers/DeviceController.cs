@@ -20,7 +20,7 @@ namespace WebIot.Controllers
             _jWT_Helper = jWT_Helper;
         }
         [HttpGet]
-        [Route("/lay-danh-sach-thiet-bi")]
+        [Route("/api/lay-danh-sach-thiet-bi")]
         public async Task<IActionResult> LayDanhSachThietBi()
         {
             KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
@@ -38,7 +38,7 @@ namespace WebIot.Controllers
                 var client = _httpClientFactory.CreateClient();
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-                var response = await client.GetAsync(_apiSettings.Url + "/ThietBi/lay-danh-sach-thiet-bi");
+                var response = await client.GetAsync(_apiSettings.Url + "/thiet-bi/lay-danh-sach-thiet-bi");
                 if (!response.IsSuccessStatusCode)
                     return Json(new { success = false, message = "Lỗi hệ thống!" });
 
@@ -57,7 +57,7 @@ namespace WebIot.Controllers
 
 
         [HttpPost]
-        [Route("/lay-du-lieu-thiet-bi")]
+        [Route("/api/lay-du-lieu-thiet-bi")]
         public async Task<IActionResult> LayDuLieuThietBi([FromBody] KiemTraQuyenThietBi request)
         {
             KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
@@ -75,7 +75,7 @@ namespace WebIot.Controllers
                 "application/json"
             );
 
-            var response = await client.PostAsync(_apiSettings.Url + "/ThietBi/kiem-tra-quyen-thiet-bi", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/kiem-tra-quyen-thiet-bi", content);
             if (!response.IsSuccessStatusCode)
                 return Json(new { success = false, message = "Lỗi hệ thống!" });
 
@@ -93,6 +93,7 @@ namespace WebIot.Controllers
             string json = JsonConvert.SerializeObject(responseClient);
             return Content(json, "application/json");
         }
+
         public async Task<AX01<DHT22, Relay4, Name_AX01>> LayModelAX01(int deviceId)
         {
             var accessToken = Request.Cookies["accessToken"];
@@ -110,7 +111,7 @@ namespace WebIot.Controllers
                 "application/json"
             );
 
-            var response = await client.PostAsync(_apiSettings.Url + "/ThietBi/kiem-tra-quyen-thiet-bi", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/kiem-tra-quyen-thiet-bi", content);
             var responseBody = await response.Content.ReadAsStringAsync();
 
             var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
@@ -144,7 +145,7 @@ namespace WebIot.Controllers
             client.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await client.GetAsync(_apiSettings.Url + $"/ThietBi/lay-ten-thiet-bi/{deviceid}");
+            var response = await client.GetAsync(_apiSettings.Url + $"/thiet-bi/lay-ten-thiet-bi/{deviceid}");
             var responseBody = await response.Content.ReadAsStringAsync();
 
             var result = JsonConvert.DeserializeObject<Request<Name_AX01>>(responseBody);
@@ -170,7 +171,7 @@ namespace WebIot.Controllers
         }
 
         [HttpGet]
-        [Route("/du-lieu-thiet-bi-moi-nhat/{type}/{deviceid}")]
+        [Route("/api/du-lieu-thiet-bi-moi-nhat/{type}/{deviceid}")]
         public async Task<ActionResult> LayDuLieuMoiNhat(string type, int deviceid)
         {
             try
@@ -223,7 +224,7 @@ namespace WebIot.Controllers
 
 
         [HttpPost]
-        [Route("/dieu-khien-thiet-bi")]
+        [Route("/api/dieu-khien-thiet-bi")]
         public async Task<ActionResult> DieuKhienThietBi([FromBody] DieuKhienThietBi request)
         {
             if (request == null)
@@ -254,7 +255,7 @@ namespace WebIot.Controllers
                 System.Text.Encoding.UTF8,
                 "application/json"
             );
-            var response = await client.PostAsync(_apiSettings.Url + "/ThietBi/dieu-khien-thiet-bi", content);
+            var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/dieu-khien-thiet-bi", content);
             if (!response.IsSuccessStatusCode)
                 return Json(new { success = false, message = "Lỗi hệ thống!" });
 
@@ -274,7 +275,7 @@ namespace WebIot.Controllers
 
 
         [HttpPost]
-        [Route("/luu-ten-thiet-bi")]
+        [Route("/api/luu-ten-thiet-bi")]
         public async Task<ActionResult> LuuTenThietBi([FromBody] LuuTenThietBi request)
         {
             try
@@ -310,7 +311,7 @@ namespace WebIot.Controllers
                     "application/json"
                 );
 
-                var response = await client.PostAsync(_apiSettings.Url + "/ThietBi/luu-ten-thiet-bi", content);
+                var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/luu-ten-thiet-bi", content);
                 var responseBody = await response.Content.ReadAsStringAsync();
 
                 
@@ -337,7 +338,7 @@ namespace WebIot.Controllers
         }
 
         [HttpPost]
-        [Route("/lay-lich-su-du-lieu-thiet-bi")]
+        [Route("/api/lay-lich-su-du-lieu-thiet-bi")]
         public async Task<ActionResult> LayLichSuDuLieuThietBi([FromBody] HistorySearch request)
         {
             try
@@ -381,7 +382,7 @@ namespace WebIot.Controllers
                     System.Text.Encoding.UTF8,
                     "application/json"
                 );
-                var response = await client.PostAsync(_apiSettings.Url + "/Thietbi/lich-su-thiet-bi", content);
+                var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/lich-su-thiet-bi", content);
                 if (!response.IsSuccessStatusCode)
                     return Json(new { success = false, message = "Lỗi hệ thống!" });
 
@@ -428,7 +429,7 @@ namespace WebIot.Controllers
             client.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await client.GetAsync(_apiSettings.Url + $"/ThietBi/thong-tin-thiet-bi/{deviceid}");
+            var response = await client.GetAsync(_apiSettings.Url + $"/thiet-bi/thong-tin-thiet-bi/{deviceid}");
             var responseBody = await response.Content.ReadAsStringAsync();
 
             var result = JsonConvert.DeserializeObject<Request<Device>>(responseBody);

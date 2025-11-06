@@ -17,7 +17,7 @@ namespace CungCapAPI.Controllers
             _configuration = configuration;
             _taiKhoanService = taiKhoanService;
         }
-        [HttpPost("dang-nhap")]
+        [HttpPost("/tai-khoan/dang-nhap")]
         public async Task<ActionResult> KiemTraMatKhau([FromBody] TaiKhoanGuiVe request)
         {
             int NguoiDungId = await _taiKhoanService.KiemTraMatKhau(request.TaiKhoan, request.MatKhau);
@@ -40,7 +40,7 @@ namespace CungCapAPI.Controllers
                 });
             }
         }
-        [HttpPost("dang-xuat")]
+        [HttpPost("/tai-khoan/dang-xuat")]
         public async Task<ActionResult> DangXuat([FromBody] RefreshRequest request)
         {
             if (request.RefreshToken.IsNullOrEmpty())
@@ -73,7 +73,7 @@ namespace CungCapAPI.Controllers
             }
         }
         [Authorize]
-        [HttpGet("thong-tin-nguoi-dung")]
+        [HttpGet("/tai-khoan/thong-tin-nguoi-dung")]
         public async Task<ActionResult> LayThongTinNguoiDung()
         {
             int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
@@ -86,7 +86,7 @@ namespace CungCapAPI.Controllers
             });
         }
 
-        [HttpPost("cap-lai-access-token")]
+        [HttpPost("/tai-khoan/cap-lai-access-token")]
         public async Task<ActionResult> CapLaiAccessToken([FromBody] RefreshRequest request)
         {
             string RefreshToken = request.RefreshToken;
@@ -117,7 +117,7 @@ namespace CungCapAPI.Controllers
                 });
             }
         }
-        [HttpPost("dang-ky-tai-khoan")]
+        [HttpPost("/tai-khoan/dang-ky")]
         public async Task<ActionResult> DangKyTaiKhoan([FromBody] DangKyTaiKhoan request)
         {
             if (request.name.IsNullOrEmpty() || request.email.IsNullOrEmpty() || request.phone_number.IsNullOrEmpty() || request.account_login.IsNullOrEmpty() || request.password_login.IsNullOrEmpty())
@@ -162,7 +162,7 @@ namespace CungCapAPI.Controllers
             } 
         }
         [Authorize]
-        [HttpGet("lay-ho-so-tai-khoan")]
+        [HttpGet("/tai-khoan/ho-so-tai-khoan")]
         public async Task<ActionResult> LayHoSoTaiKhoan()
         {
             int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
@@ -176,7 +176,7 @@ namespace CungCapAPI.Controllers
         }
 
         [Authorize]
-        [HttpPost("kiem-tra-va-doi-mat-khau")]
+        [HttpPost("/tai-khoan/doi-mat-khau")]
         public async Task<ActionResult> KiemTraVaDoiMatKhau([FromBody] DoiMatKhau request)
         {
             int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
@@ -207,7 +207,7 @@ namespace CungCapAPI.Controllers
             }
         }
         [Authorize]
-        [HttpPost("doi-thong-tin-nguoi-dung")]
+        [HttpPost("/tai-khoan/doi-thong-tin-nguoi-dung")]
         public async Task<IActionResult> DoiThongTinNguoiDung([FromBody] CaiDatThongTinTaiKhoan request)
         {
             int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
@@ -229,8 +229,9 @@ namespace CungCapAPI.Controllers
                 });
             }
         }
+
         [Authorize]
-        [HttpPost("doi-thong-tin-telegram")]
+        [HttpPost("/tai-khoan/doi-thong-tin-telegram")]
         public async Task<IActionResult> DoiThongTinTelegram([FromBody] CaiDatTelegram request)
         {
             int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);

@@ -32,7 +32,6 @@
         }
         Swal.fire({
             title: "Bạn có chắc muốn thay đổi thông tin không?",
-            //text: "You won't be able to revert this!",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
@@ -49,7 +48,7 @@
                         relay3: relay3.val().trim(),
                         relay4: relay4.val().trim()
                     };
-                    const res = await fetch('/luu-ten-thiet-bi', {
+                    const res = await fetch('/api/luu-ten-thiet-bi', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({

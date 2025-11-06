@@ -27,7 +27,7 @@ namespace CungCapAPI.Controllers
         }
 
         [Authorize]
-        [HttpPost("kiem-tra-quyen-thiet-bi")]
+        [HttpPost("/thiet-bi/kiem-tra-quyen-thiet-bi")]
         public async Task<ActionResult> KiemTraQuyenThietBi([FromBody]KiemTraQuyenThietBi request)
         {
             try
@@ -68,7 +68,7 @@ namespace CungCapAPI.Controllers
             }
         }
         [Authorize]
-        [HttpGet("lay-danh-sach-thiet-bi")]
+        [HttpGet("/thiet-bi/lay-danh-sach-thiet-bi")]
         public async Task<ActionResult> LayDanhSachThietBi()
         {
             try
@@ -92,7 +92,7 @@ namespace CungCapAPI.Controllers
             }
         }
         [Authorize]
-        [HttpPost("dieu-khien-thiet-bi")]
+        [HttpPost("/thiet-bi/dieu-khien-thiet-bi")]
         public async Task<ActionResult> DieuKhienThietBi([FromBody] DieuKhienThietBi request)
         {
             try
@@ -145,7 +145,7 @@ namespace CungCapAPI.Controllers
             }
         }
         [Authorize]
-        [HttpGet("lay-ten-thiet-bi/{deviceid}")]
+        [HttpGet("/thiet-bi/lay-ten-thiet-bi/{deviceid}")]
         public async Task<ActionResult> LayTenThietBi(int deviceid)
         {
             try
@@ -195,7 +195,7 @@ namespace CungCapAPI.Controllers
             }
         }
         [Authorize]
-        [HttpPost("luu-ten-thiet-bi")]
+        [HttpPost("/thiet-bi/luu-ten-thiet-bi")]
         public async Task<ActionResult> LuuTenThietBi([FromBody] LuuTenThietBi request)
         {
             try
@@ -245,7 +245,7 @@ namespace CungCapAPI.Controllers
 
         [Authorize]
         [HttpPost]
-        [Route("lich-su-thiet-bi")]
+        [Route("/thiet-bi/lich-su-thiet-bi")]
         public async Task<ActionResult> LichSuDuLieuThietBi([FromBody] HistorySearch model)
         {
             try
@@ -286,7 +286,7 @@ namespace CungCapAPI.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("thong-tin-thiet-bi/{deviceid}")]
+        [Route("/thiet-bi/thong-tin-thiet-bi/{deviceid}")]
         public async Task<ActionResult> ThongTinThietBi(int deviceid)
         {
             try

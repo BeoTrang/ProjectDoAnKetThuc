@@ -56,7 +56,7 @@
                 if (result.isConfirmed) {
                     showSpinner();
                     try {
-                        const res = await fetch('/kiem-tra-va-doi-mat-khau', {
+                        const res = await fetch('/api/kiem-tra-va-doi-mat-khau', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -130,7 +130,7 @@
                 if (result.isConfirmed) {
                     showSpinner();
                     try {
-                        const res = await fetch('/doi-thong-tin-nguoi-dung', {
+                        const res = await fetch('/api/doi-thong-tin-nguoi-dung', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -200,7 +200,7 @@
                 if (result.isConfirmed) {
                     showSpinner();
                     try {
-                        const res = await fetch('/doi-thong-tin-telegram', {
+                        const res = await fetch('/api/doi-thong-tin-telegram', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
