@@ -1,6 +1,6 @@
 ﻿async function Init_HoSoTaiKhoan() {
     try {
-        const res = await fetch("/lay-ho-so-tai-khoan", { method: "GET" });
+        const res = await fetch("/api/lay-ho-so-tai-khoan", { method: "GET" });
 
         if (!res.ok) {
             throw new Error(`Lỗi HTTP: ${res.status}`);

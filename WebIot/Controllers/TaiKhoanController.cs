@@ -266,7 +266,7 @@ namespace WebIot.Controllers
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await client.GetAsync(_apiSettings.Url + "/tai-khoan/lay-ho-so-tai-khoan");
+            var response = await client.GetAsync(_apiSettings.Url + "/tai-khoan/ho-so-tai-khoan");
             if (!response.IsSuccessStatusCode)
             {
                 return Json(new { success = false, message = "Lỗi!" });
