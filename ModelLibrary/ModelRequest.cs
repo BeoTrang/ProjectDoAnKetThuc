@@ -48,4 +48,10 @@
         public bool success { get; set; }
         public string accessToken { get; set; }
     }
+    public class ShareRequest
+    {
+        public int deviceid { get; set; }
+        public string quyen { get; set; }
+    }
+
 }

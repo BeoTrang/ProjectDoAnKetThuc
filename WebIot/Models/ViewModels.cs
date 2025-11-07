@@ -5,4 +5,9 @@ namespace WebIot.Models
     {
         public ThongTinNguoiDung thongTinNguoiDung { get; set; }
     }
+    public class ShareDevice
+    {
+        public int deivceId { get; set; }
+        public ShareDeviceModel share { get; set; }
+    }
 }

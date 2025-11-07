@@ -13,11 +13,20 @@ namespace ModelLibrary
         public int deviceId { get; set; }
     }
 
+    public class ShareRequest123
+    {
+        public int deviceid { get; set; }
+    }
     public class DieuKhienThietBi
     {
         public int deviceId { get; set; }
         public string payload { get; set; }
         public int state { get; set; }
+    }
+    public class ShareDeviceModel
+    {
+        public string confirm { get; set; } = null;
+        public string quyen { get; set; } = null;
     }
     public class Device
     {

@@ -3,6 +3,8 @@ using CungCapAPI.Models.SqlServer;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using ModelLibrary;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Linq;
 
 namespace CungCapAPI.Models.DichVuTrong
@@ -66,6 +68,37 @@ namespace CungCapAPI.Models.DichVuTrong
         {
             var data = await _Redis.GetAsync($"device:{DeviceId}:status");
             return data;
+        }
+        public async Task<string> MaChiaSeThietBi(int DeviceId)
+        {
+            var data = await _Redis.GetAsync($"device:{DeviceId}:share");
+            return data;
+        }
+        public async Task<bool> XoaMaChiaSeThietBi(int DeviceId)
+        {
+            try
+            {
+                await _Redis.RemoveAsync($"device:{DeviceId}:share");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            
+        }
+        public async Task<bool> TaoMaChiaSeThietBi(int deviceid, JObject value, TimeSpan expiry)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(value);
+                await _Redis.SetAsync($"device:{deviceid}:share", json, expiry);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> LuuTenThietBi(LuuTenThietBi model)

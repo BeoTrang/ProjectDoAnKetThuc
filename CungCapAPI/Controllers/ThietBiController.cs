@@ -294,13 +294,13 @@ namespace CungCapAPI.Controllers
                 int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
                 string QuyenAdmin = User.FindFirst("VaiTro").Value;
                 string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, deviceid);
-                if (Quyen == "full" || Quyen =="view" || QuyenAdmin == "Admin")
+                if (Quyen == "full" || QuyenAdmin == "Admin")
                 {
                     var info = await _thietBiService.LayThongTinThietBi(deviceid);
                     return new JsonResult(new
                     {
                         success = true,
-                        message = "Đăng xuất thành công!",
+                        message = "Thành công!",
                         data = info
                     });
                 }
@@ -310,6 +310,156 @@ namespace CungCapAPI.Controllers
                     {
                         success = false,
                         message = "Bạn không có quyền chỉnh sửa!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/thiet-bi/lay-ma-chia-se-thiet-bi/{deviceid}")]
+        public async Task<ActionResult> MaChiaSeThietBi(int deviceid)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string QuyenAdmin = User.FindFirst("VaiTro").Value;
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, deviceid);
+                if (Quyen == "full" || QuyenAdmin == "Admin")
+                {
+                    JObject info = await _thietBiService.MaChiaSeThietBi(deviceid);
+
+                    var response = new
+                    {
+                        success = true,
+                        message = "Ok",
+                        data = info
+                    };
+
+                    string json = JsonConvert.SerializeObject(response);
+
+                    return Content(json, "application/json");
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Bạn không có quyền!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/thiet-bi/tao-ma-chia-se-thiet-bi")]
+        public async Task<ActionResult> TaoMaChiaSeThietBi([FromBody] ShareRequest request)
+        {
+            try
+            {
+                if (request.deviceid == 0 || (request.quyen != "control" && request.quyen != "view"))
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Sai cú pháp!"
+                    });
+                }
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string QuyenAdmin = User.FindFirst("VaiTro").Value;
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, request.deviceid);
+                if (Quyen == "full" || QuyenAdmin == "Admin")
+                {
+                    var KetQua = await _thietBiService.TaoMaChiaSeThietBi(request.deviceid, request.quyen);
+                    if (KetQua)
+                    {
+                        return new JsonResult(new
+                        {
+                            success = true,
+                            message = "Tạo mã thành công!"
+                        });
+                    }
+                    else
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "Tạo mã không thành công!"
+                        });
+                    }
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Bạn không có quyền!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/thiet-bi/xoa-ma-chia-se-thiet-bi")]
+        public async Task<ActionResult> XoaMaChiaSeThietBi([FromBody] ShareRequest123 request)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string QuyenAdmin = User.FindFirst("VaiTro").Value;
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, request.deviceid);
+                if (Quyen == "full" || QuyenAdmin == "Admin")
+                {
+                    var KetQua = await _thietBiService.XoaMaChiaSeThietBi(request.deviceid);
+                    if (KetQua)
+                    {
+                        return new JsonResult(new
+                        {
+                            success = true,
+                            message = "Hủy chia sẻ thành công!"
+                        });
+                    }
+                    else
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "Hủy chia sẻ không thành công!"
+                        });
+                    }
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Bạn không có quyền!"
                     });
                 }
             }

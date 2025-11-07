@@ -235,47 +235,9 @@ $(document).on('change', '.relaySwitch', async function () {
 });
 
 $(document).on('click', '.device-setting', async function () {
-    showSpinner();
     const el = $(this);
     const id = el.attr('id');
-
-    try {
-        const res = await fetch(`/thong-tin-thiet-bi/${id}`, {
-            method: "GET"
-        });
-
-        const contentType = res.headers.get("content-type");
-
-        if (contentType && contentType.includes("application/json")) {
-            const data = await res.json();
-
-            if (!data.success) {
-                Swal.fire({
-                    position: "top-end",
-                    icon: "error",
-                    title: data.message,
-                    showConfirmButton: false,
-                    timer: 1000
-                });
-                return;
-            }
-        } else {
-            const html = await res.text();
-            $('#main-content').empty().append(html);
-            Init_SettingThietBi();
-        }
-    } catch (err) {
-        console.error(err);
-        Swal.fire({
-            position: "top-end",
-            icon: "error",
-            title: "Lỗi hệ thống",
-            showConfirmButton: false,
-            timer: 1000
-        });
-    } finally {
-        hideSpinner();
-    }
+    await Init_SettingThietBi(id);
 });
 
 $(document).on('click', '.device-history', async function () {
@@ -385,7 +347,6 @@ async function CapNhatDuLieuMoiNhat() {
             InsertDataAX01(deviceData.data);
         }
     }
-
 }
 
 

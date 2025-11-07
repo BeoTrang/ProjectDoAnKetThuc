@@ -452,5 +452,173 @@ namespace WebIot.Controllers
                 return PartialView("_HistoryDevice", model);
             }
         }
+
+        [HttpGet]
+        [Route("/chia-se-thiet-bi/{deviceid}")]
+        public async Task<ActionResult> LayMaChiaSeThietBi(int deviceid)
+        {
+            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap.success)
+                return Json(new
+                {
+                    success = false,
+                    message = "Đã hết hạn đăng nhập!"
+                });
+            var accessToken = KiemTraDangNhap.accessToken;
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            var response = await client.GetAsync(_apiSettings.Url + $"/thiet-bi/lay-ma-chia-se-thiet-bi/{deviceid}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseBody);
+            var result = JsonConvert.DeserializeObject<Request<ShareDeviceModel>>(responseBody);
+
+
+            if (!result.success)
+            {
+                var responseClient = new
+                {
+                    success = result.success,
+                    message = result.message
+                };
+
+                string json = JsonConvert.SerializeObject(responseClient);
+                return Content(json, "application/json");
+            }
+            else
+            {
+                var viewModel = new Models.ShareDevice
+                {
+                    deivceId = deviceid,
+                    share = result.data
+                };
+
+                return PartialView("ShareDevice", viewModel);
+            }
+        }
+
+        [HttpPost]
+        [Route("/api/tao-ma-chia-se-thiet-bi")]
+        public async Task<ActionResult> TaoMaChiaSeThietBi([FromBody] ShareRequest request)
+        {
+            try
+            {
+                KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+                if (!KiemTraDangNhap.success)
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Đã hết hạn đăng nhập!"
+                    });
+                var accessToken = KiemTraDangNhap.accessToken;
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                if (request.deviceid == 0 || (request.quyen != "control" && request.quyen != "view"))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Lỗi cú pháp!"
+                    });
+                }
+                var payload = new
+                {
+                    deviceid = request.deviceid,
+                    quyen = request.quyen
+                };
+                var content = new StringContent(
+                    JsonConvert.SerializeObject(payload),
+                    System.Text.Encoding.UTF8,
+                    "application/json"
+                );
+
+                var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/tao-ma-chia-se-thiet-bi", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+
+                if (!response.IsSuccessStatusCode)
+                    return Json(new { success = false, message = "Lỗi hệ thống!" });
+
+                var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
+
+                return Json(new
+                {
+                    success = result.success,
+                    message = result.message
+                });
+
+            }
+            catch
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+        [HttpPost]
+        [Route("/api/xoa-ma-chia-se-thiet-bi")]
+        public async Task<ActionResult> XoaMaChiaSeThietBi([FromBody] ShareRequest123 request)
+        {
+            try
+            {
+                KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+                if (!KiemTraDangNhap.success)
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Đã hết hạn đăng nhập!"
+                    });
+                var accessToken = KiemTraDangNhap.accessToken;
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                if (request.deviceid == 0)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Lỗi cú pháp!"
+                    });
+                }
+                var payload = new
+                {
+                    deviceid = request.deviceid
+                };
+                var content = new StringContent(
+                    JsonConvert.SerializeObject(payload),
+                    System.Text.Encoding.UTF8,
+                    "application/json"
+                );
+
+                var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/xoa-ma-chia-se-thiet-bi", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+
+                if (!response.IsSuccessStatusCode)
+                    return Json(new { success = false, message = "Lỗi hệ thống!" });
+
+                var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
+
+                return Json(new
+                {
+                    success = result.success,
+                    message = result.message
+                });
+
+            }
+            catch
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
     }
 }

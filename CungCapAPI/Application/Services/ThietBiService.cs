@@ -4,6 +4,9 @@ using CungCapAPI.Models.DichVuTrong;
 using ModelLibrary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CungCapAPI.Application.Services
 {
@@ -84,6 +87,52 @@ namespace CungCapAPI.Application.Services
         {
             bool KetQua = await _thietBiRepository.LuuTenThietBi(model);
             return KetQua;
+        }
+        
+        public async Task<JObject> MaChiaSeThietBi(int deviceid)
+        {
+            var KetQua = await _thietBiRepository.MaChiaSeThietBi(deviceid);
+            if (KetQua == null)
+            {
+                return null;
+            }
+            else
+            {
+                var data = string.IsNullOrEmpty(KetQua) ? new JObject() : JObject.Parse(KetQua);
+                return data;
+            }
+        }
+
+        public async Task<bool> TaoMaChiaSeThietBi(int deviceid, string quyen)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var data = new byte[10];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(data);
+            }
+
+            var result = new StringBuilder(10);
+            foreach (byte b in data)
+            {
+                result.Append(chars[b % chars.Length]);
+            }
+
+            string Random = deviceid.ToString() + "/" + result.ToString();
+
+            JObject value = new JObject
+            {
+                ["confirm"] = Random,
+                ["quyen"] = quyen
+            };
+
+            bool KetQua = await _thietBiRepository.TaoMaChiaSeThietBi(deviceid, value, TimeSpan.FromDays(7));
+            return KetQua;
+        }
+
+        public async Task<bool> XoaMaChiaSeThietBi(int deviceid)
+        {
+            return await _thietBiRepository.XoaMaChiaSeThietBi(deviceid);
         }
     }
 }
