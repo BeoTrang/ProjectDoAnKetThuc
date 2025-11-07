@@ -1,38 +1,36 @@
 ﻿@model WebIot.Models.ShareDevice
-<div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 col-12 mb-4">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h3 class="card-title text-center mb-4">Chia sẻ thiết bị</h3>
-            <input type="hidden" id="ShareDeviceId" value="@Model.deivceId" />
-            @if (Model.share == null)
-            {
-                <select class="form-select mb-3" aria-label="Default select example" id="ShareQuyen">
-                    <option value="view" selected>Chỉ xem</option>
-                    <option value="control">Xem và điều khiển</option>
-                </select>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h3 class="card-title text-center mb-4">Chia sẻ thiết bị</h3>
+        <input type="hidden" id="ShareDeviceId" value="@Model.deivceId" />
+        @if (Model.share == null)
+        {
+            <select class="form-select mb-3" aria-label="Default select example" id="ShareQuyen">
+                <option value="view" selected>Chỉ xem</option>
+                <option value="control">Xem và điều khiển</option>
+            </select>
 
-                <button id="submitShareDevice" class="btn btn-primary w-100">
-                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                    <span>Chia sẻ thiết bị</span>
-                </button>
-            }
-            else
-            {
-                <div class="mb-3">
-                    <label for="relay4" class="form-label">Mã chia sẻ</label>
-                    <input type="text" class="form-control" value="@Model.share.confirm" disabled>
-                </div>
+            <button id="submitShareDevice" class="btn btn-primary w-100">
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                <span>Chia sẻ thiết bị</span>
+            </button>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label for="relay4" class="form-label">Mã chia sẻ</label>
+                <input type="text" class="form-control" value="@Model.share.confirm" disabled>
+            </div>
 
-                <div class="mb-3">
-                    <label for="relay4" class="form-label">Quyền</label>
-                    <input type="text" class="form-control" value="@Model.share.quyen" disabled>
-                </div>
+            <div class="mb-3">
+                <label for="relay4" class="form-label">Quyền</label>
+                <input type="text" class="form-control" value="@Model.share.quyen" disabled>
+            </div>
 
-                <button id="submitCancelShareDevice" class="btn btn-primary w-100">
-                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                    <span>Hủy chia sẻ</span>
-                </button>
-            }
-        </div>
+            <button id="submitCancelShareDevice" class="btn btn-primary w-100">
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                <span>Hủy chia sẻ</span>
+            </button>
+        }
     </div>
 </div>

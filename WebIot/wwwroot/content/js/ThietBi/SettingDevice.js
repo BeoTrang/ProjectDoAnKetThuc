@@ -1,6 +1,44 @@
-﻿async function LoadDeviceSetting(id) {
-    $('#main-content').empty();
+﻿async function LoadTrangSetting() {
+    try {
+        const res = await fetch(`/trang-setting`, {
+            method: "GET"
+        });
 
+        const contentType = res.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+            const data = await res.json();
+
+            if (!data.success) {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: data.message,
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+                return;
+            }
+        } else {
+            const html = await res.text();
+            $('#main-content').empty().append(html);
+
+        }
+    } catch (err) {
+        console.error(err);
+        Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Lỗi hệ thống",
+            showConfirmButton: false,
+            timer: 1000
+        });
+    } finally {
+        hideSpinner();
+    }
+};
+
+async function LoadDeviceSetting(id) {
     try {
         const res = await fetch(`/thong-tin-thiet-bi/${id}`, {
             method: "GET"
@@ -23,7 +61,7 @@
             }
         } else {
             const html = await res.text();
-            $('#main-content').append(html);
+            $('#DeviceSetting').empty().append(html);
 
         }
     } catch (err) {
@@ -38,7 +76,9 @@
     } finally {
         hideSpinner();
     }
+};
 
+async function LoadShareDevice(id) {
     try {
         const res = await fetch(`/chia-se-thiet-bi/${id}`, {
             method: "GET"
@@ -61,7 +101,7 @@
             }
         } else {
             const html = await res.text();
-            $('#main-content').append(html);
+            $('#ShareDevice').empty().append(html);
         }
     } catch (err) {
         console.error(err);
@@ -75,11 +115,14 @@
     } finally {
         hideSpinner();
     }
-}
+};
+
+
 async function Init_SettingThietBi(id) {
     showSpinner();
-    console.log(1);
+    await LoadTrangSetting();
     await LoadDeviceSetting(id);
+    await LoadShareDevice(id);
     
 
     $('#AX01SettingForm').submit(async function (e) {
@@ -178,7 +221,7 @@ async function Init_SettingThietBi(id) {
         });
     });
 
-    $(document).off("click", "#submitShareDevice").on("click", "#submitShareDevice", async function () {
+    $(document).on("click", "#submitShareDevice", async function () {
         const deviceid = $('#ShareDeviceId');
         const quyen = $('#ShareQuyen');
         console.log(quyen.val());
@@ -200,7 +243,7 @@ async function Init_SettingThietBi(id) {
                     text: "Mã này sẽ có hiệu lực trong vòng 7 ngày",
                     icon: "success"
                 });
-                await LoadDeviceSetting(id);
+                await LoadShareDevice(id);
                 return;
             }
             else {
@@ -223,7 +266,7 @@ async function Init_SettingThietBi(id) {
         }
     });
 
-    $(document).off("click", "#submitCancelShareDevice").on("click", "#submitCancelShareDevice", async function () {
+    $(document).on("click", "#submitCancelShareDevice", async function () {
         const deviceid = $('#ShareDeviceId');
         try {
             showSpinner();
@@ -243,7 +286,7 @@ async function Init_SettingThietBi(id) {
                     showConfirmButton: false,
                     timer: 1000
                 });
-                await LoadDeviceSetting(id);
+                await LoadShareDevice(id);
                 return;
             }
             else {

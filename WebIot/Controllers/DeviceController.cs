@@ -620,5 +620,12 @@ namespace WebIot.Controllers
                 });
             }
         }
+
+        [HttpGet]
+        [Route("/trang-setting")]
+        public async Task<ActionResult> TrangSetting()
+        {
+            return  PartialView("DeviceSetting");
+        }
     }
 }

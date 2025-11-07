@@ -1,48 +1,46 @@
 ﻿@model ModelLibrary.Name_AX01
-<div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 col-12 mb-4">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h3 class="card-title text-center mb-4">Thay đổi tên thiết bị</h3>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h3 class="card-title text-center mb-4">Thay đổi tên thiết bị</h3>
 
-            <form id="AX01SettingForm" novalidate>
+        <form id="AX01SettingForm" novalidate>
 
-                <input type="hidden" id="deviceid" value="@Model.id" />
+            <input type="hidden" id="deviceid" value="@Model.id" />
 
-                <div class="mb-3">
-                    <label for="name" class="form-label">Tên thiết bị</label>
-                    <input type="text" class="form-control" id="master" value="@Model.master" name="name" placeholder="Nhập tên thiết bị" required>
-                    <div class="invalid-feedback">Vui lòng nhập tên thiết bị.</div>
-                </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Tên thiết bị</label>
+                <input type="text" class="form-control" id="master" value="@Model.master" name="name" placeholder="Nhập tên thiết bị" required>
+                <div class="invalid-feedback">Vui lòng nhập tên thiết bị.</div>
+            </div>
 
-                <div class="mb-3">
-                    <label for="relay1" class="form-label">Tên Relay 1</label>
-                    <input type="text" class="form-control" id="relay1" value="@Model.relay1" name="relay1" placeholder="Nhập tên relay 1" required>
-                    <div class="invalid-feedback">Vui lòng nhập tên relay 1.</div>
-                </div>
+            <div class="mb-3">
+                <label for="relay1" class="form-label">Tên Relay 1</label>
+                <input type="text" class="form-control" id="relay1" value="@Model.relay1" name="relay1" placeholder="Nhập tên relay 1" required>
+                <div class="invalid-feedback">Vui lòng nhập tên relay 1.</div>
+            </div>
 
-                <div class="mb-3">
-                    <label for="relay2" class="form-label">Tên Relay 2</label>
-                    <input type="text" class="form-control" id="relay2" value="@Model.relay2" name="relay1" placeholder="Nhập tên relay 2" required>
-                    <div class="invalid-feedback">Vui lòng nhập tên relay 2.</div>
-                </div>
+            <div class="mb-3">
+                <label for="relay2" class="form-label">Tên Relay 2</label>
+                <input type="text" class="form-control" id="relay2" value="@Model.relay2" name="relay1" placeholder="Nhập tên relay 2" required>
+                <div class="invalid-feedback">Vui lòng nhập tên relay 2.</div>
+            </div>
 
-                <div class="mb-3">
-                    <label for="relay3" class="form-label">Tên Relay 3</label>
-                    <input type="text" class="form-control" id="relay3" value="@Model.relay3" name="relay3" placeholder="Nhập tên relay 3" required>
-                    <div class="invalid-feedback">Vui lòng nhập tên relay 3.</div>
-                </div>
+            <div class="mb-3">
+                <label for="relay3" class="form-label">Tên Relay 3</label>
+                <input type="text" class="form-control" id="relay3" value="@Model.relay3" name="relay3" placeholder="Nhập tên relay 3" required>
+                <div class="invalid-feedback">Vui lòng nhập tên relay 3.</div>
+            </div>
 
-                <div class="mb-3">
-                    <label for="relay4" class="form-label">Tên Relay 4</label>
-                    <input type="text" class="form-control" id="relay4" value="@Model.relay4" name="relay4" placeholder="Nhập tên relay 4" required>
-                    <div class="invalid-feedback">Vui lòng nhập tên relay 4.</div>
-                </div>
+            <div class="mb-3">
+                <label for="relay4" class="form-label">Tên Relay 4</label>
+                <input type="text" class="form-control" id="relay4" value="@Model.relay4" name="relay4" placeholder="Nhập tên relay 4" required>
+                <div class="invalid-feedback">Vui lòng nhập tên relay 4.</div>
+            </div>
 
-                <button id="submitAX01" type="submit" class="btn btn-primary w-100">
-                    <span id="btnSpinnerAX01" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                    <span id="btnTextAX01">Lưu chỉnh sửa</span>
-                </button>
-            </form>
-        </div>
+            <button id="submitAX01" type="submit" class="btn btn-primary w-100">
+                <span id="btnSpinnerAX01" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                <span id="btnTextAX01">Lưu chỉnh sửa</span>
+            </button>
+        </form>
     </div>
 </div>
