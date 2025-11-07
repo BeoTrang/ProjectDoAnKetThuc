@@ -240,7 +240,7 @@ $(document).on('click', '.device-setting', async function () {
     const id = el.attr('id');
 
     try {
-        const res = await fetch(`/api/thong-tin-thiet-bi/${id}`, {
+        const res = await fetch(`/thong-tin-thiet-bi/${id}`, {
             method: "GET"
         });
 
