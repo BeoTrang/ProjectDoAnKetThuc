@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿using Azure;
+using Azure.Core;
 using CungCapAPI.Application.Interfaces;
 using CungCapAPI.Application.Services;
 using CungCapAPI.MQTT;
@@ -25,6 +26,163 @@ namespace CungCapAPI.Controllers
             _mqttService = mqttService;
             _influxService = influxService;
         }
+
+        [HttpPost("/thiet-bi/dang-ky-thiet-bi")]
+        public async Task<ActionResult> DangKyThietBi([FromBody] DangKyThietBi request)
+        {
+            try
+            {
+                bool check = await _thietBiService.CheckGhepNoiThietBiVoiTaiKhoan(request);
+                if (!check)
+                {
+                    var response = new
+                    {
+                        success = false,
+                        message = "Lỗi hệ thống!"
+                    };
+                    string json = JsonConvert.SerializeObject(response);
+                    return Content(json, "application/json");
+                }
+                else
+                {
+                    int deviceId = await _thietBiService.DangKyThietBiMoi(request);
+                    if (deviceId == 0)
+                    {
+                        var response = new
+                        {
+                            success = false,
+                            message = "Lỗi hệ thống!"
+                        };
+                        string json = JsonConvert.SerializeObject(response);
+                        return Content(json, "application/json");
+                    }
+                    else
+                    {
+                        var response = new
+                        {
+                            success = true,
+                            message = "Đã đăng ký thành công!",
+                            deviceId = deviceId.ToString()
+                        };
+                        string json = JsonConvert.SerializeObject(response);
+                        return Content(json, "application/json");
+                    }
+                }
+            }
+            catch
+            {
+                var response = new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                };
+                string json = JsonConvert.SerializeObject(response);
+                return Content(json, "application/json");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("/thiet-bi/lay-ma-them-thiet-bi-cua-nguoi-dung")]
+        public async Task<ActionResult> LayMaThemThietBiCuaNguoiDung()
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string Ma = await _thietBiService.LayMaDangKyThietBi(NguoiDungId);
+                var data = new ThemThietBi
+                {
+                    userId = NguoiDungId,
+                    maThemThietBi = Ma
+                };
+                var response = new
+                {
+                    success = true,
+                    message = "Oke!",
+                    data = data
+                };
+                string json = JsonConvert.SerializeObject(response);
+                return Content(json, "application/json");
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+        [Authorize]
+        [HttpPost("/thiet-bi/tao-ma-them-thiet-bi")]
+        public async Task<ActionResult> TaoMaThemThietBi([FromBody] KieuThietBi request)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                bool KetQua = await _thietBiService.TaoMaThemThietBi(NguoiDungId, request.deviceType);
+                if (!KetQua)
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Lỗi hệ thống!"
+                    });
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = true,
+                        message = "Tạo mã thành công!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+        [Authorize]
+        [HttpPost("/thiet-bi/huy-ma-them-thiet-bi")]
+        public async Task<ActionResult> HuyMaThemThietBi()
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                bool KetQua = await _thietBiService.HuyMaThemThietBi(NguoiDungId);
+                if (!KetQua)
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Lỗi hệ thống!"
+                    });
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = true,
+                        message = "Hủy mã thành công!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+
 
         [Authorize]
         [HttpPost("/thiet-bi/kiem-tra-quyen-thiet-bi")]

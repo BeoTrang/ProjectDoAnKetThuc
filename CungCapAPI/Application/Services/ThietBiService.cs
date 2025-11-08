@@ -134,5 +134,100 @@ namespace CungCapAPI.Application.Services
         {
             return await _thietBiRepository.XoaMaChiaSeThietBi(deviceid);
         }
+
+        public async Task<bool> CheckGhepNoiThietBiVoiTaiKhoan(DangKyThietBi model)
+        {
+            try
+            {
+                string data = await _thietBiRepository.LayMaDangKyThietBi(model.userId);
+                JObject dataJson = string.IsNullOrEmpty(data) ? new JObject() : JObject.Parse(data);
+                if (dataJson == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    int userId = Convert.ToInt32(dataJson["userId"]);
+                    string deviceType = dataJson["deviceType"].ToString();
+                    string userToken = dataJson["userToken"].ToString();
+
+                    if (model.userId == userId && model.userToken == userToken && model.deviceType == deviceType)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<int> DangKyThietBiMoi(DangKyThietBi model)
+        {
+            int deviceId = await _thietBiRepository.DangKyThietBiMoi(model);
+            if (deviceId == 0)
+            {
+                return deviceId;
+            }
+            else
+            {
+                bool IDontKnow = await _thietBiRepository.SetGiaTriMacDichBanDau(deviceId, model.deviceType);
+                return deviceId;
+            }
+        }
+
+        public async Task<string> LayMaDangKyThietBi(int userId)
+        {
+            string data = await _thietBiRepository.LayMaDangKyThietBi(userId);
+            JObject dataJson = string.IsNullOrEmpty(data) ? new JObject() : JObject.Parse(data);
+
+            var userToken = dataJson["userToken"]?.ToString();
+
+            if (string.IsNullOrEmpty(userToken))
+            {
+                return null;
+            }
+
+            return userToken;
+        }
+
+        public async Task<bool> TaoMaThemThietBi(int userId, string deviceType)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var data = new byte[10];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(data);
+            }
+
+            var result = new StringBuilder(10);
+            foreach (byte b in data)
+            {
+                result.Append(chars[b % chars.Length]);
+            }
+
+            string Random = result.ToString();
+
+            JObject value = new JObject
+            {
+                ["userId"] = userId,
+                ["userToken"] = Random,
+                ["deviceType"] = deviceType
+            };
+
+            bool KetQua = await _thietBiRepository.TaoMaThemThietBi(userId, value, TimeSpan.FromDays(1));
+            return KetQua;
+        }
+
+        public async Task<bool> HuyMaThemThietBi(int userId)
+        {
+            return await _thietBiRepository.HuyMaThemThietBi(userId);
+        }
+
     }
 }

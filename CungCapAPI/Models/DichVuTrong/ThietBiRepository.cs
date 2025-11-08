@@ -2,9 +2,12 @@
 using CungCapAPI.Models.SqlServer;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using ModelLibrary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Composition;
 using System.Linq;
 
 namespace CungCapAPI.Models.DichVuTrong
@@ -119,6 +122,90 @@ namespace CungCapAPI.Models.DichVuTrong
             {
                 return false;
             }
+        }
+
+        public async Task<string> LayMaDangKyThietBi(int userid)
+        {
+            var data = await _Redis.GetAsync($"user:{userid}:madangkythietbi");
+            return data;
+        }
+
+        public async Task<int> DangKyThietBiMoi(DangKyThietBi model)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<int>("EXEC SP_DangKyThietBiMoi @NguoiDungId, @DeviceType",
+                    new SqlParameter("@NguoiDungId", model.userId),
+                    new SqlParameter("@DeviceType", model.deviceType)
+                )
+                .ToListAsync();
+            return result.FirstOrDefault();
+        }
+        public async Task<bool> SetGiaTriMacDichBanDau(int deviceId, string deviceType)
+        {
+            JObject status = new JObject
+            {
+                ["id"] = deviceId.ToString(),
+                ["status"] = "0"
+            };
+            JObject data = new JObject();
+            switch (deviceType)
+            {
+                case "AX01":
+                    data = new JObject
+                    {
+                        ["id"] = deviceId.ToString(),
+                        ["type"] = deviceType,
+                        ["timestamp"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                        ["data"] = new JObject
+                        {
+                            ["tem"] = 0,
+                            ["hum"] = 0
+                        },
+                        ["relays"] = new JObject
+                        {
+                            ["relay1"] = 0,
+                            ["relay2"] = 0,
+                            ["relay3"] = 0,
+                            ["relay4"] = 0
+                        }
+                    };
+                    break;
+            }
+
+            string statusString = JsonConvert.SerializeObject(status);
+            string dataString = JsonConvert.SerializeObject(data);
+
+            await _Redis.SetAsync($"device:{deviceId}:status", statusString);
+            await _Redis.SetAsync($"device:{deviceId}:data", dataString);
+            return true;
+        }
+
+        public async Task<bool> TaoMaThemThietBi(int userId, JObject value, TimeSpan expiry)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(value);
+                await _Redis.SetAsync($"user:{userId}:madangkythietbi", json, expiry);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> HuyMaThemThietBi(int userId)
+        {
+            try
+            {
+                await _Redis.RemoveAsync($"user:{userId}:madangkythietbi");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
         }
     }
 }

@@ -1,0 +1,33 @@
+﻿@model ModelLibrary.ThemThietBi
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h3 class="card-title text-center mb-4">Thêm thiết bị mới</h3>
+        <div class="mb-3">
+            <label for="name" class="form-label">ID của người dùng</label>
+            <input type="text" class="form-control" id="deviceid" value="@Model.userId" name="name" disabled>
+        </div>
+        @if (Model.maThemThietBi == null)
+        {
+            <select class="form-select mb-3" aria-label="Default select example" id="MaThietBi">
+                <option value="AX01" selected>AX01</option>
+            </select>
+
+            <button id="TaoMaThemThietBi" class="btn btn-primary w-100">
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                <span>Tạo mã thêm thiết bị</span>
+            </button>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label for="relay4" class="form-label">Mã thêm thiết bị</label>
+                <input type="text" class="form-control" value="@Model.maThemThietBi" disabled>
+            </div>
+
+            <button id="HuyThemThietBi" class="btn btn-primary w-100">
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                <span>Hủy mã thêm thiết bị</span>
+            </button>
+        }
+    </div>
+</div>

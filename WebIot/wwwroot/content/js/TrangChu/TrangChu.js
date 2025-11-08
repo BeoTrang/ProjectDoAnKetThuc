@@ -136,5 +136,15 @@ $('#TrangChu').on('click', async function () {
     }
 });
 
+$('#AddDevice').on('click', async function () {
+    try {
+        showSpinner();
+        await Init_AddDevice();
+    } catch (err) {
+        console.error("Lỗi khi load:", err);
+    } finally {
+        hideSpinner();
+    }
+});
 
 

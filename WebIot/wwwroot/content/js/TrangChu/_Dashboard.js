@@ -21,6 +21,7 @@ async function Init_Dashboard() {
     BindReconnectOnFocus();
 }
 
+
 async function LayUrl() {
     const res = await fetch("/api/lay-url-api");
     const json = await res.json();
@@ -234,6 +235,7 @@ $(document).on('change', '.relaySwitch', async function () {
     }
 });
 
+
 $(document).on('click', '.device-setting', async function () {
     const el = $(this);
     const id = el.attr('id');
@@ -284,6 +286,8 @@ $(document).on('click', '.device-history', async function () {
         hideSpinner();
     }
 });
+
+
 
 
 

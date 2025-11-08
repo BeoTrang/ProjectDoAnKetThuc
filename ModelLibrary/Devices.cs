@@ -13,6 +13,21 @@ namespace ModelLibrary
         public int deviceId { get; set; }
     }
 
+    public class ThemThietBi
+    {
+        public int userId { get; set; }
+        public string maThemThietBi { get; set; }
+    }
+    public class KieuThietBi
+    {
+        public string deviceType { get; set; }
+    }
+    public class DangKyThietBi
+    {
+        public int userId { get; set; }
+        public string deviceType { get; set; }
+        public string userToken { get; set; }
+    }
     public class ShareRequest123
     {
         public int deviceid { get; set; }

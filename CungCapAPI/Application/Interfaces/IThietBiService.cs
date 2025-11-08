@@ -15,5 +15,10 @@ namespace CungCapAPI.Application.Interfaces
         Task<JObject> MaChiaSeThietBi(int deviceid);
         Task<bool> TaoMaChiaSeThietBi(int deviceid, string quyen);
         Task<bool> XoaMaChiaSeThietBi(int deviceid);
+        Task<bool> CheckGhepNoiThietBiVoiTaiKhoan(DangKyThietBi model);
+        Task<int> DangKyThietBiMoi(DangKyThietBi model);
+        Task<string> LayMaDangKyThietBi(int userId);
+        Task<bool> TaoMaThemThietBi(int userId, string deviceType);
+        Task<bool> HuyMaThemThietBi(int userId);
     }
 }
