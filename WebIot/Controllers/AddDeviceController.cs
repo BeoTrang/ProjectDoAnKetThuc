@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using ModelLibrary;
 using Newtonsoft.Json;
@@ -116,6 +117,42 @@ namespace WebIot.Controllers
 
 
             var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/huy-ma-them-thiet-bi", content: null);
+            if (!response.IsSuccessStatusCode)
+                return Json(new { success = false, message = "Lỗi hệ thống!" });
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<Request<KieuThietBi>>(responseBody);
+
+            var responseClient = new
+            {
+                success = result.success,
+                message = result.message
+            };
+
+            string json = JsonConvert.SerializeObject(responseClient);
+            return Content(json, "application/json");
+        }
+
+        [HttpPost("/api/them-thiet-bi-chia-se")]
+        public async Task<ActionResult> ThemThietBiChiSe([FromBody] ShareDeviceRequest request)
+        {
+            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!KiemTraDangNhap.success) return NotFound();
+
+            var accessToken = KiemTraDangNhap.accessToken;
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            var payload = new { maThietBi = request.maThietBi };
+            var content = new StringContent(
+                Newtonsoft.Json.JsonConvert.SerializeObject(payload),
+                System.Text.Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/them-thiet-bi-chia-se", content);
             if (!response.IsSuccessStatusCode)
                 return Json(new { success = false, message = "Lỗi hệ thống!" });
 

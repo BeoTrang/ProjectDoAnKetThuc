@@ -205,7 +205,18 @@ namespace CungCapAPI.Models.DichVuTrong
             {
                 return false;
             }
+        }
 
+        public async Task<int> DangKyThietBiChiaSe(int userId, int deviceId, string quyen)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<int>("EXEC SP_ThemThietBiChiaSe @NguoiDungId, @DeviceId, @Quyen",
+                    new SqlParameter("@NguoiDungId", userId),
+                    new SqlParameter("@DeviceId", deviceId),
+                    new SqlParameter("@Quyen", quyen)
+                )
+                .ToListAsync();
+            return result.FirstOrDefault();
         }
     }
 }

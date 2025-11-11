@@ -60,7 +60,7 @@ namespace WebIot.Controllers
 
             if (!response.IsSuccessStatusCode)
             {
-                return Json(new { success = false, message = "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin." });
+                return Json(new { success = false, message = "Lỗi hệ thống!" });
             }
 
             var responseBody = await response.Content.ReadAsStringAsync();

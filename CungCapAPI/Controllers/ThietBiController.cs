@@ -193,7 +193,7 @@ namespace CungCapAPI.Controllers
                 int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
                 string QuyenAdmin = User.FindFirst("VaiTro").Value;
                 string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, request.deviceId);
-                if (Quyen == "full" || Quyen == "view" || QuyenAdmin == "Admin")
+                if (Quyen == "full" || Quyen == "view"  || Quyen == "control" || QuyenAdmin == "Admin")
                 {
                     JObject data = await _thietBiService.LayDuLieuThietBi(request.deviceId);
                     var response = new
@@ -263,7 +263,7 @@ namespace CungCapAPI.Controllers
 
                 if (status == true)
                 {
-                    if (Quyen == "full" || QuyenAdmin == "Admin")
+                    if (Quyen == "full" || Quyen == "control" || QuyenAdmin == "Admin")
                     {
                         var info = await _thietBiService.LayThongTinThietBi(request.deviceId);
                         string topic = "esp/" + info.type + "/" + request.deviceId + "/control";
@@ -618,6 +618,41 @@ namespace CungCapAPI.Controllers
                     {
                         success = false,
                         message = "Bạn không có quyền!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+        [Authorize]
+        [HttpPost("/thiet-bi/them-thiet-bi-chia-se")]
+        public async Task<ActionResult> ThemThietBiChiaSe([FromBody] ShareDeviceRequest request)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                bool KetQua = await _thietBiService.ThemThietBiChiaSe(NguoiDungId, request);
+                if (KetQua)
+                {
+                    return new JsonResult(new
+                    {
+                        success = true,
+                        message = "Thêm thiết bị thành công!"
+                    });
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Thêm thiết bị không thành công!"
                     });
                 }
             }

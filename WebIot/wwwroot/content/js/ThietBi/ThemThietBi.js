@@ -146,7 +146,6 @@ async function Init_AddDevice() {
                     timer: 1000
                 });
                 await ViewThemThietBiMoi();
-                return;
             }
             else {
                 Swal.fire({
@@ -185,7 +184,6 @@ async function Init_AddDevice() {
                     timer: 1000
                 });
                 await ViewThemThietBiMoi();
-                return;
             }
             else {
                 Swal.fire({
@@ -207,4 +205,55 @@ async function Init_AddDevice() {
         }
     });
 
+
+    $(document).on("click", "#ThemThietBiChiaSe", async function () {
+        try {
+            showSpinner();
+            const ma = $('#MaChiaSeThietBi');
+            console.log(ma.val());
+            if (!ma.val()) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Bạn chưa điền mã chia sẻ thiết bị! :))"
+                });
+                return;
+            }
+            const res = await fetch('/api/them-thiet-bi-chia-se', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    maThietBi: ma.val()
+                })
+            });
+            const request = await res.json();
+            if (request.success) {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: request.message,
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+                await ViewThemThietBiMoi();
+            }
+            else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: request.message
+                });
+            }
+        }
+        catch {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Lỗi hệ thống, thử lại sau!"
+            });
+        }
+        finally {
+            hideSpinner();
+        }
+    });
 };

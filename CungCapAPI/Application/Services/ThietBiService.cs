@@ -4,6 +4,7 @@ using CungCapAPI.Models.DichVuTrong;
 using ModelLibrary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Reflection.PortableExecutable;
 using System.Security.Cryptography;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -227,6 +228,49 @@ namespace CungCapAPI.Application.Services
         public async Task<bool> HuyMaThemThietBi(int userId)
         {
             return await _thietBiRepository.HuyMaThemThietBi(userId);
+        }
+
+        public async Task<bool> ThemThietBiChiaSe(int userId, ShareDeviceRequest request)
+        {
+            try
+            {
+                string[] Ma = (request.maThietBi).Split('/');
+                int DeviceId = int.Parse(Ma[0]);
+                string data = await _thietBiRepository.MaChiaSeThietBi(DeviceId);
+                
+                
+                if (request.maThietBi == null || data == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    JObject dataJson = string.IsNullOrEmpty(data) ? new JObject() : JObject.Parse(data);
+                    string quyen = dataJson["quyen"]?.ToString();
+                    string maXacNhan = dataJson["confirm"]?.ToString();
+
+                    if (request.maThietBi == maXacNhan)
+                    {
+                        int KetQua = await _thietBiRepository.DangKyThietBiChiaSe(userId, DeviceId, quyen);
+                        if (KetQua != 1)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
 
     }

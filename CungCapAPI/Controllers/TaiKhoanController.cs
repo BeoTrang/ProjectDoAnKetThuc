@@ -117,7 +117,7 @@ namespace CungCapAPI.Controllers
                 });
             }
         }
-        [HttpPost("/tai-khoan/dang-ky")]
+        [HttpPost("/tai-khoan/dang-ky-tai-khoan")]
         public async Task<ActionResult> DangKyTaiKhoan([FromBody] DangKyTaiKhoan request)
         {
             if (request.name.IsNullOrEmpty() || request.email.IsNullOrEmpty() || request.phone_number.IsNullOrEmpty() || request.account_login.IsNullOrEmpty() || request.password_login.IsNullOrEmpty())
@@ -253,5 +253,6 @@ namespace CungCapAPI.Controllers
                 });
             }
         }
+
     }
 }

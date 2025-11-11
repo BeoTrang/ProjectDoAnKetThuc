@@ -43,6 +43,11 @@ namespace ModelLibrary
         public string confirm { get; set; } = null;
         public string quyen { get; set; } = null;
     }
+
+    public class ShareDeviceRequest
+    {
+        public string maThietBi { get; set; }
+    }
     public class Device
     {
         public int id { get; set; }
