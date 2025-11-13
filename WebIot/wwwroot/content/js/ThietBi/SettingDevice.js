@@ -221,7 +221,7 @@ async function Init_SettingThietBi(id) {
         });
     });
 
-    $(document).on("click", "#submitShareDevice", async function () {
+    $(document).off("click", "#submitShareDevice").on("click", "#submitShareDevice", async function () {
         const deviceid = $('#ShareDeviceId');
         const quyen = $('#ShareQuyen');
         console.log(quyen.val());
@@ -266,7 +266,7 @@ async function Init_SettingThietBi(id) {
         }
     });
 
-    $(document).on("click", "#submitCancelShareDevice", async function () {
+    $(document).off("click", "#submitCancelShareDevice").on("click", "#submitCancelShareDevice", async function () {
         const deviceid = $('#ShareDeviceId');
         try {
             showSpinner();

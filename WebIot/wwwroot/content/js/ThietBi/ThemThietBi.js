@@ -124,7 +124,7 @@ async function Init_AddDevice() {
     await ViewThemThietBiMoi();
     await ViewThemThietBiShare();
 
-    $(document).on("click", "#TaoMaThemThietBi", async function () {
+    $(document).off("click", "#TaoMaThemThietBi").on("click", "#TaoMaThemThietBi", async function () {
         const deviceType = $('#MaThietBi');
         console.log(deviceType.val());
         try {
@@ -167,7 +167,7 @@ async function Init_AddDevice() {
         }
     });
 
-    $(document).on("click", "#HuyThemThietBi", async function () {
+    $(document).off("click", "#HuyThemThietBi").on("click", "#HuyThemThietBi", async function () {
         try {
             showSpinner();
             const res = await fetch('/api/huy-ma-them-thiet-bi', {
@@ -206,7 +206,7 @@ async function Init_AddDevice() {
     });
 
 
-    $(document).on("click", "#ThemThietBiChiaSe", async function () {
+    $(document).off("click", "#ThemThietBiChiaSe").on("click", "#ThemThietBiChiaSe", async function () {
         try {
             showSpinner();
             const ma = $('#MaChiaSeThietBi');
