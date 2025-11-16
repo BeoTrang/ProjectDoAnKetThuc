@@ -312,7 +312,7 @@ namespace CungCapAPI.Controllers
                 string QuyenAdmin = User.FindFirst("VaiTro").Value;
                 string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, deviceid);
 
-                if (Quyen == "full" || QuyenAdmin == "Admin")
+                if (Quyen == "full" || Quyen == "control" || Quyen == "view" ||QuyenAdmin == "Admin")
                 {
                     var info = await _thietBiService.LayThongTinThietBi(deviceid);
                     if (info.type == "AX01")
@@ -653,6 +653,155 @@ namespace CungCapAPI.Controllers
                     {
                         success = false,
                         message = "Thêm thiết bị không thành công!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+        [Authorize]
+        [HttpPost("thiet-bi/huy-theo-doi-thiet-bi")]
+        public async Task<ActionResult> HuyTheoDoiThietBi([FromBody] KiemTraQuyenThietBi request)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                bool KetQua = await _thietBiService.HuyTheoDoiThietBi(NguoiDungId, request.deviceId);
+                if (KetQua)
+                {
+                    return new JsonResult(new
+                    {
+                        success = true,
+                        message = "Hủy theo dõi thành công!"
+                    });
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Hủy theo dõi không thành công!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+        [Authorize]
+        [HttpGet("/thiet-bi/device-info/{deviceId}")]
+        public async Task<ActionResult> DeviceInfo(int deviceId)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, deviceId);
+                if (Quyen == "full" || Quyen == "control" || Quyen == "view")
+                {
+                    var KetQua = await _thietBiService.LayDeviceInfo(deviceId);
+                    if (KetQua == null)
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "Bạn không có quyền!"
+                        });
+                    }
+                    else
+                    {
+                        return new JsonResult(new
+                        {
+                            success = true,
+                            message = "Oke!",
+                            data = KetQua
+                        });
+                    }
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Bạn không có quyền!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+        [Authorize]
+        [HttpPost("/thiet-bi/xoa-thiet-bi-boi-nguoi-dung")]
+        public async Task<ActionResult> XoaThietBiBoiNguoiDung([FromBody] ShareRequest123 request)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, request.deviceid);
+                if (Quyen == "full")
+                {
+                    bool KetQua = await _thietBiService.XoaThietBi(request.deviceid);
+                    if (!KetQua)
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "Không biết nữa!"
+                        });
+                    }
+                    else
+                    {
+                        return new JsonResult(new
+                        {
+                            success = true,
+                            message = "Xóa thiết bị thành công!"
+                        });
+                    }
+                }
+                else if (Quyen == "view" || Quyen == "control")
+                {
+                    var KetQua = await _thietBiService.HuyTheoDoiThietBi(NguoiDungId, request.deviceid);
+                    if (!KetQua)
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "Không biết nữa!"
+                        });
+                    }
+                    else
+                    {
+                        return new JsonResult(new
+                        {
+                            success = true,
+                            message = "Hủy theo dõi thành công!"
+                        });
+                    }
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Không biết nữa!"
                     });
                 }
             }

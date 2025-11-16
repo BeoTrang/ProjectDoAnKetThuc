@@ -218,5 +218,39 @@ namespace CungCapAPI.Models.DichVuTrong
                 .ToListAsync();
             return result.FirstOrDefault();
         }
+
+        
+
+        public async Task<DeviceInfo> LayDeviceInfo(int deviceId)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<DeviceInfo>(
+                    "EXEC SP_LayDeviceInfo @DeviceId",
+                    new SqlParameter("@DeviceId", deviceId)
+                )
+                .ToListAsync();
+
+            return result.FirstOrDefault();
+        }
+
+        public async Task<int> XoaThietBi(int deviceId)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<int>("EXEC SP_XoaThietBi @DeviceId",
+                    new SqlParameter("@DeviceId", deviceId)
+                )
+                .ToListAsync();
+            return result.FirstOrDefault();
+        }
+        public async Task<int> HuyTheoDoiThietBi(int userId, int deviceId)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<int>("EXEC SP_HuyTheoDoiThietBi @NguoiDungId, @DeviceId",
+                    new SqlParameter("@NguoiDungId", userId),
+                    new SqlParameter("@DeviceId", deviceId)
+                )
+                .ToListAsync();
+            return result.FirstOrDefault();
+        }
     }
 }

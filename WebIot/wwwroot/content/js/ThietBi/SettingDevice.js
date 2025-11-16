@@ -90,6 +90,46 @@ async function LoadShareDevice(id) {
             const data = await res.json();
 
             if (!data.success) {
+                //Swal.fire({
+                //    position: "top-end",
+                //    icon: "error",
+                //    title: data.message,
+                //    showConfirmButton: false,
+                //    timer: 1000
+                //});
+                $('#ShareDevice').remove();
+                return;
+            }
+        } else {
+            const html = await res.text();
+            $('#ShareDevice').empty().append(html);
+        }
+    } catch (err) {
+        console.error(err);
+        Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Lỗi hệ thống",
+            showConfirmButton: false,
+            timer: 1000
+        });
+    } finally {
+        hideSpinner();
+    }
+};
+
+async function LoadDeviceInfo(id) {
+    try {
+        const resView = await fetch(`/view-device-info`, {
+            method: "GET"
+        });
+
+        const contentType = resView.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+            const data = await resView.json();
+
+            if (!data.success) {
                 Swal.fire({
                     position: "top-end",
                     icon: "error",
@@ -100,8 +140,52 @@ async function LoadShareDevice(id) {
                 return;
             }
         } else {
-            const html = await res.text();
-            $('#ShareDevice').empty().append(html);
+            const html = await resView.text();
+            $('#DeviceInfo').empty().append(html);
+
+            try {
+                const respone = await fetch(`/api/device-info/${id}`, {
+                    method: "GET"
+                });
+                const dataRespone = await respone.json();
+                if (dataRespone) {
+                    const deviceTypeEl = $('#deviceType');
+                    const deviceIdEl = $('#deviceIdInfo');
+                    const deviceTimeEl = $('#deviceTime');
+
+                    const times = new Date(dataRespone.data.deviceTime).toLocaleString('vi-VN', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+
+                    deviceIdEl.val(dataRespone.data.deviceId);
+                    deviceTypeEl.val(dataRespone.data.deviceType);
+                    deviceTimeEl.val(times);
+
+                }
+                else {
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
+                }
+            }
+            catch {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "Lỗi hệ thống",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }
         }
     } catch (err) {
         console.error(err);
@@ -123,6 +207,7 @@ async function Init_SettingThietBi(id) {
     await LoadTrangSetting();
     await LoadDeviceSetting(id);
     await LoadShareDevice(id);
+    await LoadDeviceInfo(id);
     
 
     $('#AX01SettingForm').submit(async function (e) {
@@ -308,4 +393,66 @@ async function Init_SettingThietBi(id) {
             hideSpinner();
         }
     });
+
+
+    $(document).off("click", "#HuyTheoDoiThietBi").on("click", "#HuyTheoDoiThietBi", async function () {
+        const deviceid = $('#deviceIdInfo');
+        Swal.fire({
+            title: "Bạn có chắc chắn muốn xóa thiết bị?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Có, tôi muốn xóa!",
+            cancelButtonText: "Hủy bỏ"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                showSpinner();
+                try {
+                    showSpinner();
+                    const res = await fetch('/api/xoa-thiet-bi-boi-nguoi-dung', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            deviceid: deviceid.val()
+                        })
+                    });
+                    const request = await res.json();
+                    if (request.success) {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: request.message,
+                            showConfirmButton: false,
+                            timer: 1000
+                        });
+                        setTimeout(() => {
+                            window.location.href = '/trang-chu';
+                        }, 1500);
+                        return;
+                    }
+                    else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: request.message
+                        });
+                    }
+                }
+                catch {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Lỗi hệ thống, thử lại sau!"
+                    });
+                }
+                finally {
+                    hideSpinner();
+                }
+            }
+        });
+        
+        
+    });
+
 };

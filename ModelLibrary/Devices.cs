@@ -124,4 +124,12 @@ namespace ModelLibrary
         public DateTime startUTC { get; set; }
         public DateTime endUTC { get; set; }
     }
+
+    public class DeviceInfo
+    {
+        public int deviceId { get; set; }
+        public string deviceType { get; set; }
+        public DateTime deviceTime { get; set; }
+    }
+
 }

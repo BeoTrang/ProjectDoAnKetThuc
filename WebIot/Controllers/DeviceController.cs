@@ -431,6 +431,8 @@ namespace WebIot.Controllers
 
             var response = await client.GetAsync(_apiSettings.Url + $"/thiet-bi/thong-tin-thiet-bi/{deviceid}");
             var responseBody = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+                return Json(new { success = false, message = "Lỗi hệ thống!" });
 
             var result = JsonConvert.DeserializeObject<Request<Device>>(responseBody);
             
@@ -471,6 +473,8 @@ namespace WebIot.Controllers
 
             var response = await client.GetAsync(_apiSettings.Url + $"/thiet-bi/lay-ma-chia-se-thiet-bi/{deviceid}");
             var responseBody = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+                return Json(new { success = false, message = "Lỗi hệ thống!" });
             Console.WriteLine(responseBody);
             var result = JsonConvert.DeserializeObject<Request<ShareDeviceModel>>(responseBody);
 
@@ -627,5 +631,131 @@ namespace WebIot.Controllers
         {
             return  PartialView("DeviceSetting");
         }
+
+        [HttpGet]
+        [Route("/view-device-info")]
+        public async Task<ActionResult> ViewDeviceInfo()
+        {
+             return PartialView("DeviceInfo");
+        }
+
+        [HttpGet]
+        [Route("/api/device-info/{deviceId}")]
+        public async Task<ActionResult> DeviceInfo(int deviceId)
+        {
+            try
+            {
+                KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+                if (!KiemTraDangNhap.success)
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Đã hết hạn đăng nhập!"
+                    });
+                var accessToken = KiemTraDangNhap.accessToken;
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+                var response = await client.GetAsync(_apiSettings.Url + $"/thiet-bi/device-info/{deviceId}");
+                var responseBody = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                    return Json(new { success = false, message = "Lỗi hệ thống!" });
+                Console.WriteLine(responseBody);
+                var result = JsonConvert.DeserializeObject<Request<DeviceInfo>>(responseBody);
+
+
+                if (!result.success)
+                {
+                    var responseClient = new
+                    {
+                        success = result.success,
+                        message = result.message
+                    };
+
+                    string json = JsonConvert.SerializeObject(responseClient);
+                    return Content(json, "application/json");
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = result.success,
+                        message = result.message,
+                        data = result.data
+                    });
+                }
+            }
+            catch
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+        [HttpPost]
+        [Route("/api/xoa-thiet-bi-boi-nguoi-dung")]
+        public async Task<ActionResult> XoaThietBiBoiNguoiDung([FromBody] ShareRequest123 request)
+        {
+            try
+            {
+                KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+                if (!KiemTraDangNhap.success)
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Đã hết hạn đăng nhập!"
+                    });
+                var accessToken = KiemTraDangNhap.accessToken;
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                if (request.deviceid == 0)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Lỗi cú pháp!"
+                    });
+                }
+                var payload = new
+                {
+                    deviceid = request.deviceid
+                };
+                var content = new StringContent(
+                    JsonConvert.SerializeObject(payload),
+                    System.Text.Encoding.UTF8,
+                    "application/json"
+                );
+
+                var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/xoa-thiet-bi-boi-nguoi-dung", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+
+                if (!response.IsSuccessStatusCode)
+                    return Json(new { success = false, message = "Lỗi hệ thống!" });
+
+                var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
+
+                return Json(new
+                {
+                    success = result.success,
+                    message = result.message
+                });
+
+            }
+            catch
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
     }
 }

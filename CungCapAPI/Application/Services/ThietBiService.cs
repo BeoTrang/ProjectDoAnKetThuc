@@ -272,6 +272,59 @@ namespace CungCapAPI.Application.Services
                 return false;
             }
         }
+        public async Task<bool> HuyTheoDoiThietBi(int userId, int deviceId)
+        {
+            try
+            {
+                int KetQua = await _thietBiRepository.HuyTheoDoiThietBi(userId, deviceId);
+                if (KetQua != 1)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
+        public async Task<bool> XoaThietBi(int deviceId)
+        {
+
+            try
+            {
+                int KetQua = await _thietBiRepository.XoaThietBi(deviceId);
+                if (KetQua != 1)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<DeviceInfo> LayDeviceInfo(int deviceId)
+        {
+            try
+            {
+                var KetQua = await _thietBiRepository.LayDeviceInfo(deviceId);
+                return KetQua;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        
     }
 }
