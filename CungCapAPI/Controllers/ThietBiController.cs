@@ -411,7 +411,7 @@ namespace CungCapAPI.Controllers
                 int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
                 string QuyenAdmin = User.FindFirst("VaiTro").Value;
                 string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, model.deviceId);
-                if (Quyen == "full" || Quyen == "view" || QuyenAdmin == "Admin")
+                if (Quyen == "full" || Quyen == "view" || Quyen == "control" || QuyenAdmin == "Admin")
                 {
                     var info = await _thietBiService.LayThongTinThietBi(model.deviceId);
                     model.type = info.type;
@@ -419,7 +419,7 @@ namespace CungCapAPI.Controllers
                     return new JsonResult(new
                     {
                         success = true,
-                        message = "Đăng xuất thành công!",
+                        message = "Oke!",
                         data = data
                     });
                 }
@@ -428,7 +428,7 @@ namespace CungCapAPI.Controllers
                     return new JsonResult(new
                     {
                         success = false,
-                        message = "Bạn không có quyền chỉnh sửa!"
+                        message = "Bạn không có quyền!"
                     });
                 }   
             }
@@ -452,7 +452,7 @@ namespace CungCapAPI.Controllers
                 int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
                 string QuyenAdmin = User.FindFirst("VaiTro").Value;
                 string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, deviceid);
-                if (Quyen == "full" || QuyenAdmin == "Admin")
+                if (Quyen == "full" || Quyen == "control" || Quyen == "view" || QuyenAdmin == "Admin")
                 {
                     var info = await _thietBiService.LayThongTinThietBi(deviceid);
                     return new JsonResult(new
