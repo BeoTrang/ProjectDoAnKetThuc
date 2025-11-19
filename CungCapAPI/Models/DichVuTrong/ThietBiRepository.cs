@@ -62,6 +62,16 @@ namespace CungCapAPI.Models.DichVuTrong
             return result.FirstOrDefault();
         }
 
+        public async Task<Name_AX02> LayTenAX02(int deviceid)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<Name_AX02>("EXEC SP_LayTenAX02 @DeviceId",
+                    new SqlParameter("@DeviceId", deviceid)
+                )
+                .ToListAsync();
+            return result.FirstOrDefault();
+        }
+
         public async Task<string> LayDataThietBi(int DeviceId)
         {
             var data = await _Redis.GetAsync($"device:{DeviceId}:data");

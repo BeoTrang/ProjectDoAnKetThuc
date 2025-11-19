@@ -91,14 +91,14 @@ namespace CungCapAPI.MQTT
                             status = payload.ToString()
                         };
                         string jsonData = JsonConvert.SerializeObject(data);
-                        _Redis.SetAsync(keyStatus, jsonData);
-                        _hubContext.Clients.Group(deviceId).SendAsync("DeviceStatus", jsonData);
+                        await _Redis.SetAsync(keyStatus, jsonData);
+                        await _hubContext.Clients.Group(deviceId).SendAsync("DeviceStatus", jsonData);
                         break;
                     case "data":
                         string keyData = $"device:{deviceID}:data";
-                        _Redis.SetAsync(keyData, payload);
-                        _hubContext.Clients.Group(deviceId).SendAsync("DeviceData", payload);
-                        _influx.WriteSensorAsync(payload);
+                        await _Redis.SetAsync(keyData, payload);
+                        await _hubContext.Clients.Group(deviceId).SendAsync("DeviceData", payload);
+                        await _influx.WriteSensorAsync(payload);
                         break;
                     default:
                         Console.WriteLine("Không xác định được topic");

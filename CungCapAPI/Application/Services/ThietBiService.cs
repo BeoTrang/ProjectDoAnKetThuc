@@ -38,14 +38,21 @@ namespace CungCapAPI.Application.Services
                 MergeArrayHandling = MergeArrayHandling.Merge
             });
 
-             
-
-            if (info.type == "AX01")
+            switch (info.type)
             {
-                Name_AX01 name = await _thietBiRepository.LayTenAX01(DeviceId);
-                var nameJson = JObject.FromObject(name);
-                data["names"] = nameJson;
+                case "AX01":
+                    Name_AX01 name_AX01 = await _thietBiRepository.LayTenAX01(DeviceId);
+                    var nameJson_AX01 = JObject.FromObject(name_AX01);
+                    data["names"] = nameJson_AX01;
+                    break;
+
+                case "AX02":
+                    Name_AX02 name_AX02 = await _thietBiRepository.LayTenAX02(DeviceId);
+                    var nameJson_AX02 = JObject.FromObject(name_AX02);
+                    data["names"] = nameJson_AX02;
+                    break;
             }
+
             
             data["status"] = status["status"];
             
@@ -78,9 +85,15 @@ namespace CungCapAPI.Application.Services
             }
         }
 
-        public async Task<Name_AX01> LayTenThietBi(int deviceid)
+        public async Task<Name_AX01> LayTenThietBi_AX01(int deviceid)
         {
             Name_AX01 name = await _thietBiRepository.LayTenAX01(deviceid);
+            return name;
+        }
+
+        public async Task<Name_AX02> LayTenThietBi_AX02(int deviceid)
+        {
+            Name_AX02 name = await _thietBiRepository.LayTenAX02(deviceid);
             return name;
         }
 

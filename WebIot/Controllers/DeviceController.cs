@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using ModelLibrary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
 using WebIot.Helper;
 using WebIot.Models;
 
@@ -123,7 +124,7 @@ namespace WebIot.Controllers
             return AX01;
         }
 
-        public async Task<AX02<DHT22, Name_AX01>> LayModelAX02(int deviceId)
+        public async Task<AX02<DHT22, Name_AX02>> LayModelAX02(int deviceId)
         {
             var accessToken = Request.Cookies["accessToken"];
             var client = _httpClientFactory.CreateClient();
@@ -145,7 +146,7 @@ namespace WebIot.Controllers
 
             var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
 
-            var AX02 = result.data?.ToObject<AX02<DHT22, Name_AX01>>();
+            var AX02 = result.data?.ToObject<AX02<DHT22, Name_AX02>>();
 
             return AX02;
         }
@@ -179,38 +180,53 @@ namespace WebIot.Controllers
         [Route("/thong-tin-thiet-bi/{deviceid}")]
         public async Task<ActionResult> SettingThietBi(int deviceid)
         {
-            KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
-            if (!KiemTraDangNhap.success) return NotFound();
+            var kiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+            if (!kiemTraDangNhap.success)
+                return Unauthorized();
 
-            var accessToken = KiemTraDangNhap.accessToken;
+            var accessToken = kiemTraDangNhap.accessToken;
+
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                new AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await client.GetAsync(_apiSettings.Url + $"/thiet-bi/lay-ten-thiet-bi/{deviceid}");
+            var response = await client.GetAsync($"{_apiSettings.Url}/thiet-bi/lay-ten-thiet-bi/{deviceid}");
             var responseBody = await response.Content.ReadAsStringAsync();
 
-            var result = JsonConvert.DeserializeObject<Request<Name_AX01>>(responseBody);
-            var model = result.data;
+            var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
 
             if (!result.success)
             {
-                var responseClient = new
+                return Json(new
                 {
                     success = result.success,
                     message = result.message
-                };
-
-                string json = JsonConvert.SerializeObject(responseClient);
-                return Content(json, "application/json");
+                });
             }
 
-            if (result.data.type == "AX01")
+            var data = result.data;
+            string type = data.Value<string>("type");
+
+            switch (type)
             {
-                return PartialView("AX01_Settings", model);
+                case "AX01":
+                    {
+                        var model = data.ToObject<ModelLibrary.Name_AX01>();
+                        return PartialView("AX01_Settings", model);
+                    }
+
+                case "AX02":
+                    {
+                        var model = data.ToObject<ModelLibrary.Name_AX02>();
+                        return PartialView("AX02_Settings", model);
+                    }
+
+                default:
+                    return NotFound($"Không có giao diện cho loại thiết bị: {type}");
             }
-            return NotFound();
         }
+
+
 
         [HttpGet]
         [Route("/api/du-lieu-thiet-bi-moi-nhat/{type}/{deviceid}")]
@@ -358,11 +374,12 @@ namespace WebIot.Controllers
                         message = "Lỗi hệ thống!"
                     });
                 }
+                
                 var payload = new
                 {
                     deviceid = request.deviceid,
                     master = request.master,
-                    nameConfig = request.nameConfig
+                    nameConfig = string.IsNullOrEmpty(request.nameConfig) ? "" : request.nameConfig
                 };
                 var content = new StringContent(
                     JsonConvert.SerializeObject(payload),

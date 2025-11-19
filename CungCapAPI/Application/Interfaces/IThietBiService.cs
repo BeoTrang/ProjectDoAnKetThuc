@@ -10,7 +10,8 @@ namespace CungCapAPI.Application.Interfaces
         Task<List<DanhSachThietBi>> LayDanhSachThietBi(int NguoiDungId);
         Task<Device> LayThongTinThietBi(int DeviceId);
         Task<bool> TrangThaiThietBi(int DeviceId);
-        Task<Name_AX01> LayTenThietBi(int deviceid);
+        Task<Name_AX01> LayTenThietBi_AX01(int deviceid);
+        Task<Name_AX02> LayTenThietBi_AX02(int deviceid);
         Task<bool> LuuTenThietBi(LuuTenThietBi model);
         Task<JObject> MaChiaSeThietBi(int deviceid);
         Task<bool> TaoMaChiaSeThietBi(int deviceid, string quyen);

@@ -315,17 +315,28 @@ namespace CungCapAPI.Controllers
                 if (Quyen == "full" || Quyen == "control" || Quyen == "view" ||QuyenAdmin == "Admin")
                 {
                     var info = await _thietBiService.LayThongTinThietBi(deviceid);
+                    switch (info.type)
+                    {
+                        case "AX01":
+                            Name_AX01 name_AX01 = await _thietBiService.LayTenThietBi_AX01(deviceid);
+                            return new JsonResult(new
+                            {
+                                success = true,
+                                data = name_AX01,
+                                message = "Ok",
+                            });
+                        case "AX02":
+                            Name_AX02 name_AX02 = await _thietBiService.LayTenThietBi_AX02(deviceid);
+                            return new JsonResult(new
+                            {
+                                success = true,
+                                data = name_AX02,
+                                message = "Ok",
+                            });
+                    }
                     if (info.type == "AX01")
                     {
-                        Name_AX01 name = await _thietBiService.LayTenThietBi(deviceid);
-
-
-                        return new JsonResult(new
-                        {
-                            success = true,
-                            data = name,
-                            message = "Ok",
-                        });
+                        
                     }
                     return new JsonResult(new
                     {

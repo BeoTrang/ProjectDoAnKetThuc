@@ -140,12 +140,12 @@ namespace CungCapAPI.Services
 
             if (model.type != null)
             {
-                switch (model.type, model.typePick)
+                switch (model.typePick)
                 {
-                    case ("AX01", "TemHum"):
+                    case ("TemHum"):
                         fillterType = @"r[""_field""] == ""hum"" or r[""_field""] == ""tem""";
                         break;
-                    case ("AX01", "Relay"):
+                    case ("Relay"):
                         fillterType = @"r[""_field""] == ""relay1"" or r[""_field""] == ""relay2"" or r[""_field""] == ""relay3"" or r[""_field""] == ""relay4""";
                         break;
                     default:
@@ -157,9 +157,9 @@ namespace CungCapAPI.Services
                 return null;
             }
 
-            switch(model.type, model.typePick)
+            switch(model.typePick)
             {
-                case ("AX01", "TemHum"):
+                case ("TemHum"):
                     flux = $@"
                         from(bucket: ""{_bucket}"")
                           |> {time}
@@ -171,7 +171,7 @@ namespace CungCapAPI.Services
                           |> pivot(rowKey: [""_time""], columnKey: [""_field""], valueColumn: ""_value"")
                           |> yield(name: ""mean"")";
                     break;
-                case ("AX01", "Relay"):
+                case ("Relay"):
                     flux = $@"
                         from(bucket: ""{_bucket}"")
                           |> {time}
@@ -193,9 +193,9 @@ namespace CungCapAPI.Services
             var tables = await queryApi.QueryAsync(flux, _org);
             var list = new List<dynamic>();
             var sapxepList = new List<dynamic>();
-            switch (model.type, model.typePick)
+            switch (model.typePick)
             {
-                case ("AX01", "TemHum"):
+                case ("TemHum"):
                     foreach (var table in tables)
                     {
                         foreach (var record in table.Records)
@@ -209,7 +209,7 @@ namespace CungCapAPI.Services
                         }
                     }
                     break;
-                case ("AX01", "Relay"):
+                case ("Relay"):
                     foreach (var table in tables)
                     {
                         foreach (var record in table.Records)

@@ -306,6 +306,83 @@ async function Init_SettingThietBi(id) {
         });
     });
 
+    $('#AX02SettingForm').submit(async function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const deviceid = $('#deviceid');
+        const master = $('#master');
+
+        const is_master = master.val().trim().length > 0;
+
+        master.toggleClass('is-invalid', !is_master);
+
+        if (!is_master) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Nhập đầy đủ thông tin!"
+            });
+            return;
+        }
+        Swal.fire({
+            title: "Bạn có chắc muốn thay đổi thông tin không?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Có",
+            cancelButtonText: "Không"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                showSpinner();
+                try {
+                    const res = await fetch('/api/luu-ten-thiet-bi', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            deviceid: deviceid.val(),
+                            master: master.val().trim()
+                        })
+                    });
+                    const request = await res.json();
+                    if (request.success) {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: request.message,
+                            showConfirmButton: false,
+                            timer: 1000
+                        });
+                        return;
+                    }
+                    else {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: request.message,
+                            showConfirmButton: false,
+                            timer: 1000
+                        });
+                        return;
+                    }
+
+                    console.log(json);
+                }
+                catch {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Lỗi hệ thống, thử lại sau!"
+                    });
+                }
+                finally {
+                    hideSpinner();
+                }
+            }
+        });
+    });
+
     $(document).off("click", "#submitShareDevice").on("click", "#submitShareDevice", async function () {
         const deviceid = $('#ShareDeviceId');
         const quyen = $('#ShareQuyen');

@@ -23,24 +23,39 @@
                 <option value="-30d">30 ngày qua</option>
             </select>
         </div>
-
-        @if (Model.type == "AX01")
+        @switch (Model.type)
         {
-            <div class="col-md-5">
-                <label class="form-label fw-semibold">Loại dữ liệu</label>
-                <div class="d-flex flex-wrap gap-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="pickType" id="pickType1" value="TemHum" checked>
-                        <label class="form-check-label" for="pickType1">Độ ẩm & Nhiệt độ</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="pickType" id="pickType2" value="Relay">
-                        <label class="form-check-label" for="pickType2">Trạng thái Relay</label>
+            case "AX01":
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Loại dữ liệu</label>
+                    <div class="d-flex flex-wrap gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="pickType" id="pickType1" value="TemHum" checked>
+                            <label class="form-check-label" for="pickType1">Độ ẩm & Nhiệt độ</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="pickType" id="pickType2" value="Relay">
+                            <label class="form-check-label" for="pickType2">Trạng thái Relay</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+                break;
+            case "AX02":
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Loại dữ liệu</label>
+                    <div class="d-flex flex-wrap gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="pickType" id="pickType1" value="TemHum" checked>
+                            <label class="form-check-label" for="pickType1">Độ ẩm & Nhiệt độ</label>
+                        </div>
+                    </div>
+                </div>
+                break;
+            default:
+                <h4>Không tìm thấy loại thiết bị</h4>
+                break;
 
+        }
         <div class="col-md-3 text-md-end text-center">
             <button class="btn btn-primary px-4 w-100" id="TaoBieuDo">
                 <i class="bi bi-bar-chart-line me-1"></i> Tạo biểu đồ

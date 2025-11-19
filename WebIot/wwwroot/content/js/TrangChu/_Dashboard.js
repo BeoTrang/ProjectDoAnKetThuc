@@ -55,7 +55,17 @@ async function ConnectSignalR() {
     connection.on("JoinedGroup", () => console.log("Đã tham gia group"));
     connection.on("DeviceData", payload => {
         const data = JSON.parse(payload);
-        if (data.type === "AX01") InsertDataAX01(data);
+        switch (data.type) {
+            case "AX01":
+                InsertDataAX01(data);
+                break;
+            case "AX02":
+                InsertDataAX02(data);
+                break;
+            default:
+                console.log("Không thấy loại thiết bị này!");
+                break;
+        }
     });
     connection.on("DeviceStatus", payload => {
         const data = JSON.parse(payload);
@@ -190,6 +200,16 @@ async function InsertDataAX01(data) {
     ELrelay2.prop("checked", relays.relay2 === 1);
     ELrelay3.prop("checked", relays.relay3 === 1);
     ELrelay4.prop("checked", relays.relay4 === 1);
+}
+
+async function InsertDataAX02(data) {
+    const ELtem = $(`#tem_${data.id}`);
+    const ELhum = $(`#hum_${data.id}`);
+    //const ELtime = $(`#time_${data.id}`);
+
+    ELtem.text(data.data.tem);
+    ELhum.text(data.data.hum);
+    //ELtime.text(data.timestamp);
 }
 
 $(document).on('change', '.relaySwitch', async function () {
@@ -347,9 +367,17 @@ async function CapNhatDuLieuMoiNhat() {
 
         const deviceData = await dulieu.json();
 
-        if (device.deviceType == "AX01") {
-            InsertDataAX01(deviceData.data);
-        }
+        switch (device.deviceType) {
+            case "AX01":
+                InsertDataAX01(deviceData.data);
+                break;
+            case "AX02":
+                InsertDataAX02(deviceData.data);
+                break;
+            default:
+                console.log("Không thấy loại thiết bị này!");
+                break;
+        };
     }
 }
 
