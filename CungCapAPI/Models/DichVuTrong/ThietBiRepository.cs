@@ -170,6 +170,19 @@ namespace CungCapAPI.Models.DichVuTrong
                         }
                     };
                     break;
+                case "AX02":
+                    data = new JObject
+                    {
+                        ["id"] = deviceId.ToString(),
+                        ["type"] = deviceType,
+                        ["timestamp"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                        ["data"] = new JObject
+                        {
+                            ["tem"] = 0,
+                            ["hum"] = 0
+                        }
+                    };
+                    break;
             }
 
             string statusString = JsonConvert.SerializeObject(status);

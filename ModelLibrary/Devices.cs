@@ -82,6 +82,21 @@ namespace ModelLibrary
         public string relay4 { get; set; }
     }
 
+
+    public class AX02<TData, TName> : Devices
+    {
+        public TData data { get; set; }
+        public TName names { get; set; }
+    }
+
+    public class Name_AX02
+    {
+        public int id { get; set; }
+        public string type { get; set; }
+        public string master { get; set; }
+
+    }
+
     public class DHT22
     {
         public double tem { get; set; }

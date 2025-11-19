@@ -32,13 +32,13 @@ namespace CungCapAPI.Services
         {
             var data = JsonDocument.Parse(payload);
             var type = data.RootElement.GetProperty("type").GetString();
+            var writeApi = _client.GetWriteApiAsync();
 
             switch (type)
             {
                 case "AX01":
                     var ax01 = JsonConvert.DeserializeObject<AX01<DHT22, Relay4, Name_AX01>>(payload);
-                    var writeApi = _client.GetWriteApiAsync();
-                    var point = PointData
+                    var point_AX01 = PointData
                         .Measurement("sensor_data")
                         .Tag("device_id", ax01.id)
                         .Tag("type", ax01.type)
@@ -49,12 +49,21 @@ namespace CungCapAPI.Services
                         .Field("relay3", ax01.relays.relay3)
                         .Field("relay4", ax01.relays.relay4)
                         .Timestamp(ax01.timestamp, WritePrecision.Ns);
-                    await writeApi.WritePointAsync(point, _bucket, _org);
+                    await writeApi.WritePointAsync(point_AX01, _bucket, _org);
 
                     break;
 
                 case "AX02":
-
+                    var ax02 = JsonConvert.DeserializeObject<AX02<DHT22, Name_AX02>>(payload);
+                    
+                    var point = PointData
+                        .Measurement("sensor_data")
+                        .Tag("device_id", ax02.id)
+                        .Tag("type", ax02.type)
+                        .Field("tem", ax02.data.tem)
+                        .Field("hum", ax02.data.hum)
+                        .Timestamp(ax02.timestamp, WritePrecision.Ns);
+                    await writeApi.WritePointAsync(point, _bucket, _org);
                     break;
                 default:
 

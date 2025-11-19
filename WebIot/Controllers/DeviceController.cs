@@ -94,6 +94,8 @@ namespace WebIot.Controllers
             return Content(json, "application/json");
         }
 
+
+        
         public async Task<AX01<DHT22, Relay4, Name_AX01>> LayModelAX01(int deviceId)
         {
             var accessToken = Request.Cookies["accessToken"];
@@ -121,17 +123,57 @@ namespace WebIot.Controllers
             return AX01;
         }
 
+        public async Task<AX02<DHT22, Name_AX01>> LayModelAX02(int deviceId)
+        {
+            var accessToken = Request.Cookies["accessToken"];
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            var payload = new
+            {
+                deviceId = deviceId
+            };
+            var content = new StringContent(
+                JsonConvert.SerializeObject(payload),
+                System.Text.Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/kiem-tra-quyen-thiet-bi", content);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
+
+            var AX02 = result.data?.ToObject<AX02<DHT22, Name_AX01>>();
+
+            return AX02;
+        }
+
+
         [HttpPost]
         [Route("/view-cho-thiet-bi")]
         public async Task<ActionResult> LayViewThietBi([FromBody] LayViewThietBi request)
         {
-            if (request.deviceType == "AX01")
+
+            switch (request.deviceType)
             {
-                var model = await LayModelAX01(request.deviceId);
-                return PartialView("AX01", model);
-            }
-            return BadRequest("Loại thiết bị không hợp lệ");
+                case "AX01":
+                    var model_AX01 = await LayModelAX01(request.deviceId);
+                    return PartialView("AX01", model_AX01);
+                case "AX02":
+                    var model_AX02 = await LayModelAX02(request.deviceId);
+                    return PartialView("AX02", model_AX02);
+
+                default:
+                    return BadRequest("Loại thiết bị không hợp lệ");
+
+            } 
         }
+
+
+
+
 
         [HttpGet]
         [Route("/thong-tin-thiet-bi/{deviceid}")]
@@ -185,30 +227,47 @@ namespace WebIot.Controllers
                         message = "Hết hạn đăng nhập!"
                     });
                 }
-                if (type == "AX01")
+                switch (type)
                 {
-                    var model = await LayModelAX01(deviceid);
-                    if (model == null)
-                    {
+                    case "AX01":
+                        var model_AX01 = await LayModelAX01(deviceid);
+                        if (model_AX01 == null)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = "Không có thiết bị nào!"
+                            });
+                        }
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Oke!",
+                            data = model_AX01
+                        });
+                    case "AX02":
+                        var model_AX02 = await LayModelAX02(deviceid);
+                        if (model_AX02 == null)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = "Không có thiết bị nào!"
+                            });
+                        }
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Oke!",
+                            data = model_AX02
+                        });
+                    default:
                         return Json(new
                         {
                             success = false,
                             message = "Không có thiết bị nào!"
                         });
-                    }
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Oke!",
-                        data = model
-                    });
                 }
-
-                return Json(new
-                {
-                    success = false,
-                    message = "Không có thiết bị nào!"
-                });
             }
             catch
             {

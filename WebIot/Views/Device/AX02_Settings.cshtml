@@ -1,0 +1,22 @@
+﻿@model ModelLibrary.Name_AX02
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h3 class="card-title text-center mb-4">Thay đổi tên hiển thị của thiết bị</h3>
+
+        <form id="AX02SettingForm" novalidate>
+
+            <input type="hidden" id="deviceid" value="@Model.id" />
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Tên thiết bị</label>
+                <input type="text" class="form-control" id="master" value="@Model.master" name="name" placeholder="Nhập tên thiết bị" required>
+                <div class="invalid-feedback">Vui lòng nhập tên thiết bị.</div>
+            </div>
+
+            <button id="submitAX02" type="submit" class="btn btn-primary mb-3 w-100">
+                <span id="btnSpinnerAX02" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                <span id="btnTextAX02">Lưu chỉnh sửa</span>
+            </button>
+        </form>
+    </div>
+</div>
