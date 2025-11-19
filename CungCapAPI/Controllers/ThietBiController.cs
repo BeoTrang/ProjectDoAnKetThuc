@@ -38,7 +38,7 @@ namespace CungCapAPI.Controllers
                     var response = new
                     {
                         success = false,
-                        message = "Lỗi hệ thống!"
+                        message = "Đăng ký không thành công!"
                     };
                     string json = JsonConvert.SerializeObject(response);
                     return Content(json, "application/json");
@@ -51,7 +51,7 @@ namespace CungCapAPI.Controllers
                         var response = new
                         {
                             success = false,
-                            message = "Lỗi hệ thống!"
+                            message = "Lỗi hệ thống 1!"
                         };
                         string json = JsonConvert.SerializeObject(response);
                         return Content(json, "application/json");
@@ -74,7 +74,7 @@ namespace CungCapAPI.Controllers
                 var response = new
                 {
                     success = false,
-                    message = "Lỗi hệ thống!"
+                    message = "Lỗi hệ thống 2!"
                 };
                 string json = JsonConvert.SerializeObject(response);
                 return Content(json, "application/json");
