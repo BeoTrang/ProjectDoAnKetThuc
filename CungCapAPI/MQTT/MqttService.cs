@@ -41,7 +41,14 @@ namespace CungCapAPI.MQTT
                 {
                     var subscribeOptions = new MqttClientSubscribeOptions
                     {
-                        TopicFilters = { new MqttTopicFilter { Topic = topic } }
+                        TopicFilters =
+                        {
+                            new MqttTopicFilter
+                            {
+                                Topic = topic,
+                                QualityOfServiceLevel = MqttQualityOfServiceLevel.AtLeastOnce // QoS 1
+                            }
+                        }
                     };
                     await _mqttClient.SubscribeAsync(subscribeOptions);
                     Console.WriteLine($"📡 Subscribed to topic: {topic}");
