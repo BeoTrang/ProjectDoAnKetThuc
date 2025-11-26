@@ -33,7 +33,7 @@ namespace CungCapAPI.Hubs
             var DanhSachThietBi = await _thietBiRepository.DanhSachThietBi(NguoiDungId);
             Console.WriteLine(DanhSachThietBi);
             //Đây là group thông báo của người dùng
-            string groupThongBao = "ThongBao_" + nguoiDungIdClaim;
+            string groupThongBao = "ThongBao_" + NguoiDungId;
             await Groups.AddToGroupAsync(Context.ConnectionId, groupThongBao);
 
             //Đây là tham gia group thiết bị mà người dùng sở hữu

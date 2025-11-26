@@ -195,8 +195,8 @@ namespace CungCapAPI.Application.Services
             {
                 var payloadObject = new
                 {
-                    status = false,
-                    message = "Đăng ký thiết bị thất bại"
+                    success = false,
+                    message = "Thêm thiết bị thất bại"
                 };
                 payloadString = JsonConvert.SerializeObject(payloadObject);
             }
@@ -205,8 +205,8 @@ namespace CungCapAPI.Application.Services
                 bool IDontKnow = await _thietBiRepository.SetGiaTriMacDichBanDau(deviceId, model.deviceType);
                 var payloadObject = new
                 {
-                    status = false,
-                    message = "Đăng ký thiết bị thất bại"
+                    success = true,
+                    message = "Thêm thiết bị thành công"
                 };
                 payloadString = JsonConvert.SerializeObject(payloadObject);
             }

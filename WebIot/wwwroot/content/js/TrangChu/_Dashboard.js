@@ -78,19 +78,22 @@ async function ConnectSignalR() {
         if (data.success) {
             Swal.fire({
                 position: "top-end",
-                icon: "error",
+                icon: "success",
                 title: data.message,
                 showConfirmButton: false,
-                timer: 1500
+                timer: 2000
             });
+            setTimeout(function () {
+                window.location.href = "/trang-chu";
+            }, 3000);
         }
         else {
             Swal.fire({
                 position: "top-end",
-                icon: "",
+                icon: "error",
                 title: data.message,
                 showConfirmButton: false,
-                timer: 1500
+                timer: 2000
             });
         }
     });
