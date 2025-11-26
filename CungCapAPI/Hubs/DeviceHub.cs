@@ -32,6 +32,11 @@ namespace CungCapAPI.Hubs
             int NguoiDungId = int.Parse(nguoiDungIdClaim.Value);
             var DanhSachThietBi = await _thietBiRepository.DanhSachThietBi(NguoiDungId);
             Console.WriteLine(DanhSachThietBi);
+            //Đây là group thông báo của người dùng
+            string groupThongBao = "ThongBao_" + nguoiDungIdClaim;
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupThongBao);
+
+            //Đây là tham gia group thiết bị mà người dùng sở hữu
             foreach (var item in DanhSachThietBi)
             {
                 string groupName = "DeviceId_" + item.DeviceId;
@@ -48,7 +53,12 @@ namespace CungCapAPI.Hubs
         }
         public async Task GuiData(string groupName, string payload)
         {
-            await Clients.Group(groupName).SendAsync("SendData", groupName, payload);
+            await Clients.Group(groupName).SendAsync("DeviceData", payload);
+        }
+
+        public async Task GuiThongBao(string groupName, string payload)
+        {
+            await Clients.Group(groupName).SendAsync("ThongBao", payload);
         }
 
 

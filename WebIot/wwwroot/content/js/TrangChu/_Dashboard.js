@@ -67,9 +67,32 @@ async function ConnectSignalR() {
                 break;
         }
     });
+
     connection.on("DeviceStatus", payload => {
         const data = JSON.parse(payload);
         InsertStatus(data);
+    });
+
+    connection.on("ThongBao", payload => {
+        const data = JSON.parse(payload);
+        if (data.success) {
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: data.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+        else {
+            Swal.fire({
+                position: "top-end",
+                icon: "",
+                title: data.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
     });
 
     connection.onreconnecting(() => console.warn("Mất kết nối, đang thử reconnect..."));

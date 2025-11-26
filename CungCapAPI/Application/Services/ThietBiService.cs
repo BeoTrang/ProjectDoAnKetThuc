@@ -1,6 +1,8 @@
 ﻿using CungCapAPI.Application.Interfaces;
 using CungCapAPI.Helpers;
+using CungCapAPI.Hubs;
 using CungCapAPI.Models.DichVuTrong;
+using Microsoft.AspNetCore.SignalR;
 using ModelLibrary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,9 +16,11 @@ namespace CungCapAPI.Application.Services
     public class ThietBiService : IThietBiService
     {
         private readonly ThietBiRepository _thietBiRepository;
-        public ThietBiService(ThietBiRepository thietBiRepository)
+        private readonly IHubContext<DeviceHub> _hubContext;
+        public ThietBiService(ThietBiRepository thietBiRepository, IHubContext<DeviceHub> hubContext)
         {
             _thietBiRepository = thietBiRepository;
+            _hubContext = hubContext;
         }
         public async Task<string> KiemTraQuyenThietBi(int NguoiDungId, int DeviceId)
         {
@@ -184,15 +188,30 @@ namespace CungCapAPI.Application.Services
         public async Task<int> DangKyThietBiMoi(DangKyThietBi model)
         {
             int deviceId = await _thietBiRepository.DangKyThietBiMoi(model);
+            string groupName = "ThongBao_" + model.userId;
+            string payloadString;
+            
             if (deviceId == 0)
             {
-                return deviceId;
+                var payloadObject = new
+                {
+                    status = false,
+                    message = "Đăng ký thiết bị thất bại"
+                };
+                payloadString = JsonConvert.SerializeObject(payloadObject);
             }
             else
             {
                 bool IDontKnow = await _thietBiRepository.SetGiaTriMacDichBanDau(deviceId, model.deviceType);
-                return deviceId;
+                var payloadObject = new
+                {
+                    status = false,
+                    message = "Đăng ký thiết bị thất bại"
+                };
+                payloadString = JsonConvert.SerializeObject(payloadObject);
             }
+            await _hubContext.Clients.Group(groupName).SendAsync("GuiThongBao", payloadString);
+            return deviceId;
         }
 
         public async Task<string> LayMaDangKyThietBi(int userId)
