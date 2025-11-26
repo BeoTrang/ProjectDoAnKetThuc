@@ -73,7 +73,7 @@ async function ConnectSignalR() {
         InsertStatus(data);
     });
 
-    connection.on("ThongBao", payload => {
+    connection.on("GuiThongBao", payload => {
         const data = JSON.parse(payload);
         if (data.success) {
             Swal.fire({
