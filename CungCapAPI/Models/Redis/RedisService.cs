@@ -33,6 +33,11 @@ namespace CungCapAPI.Models.Redis
             return await _db.StringGetAsync(key);
         }
 
+        public async Task<string> GetCache(string key)
+        {
+            return await _db.StringGetAsync(key);
+        }
+
         public async Task RemoveAsync(string key)
         {
             await _db.KeyDeleteAsync(key);

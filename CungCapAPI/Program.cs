@@ -1,6 +1,8 @@
 ﻿using CungCapAPI.Application.Interfaces;
 using CungCapAPI.Application.Services;
 using CungCapAPI.Hubs;
+using CungCapAPI.Models.Cache;
+using CungCapAPI.Models.DichVuNgoai;
 using CungCapAPI.Models.DichVuTrong;
 using CungCapAPI.Models.Redis;
 using CungCapAPI.Models.SqlServer;
@@ -67,6 +69,7 @@ builder.Services.AddCors(options =>
 });
 
 // ===== Services =====
+builder.Services.AddHttpClient();
 builder.Services.AddSignalR();
 builder.Services.AddControllers().AddJsonOptions(o =>
 {
@@ -78,6 +81,9 @@ builder.Services.AddScoped<TaiKhoanRepository>();
 builder.Services.AddScoped<ThietBiRepository>();
 builder.Services.AddScoped<ITaiKhoanService, TaiKhoanService>();
 builder.Services.AddScoped<IThietBiService, ThietBiService>();
+builder.Services.AddScoped<Cache>();
+builder.Services.AddScoped<Telegram>();
+
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var config = builder.Configuration.GetSection("Redis")["Configuration"];

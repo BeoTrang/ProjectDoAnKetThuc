@@ -1,6 +1,8 @@
 ﻿using CungCapAPI.Application.Interfaces;
 using CungCapAPI.Helpers;
 using CungCapAPI.Hubs;
+using CungCapAPI.Models.Cache;
+using CungCapAPI.Models.DichVuNgoai;
 using CungCapAPI.Models.DichVuTrong;
 using Microsoft.AspNetCore.SignalR;
 using ModelLibrary;
@@ -17,10 +19,15 @@ namespace CungCapAPI.Application.Services
     {
         private readonly ThietBiRepository _thietBiRepository;
         private readonly IHubContext<DeviceHub> _hubContext;
-        public ThietBiService(ThietBiRepository thietBiRepository, IHubContext<DeviceHub> hubContext)
+        private readonly Telegram _telegram; 
+        private readonly Cache _cache;
+
+        public ThietBiService(ThietBiRepository thietBiRepository, IHubContext<DeviceHub> hubContext, Cache cache, Telegram telegram)
         {
             _thietBiRepository = thietBiRepository;
             _hubContext = hubContext;
+            _cache = cache;
+            _telegram = telegram;
         }
         public async Task<string> KiemTraQuyenThietBi(int NguoiDungId, int DeviceId)
         {
@@ -190,29 +197,37 @@ namespace CungCapAPI.Application.Services
             int deviceId = await _thietBiRepository.DangKyThietBiMoi(model);
             string groupName = "ThongBao_" + model.userId;
             string payloadString;
+            string message;
             
             if (deviceId == 0)
             {
+                message = "Thêm thiết bị thất bại";
                 var payloadObject = new
                 {
                     success = false,
                     type = "ThietBiMoi",
-                    message = "Thêm thiết bị thất bại"
+                    message = message
                 };
                 payloadString = JsonConvert.SerializeObject(payloadObject);
             }
             else
             {
                 bool IDontKnow = await _thietBiRepository.SetGiaTriMacDichBanDau(deviceId, model.deviceType);
+                message = "Thêm thiết bị thành công";
                 var payloadObject = new
                 {
                     success = true,
                     type = "ThietBiMoi",
-                    message = "Thêm thiết bị thành công"
+                    message = message
                 };
                 payloadString = JsonConvert.SerializeObject(payloadObject);
             }
+
             await _hubContext.Clients.Group(groupName).SendAsync("GuiThongBao", payloadString);
+
+            TelegramInfo Cache = await _cache.GetTelegramInfo(model.userId);
+            await _telegram.GuiThongBaoTelegram(Cache.tele_chat_id, Cache.tele_bot_id, message);
+
             return deviceId;
         }
 
