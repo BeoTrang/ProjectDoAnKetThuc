@@ -75,27 +75,42 @@ async function ConnectSignalR() {
 
     connection.on("GuiThongBao", payload => {
         const data = JSON.parse(payload);
-        if (data.success) {
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: data.message,
-                showConfirmButton: false,
-                timer: 2000
-            });
-            setTimeout(function () {
-                window.location.href = "/trang-chu";
-            }, 3000);
+        switch (data.type) {
+            case "ThietBiMoi":
+                if (data.success) {
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                    setTimeout(function () {
+                        window.location.href = "/trang-chu";
+                    }, 3000);
+                }
+                else {
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+                break;
+
+            default:
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "Không biết loại nào?",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                break;
         }
-        else {
-            Swal.fire({
-                position: "top-end",
-                icon: "error",
-                title: data.message,
-                showConfirmButton: false,
-                timer: 2000
-            });
-        }
+        
     });
 
     connection.onreconnecting(() => console.warn("Mất kết nối, đang thử reconnect..."));

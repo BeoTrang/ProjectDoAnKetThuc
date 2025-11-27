@@ -196,6 +196,7 @@ namespace CungCapAPI.Application.Services
                 var payloadObject = new
                 {
                     success = false,
+                    type = "ThietBiMoi",
                     message = "Thêm thiết bị thất bại"
                 };
                 payloadString = JsonConvert.SerializeObject(payloadObject);
@@ -206,6 +207,7 @@ namespace CungCapAPI.Application.Services
                 var payloadObject = new
                 {
                     success = true,
+                    type = "ThietBiMoi",
                     message = "Thêm thiết bị thành công"
                 };
                 payloadString = JsonConvert.SerializeObject(payloadObject);
