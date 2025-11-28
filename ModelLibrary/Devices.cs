@@ -35,8 +35,8 @@ namespace ModelLibrary
     public class DieuKhienThietBi
     {
         public int deviceId { get; set; }
-        public string payload { get; set; }
-        public int state { get; set; }
+        public string control { get; set; }
+        public string state { get; set; }
     }
     public class ShareDeviceModel
     {
@@ -128,6 +128,13 @@ namespace ModelLibrary
         public int deviceid { get; set; }
         public string master { get; set; }
         public string nameConfig { get; set; }
+    }
+
+    public class EspResponse
+    {
+        public int userId { get; set; }
+        public bool status { get; set; }
+        public string message { get; set; }
     }
 
     public class HistorySearch  

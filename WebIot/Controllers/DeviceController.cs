@@ -314,11 +314,6 @@ namespace WebIot.Controllers
             }
             KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
             if (!KiemTraDangNhap.success) return NotFound();
-            var payload = new
-            {
-                deviceId = request.deviceId,
-                payload = request.payload
-            };
             var accessToken = KiemTraDangNhap.accessToken;
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization =
@@ -326,7 +321,7 @@ namespace WebIot.Controllers
 
             
             var content = new StringContent(
-                Newtonsoft.Json.JsonConvert.SerializeObject(payload),
+                Newtonsoft.Json.JsonConvert.SerializeObject(request),
                 System.Text.Encoding.UTF8,
                 "application/json"
             );

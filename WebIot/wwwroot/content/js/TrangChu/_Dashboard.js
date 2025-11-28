@@ -99,6 +99,15 @@ async function ConnectSignalR() {
                     });
                 }
                 break;
+            case "DieuKhienThietBi":
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: data.message,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                break;
 
             default:
                 Swal.fire({
@@ -267,18 +276,19 @@ $(document).on('change', '.relaySwitch', async function () {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 deviceId: deviceId,
-                payload: payload
+                control: relayName,
+                state: newState
             })
         });
         data = await res.json();
         if (data.success) {
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: "Điều khiển thành công!",
-                showConfirmButton: false,
-                timer: 1000
-            });
+            //Swal.fire({
+            //    position: "top-end",
+            //    icon: "success",
+            //    title: "Điều khiển thành công!",
+            //    showConfirmButton: false,
+            //    timer: 1000
+            //});
         }
         else {
             Swal.fire({

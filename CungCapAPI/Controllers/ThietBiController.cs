@@ -267,7 +267,17 @@ namespace CungCapAPI.Controllers
                     {
                         var info = await _thietBiService.LayThongTinThietBi(request.deviceId);
                         string topic = "esp/" + info.type + "/" + request.deviceId + "/control";
-                        await _mqttService.PublishAsync(topic, request.payload);
+
+                        var json = new
+                        {
+                            userId = NguoiDungId,
+                            control = request.control,
+                            state = request.state
+                        };
+
+                        string payload = JsonConvert.SerializeObject(json);
+
+                        await _mqttService.PublishAsync(topic, payload);
                         return new JsonResult(new
                         {
                             success = true,

@@ -1,6 +1,7 @@
 ﻿using CungCapAPI.Hubs;
 using CungCapAPI.Models.Redis;
 using CungCapAPI.Services;
+using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Configurations;
 using Microsoft.AspNetCore.SignalR;
 using ModelLibrary;
@@ -106,6 +107,18 @@ namespace CungCapAPI.MQTT
                         await _Redis.SetAsync(keyData, payload);
                         await _hubContext.Clients.Group(deviceId).SendAsync("DeviceData", payload);
                         await _influx.WriteSensorAsync(payload);
+                        break;
+                    case "control_response":
+                        EspResponse dataReponse = JsonConvert.DeserializeObject<EspResponse>(payload);
+                        string groupName = "ThongBao_" + dataReponse.userId;
+                        var ThongBao = new
+                        {
+                            status = dataReponse.status,
+                            type = "DieuKhienThietBi",
+                            message = dataReponse.message
+                        };
+                        string payloadThongBao = JsonConvert.SerializeObject(ThongBao);
+                        await _hubContext.Clients.Group(groupName).SendAsync("GuiThongBao", payloadThongBao);
                         break;
                     default:
                         Console.WriteLine("Không xác định được topic");

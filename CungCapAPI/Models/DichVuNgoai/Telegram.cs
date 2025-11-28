@@ -32,6 +32,6 @@ namespace CungCapAPI.Models.DichVuNgoai
 
             var response = await _httpClient.PostAsync(url, new FormUrlEncodedContent(data));
         }
-
+        
     }
 }
