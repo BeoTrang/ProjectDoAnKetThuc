@@ -372,6 +372,7 @@ namespace CungCapAPI.Application.Services
             catch
             {
                 return null;
+
             }
         }
         
