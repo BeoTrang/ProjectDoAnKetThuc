@@ -130,7 +130,7 @@ namespace CungCapAPI.Application.Services
 
         public async Task<bool> TaoMaChiaSeThietBi(int deviceid, string quyen)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             var data = new byte[6];
             using (var rng = RandomNumberGenerator.Create())
             {
@@ -248,7 +248,7 @@ namespace CungCapAPI.Application.Services
 
         public async Task<bool> TaoMaThemThietBi(int userId, string deviceType)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             var data = new byte[6];
             using (var rng = RandomNumberGenerator.Create())
             {
