@@ -1,0 +1,25 @@
+name: Deploy to Self-Hosted Server
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Stop current containers
+        run: |
+          docker compose down || true
+
+      - name: Build & Start containers
+        run: |
+          docker compose up -d --build
+
+      - name: Clean unused images
+        run: |
+          docker image prune -f
