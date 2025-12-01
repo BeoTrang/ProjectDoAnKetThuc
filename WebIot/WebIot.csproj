@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.3.8" />
-    <PackageReference Include="jQuery" Version="3.7.1" />
+    <PackageReference Include="Chart.js" Version="3.7.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

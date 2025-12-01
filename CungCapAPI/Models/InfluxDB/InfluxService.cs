@@ -103,6 +103,7 @@ namespace CungCapAPI.Services
                         .Measurement("sensor_data")
                         .Tag("device_id", ax02.id)
                         .Tag("type", ax02.type)
+                        .Tag("data", "data")
                         .Field("tem", ax02.data.tem)
                         .Field("hum", ax02.data.hum)
                         .Timestamp(ax02.timestamp, WritePrecision.Ns);
