@@ -104,9 +104,10 @@ namespace CungCapAPI.MQTT
                         break;
                     case "data":
                         string keyData = $"device:{deviceID}:data";
-                        await _Redis.SetAsync(keyData, payload);
+                        
                         await _hubContext.Clients.Group(deviceId).SendAsync("DeviceData", payload);
                         await _influx.WriteSensorAsync(payload);
+                        await _Redis.SetAsync(keyData, payload);
                         break;
                     case "control_response":
                         EspResponse dataReponse = JsonConvert.DeserializeObject<EspResponse>(payload);

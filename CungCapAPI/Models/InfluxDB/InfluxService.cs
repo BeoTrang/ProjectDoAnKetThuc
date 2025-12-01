@@ -1,7 +1,9 @@
-﻿using InfluxDB.Client;
+﻿using CungCapAPI.Models.Redis;
+using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using ModelLibrary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -17,13 +19,15 @@ namespace CungCapAPI.Services
         private readonly InfluxDBClient _client;
         private readonly string _org;
         private readonly string _bucket;
+        private readonly IRedisService _Redis;
 
-        public InfluxService(IConfiguration config)
+        public InfluxService(IConfiguration config, IRedisService Redis)
         {
             var url = config["InfluxDb:Url"];
             var token = config["InfluxDb:Token"];
             _org = config["InfluxDb:Org"];
             _bucket = config["InfluxDb:Bucket"];
+            _Redis = Redis;
 
             _client = InfluxDBClientFactory.Create(url, token.ToCharArray());
         }
@@ -37,34 +41,72 @@ namespace CungCapAPI.Services
             switch (type)
             {
                 case "AX01":
-                    var ax01 = JsonConvert.DeserializeObject<AX01<DHT22, Relay4, Name_AX01>>(payload);
-                    var point_AX01 = PointData
-                        .Measurement("sensor_data")
-                        .Tag("device_id", ax01.id)
-                        .Tag("type", ax01.type)
-                        .Field("tem", ax01.data.tem)
-                        .Field("hum", ax01.data.hum)
-                        .Field("relay1", ax01.relays.relay1)
-                        .Field("relay2", ax01.relays.relay2)
-                        .Field("relay3", ax01.relays.relay3)
-                        .Field("relay4", ax01.relays.relay4)
-                        .Timestamp(ax01.timestamp, WritePrecision.Ns);
-                    await writeApi.WritePointAsync(point_AX01, _bucket, _org);
+                    var ax01_new = JsonConvert.DeserializeObject<AX01<DHT22, Relay4, Name_AX01>>(payload);
 
-                    break;
+
+
+                    //Ghi nhiệt độ, độ ẩm
+                    var data_AX01 = PointData
+                        .Measurement("sensor_data")
+                        .Tag("device_id", ax01_new.id)
+                        .Tag("type", ax01_new.type)
+                        .Tag("data", "data")
+                        .Field("tem", ax01_new.data.tem)
+                        .Field("hum", ax01_new.data.hum)
+                        .Timestamp(ax01_new.timestamp, WritePrecision.Ns);
+                    await writeApi.WritePointAsync(data_AX01, _bucket, _org);
+
+                    //Kiểm tra relay có thay đổi không, rồi ghi vào 
+                    var key = $"device:{ax01_new.id}:data";
+                    var redis_data = await _Redis.GetAsync(key);
+                    if (redis_data.IsNullOrEmpty())
+                    {
+                        var relay_AX01 = PointData
+                                .Measurement("sensor_data")
+                                .Tag("device_id", ax01_new.id)
+                                .Tag("type", ax01_new.type)
+                                .Tag("data", "relay")
+                                .Field("relay1", ax01_new.relays.relay1)
+                                .Field("relay2", ax01_new.relays.relay2)
+                                .Field("relay3", ax01_new.relays.relay3)
+                                .Field("relay4", ax01_new.relays.relay4)
+                                .Timestamp(ax01_new.timestamp, WritePrecision.Ns);
+                        await writeApi.WritePointAsync(relay_AX01, _bucket, _org);
+                    }
+                    else
+                    {
+                        var ax01_redis = JsonConvert.DeserializeObject<AX01<DHT22, Relay4, Name_AX01>>(redis_data);
+                        if (ax01_new.relays.relay1 != ax01_redis.relays.relay1 || ax01_new.relays.relay2 != ax01_redis.relays.relay2 || ax01_new.relays.relay3 != ax01_redis.relays.relay3 || ax01_new.relays.relay4 != ax01_redis.relays.relay4)
+                        {
+                            var relay_AX01 = PointData
+                                .Measurement("sensor_data")
+                                .Tag("device_id", ax01_new.id)
+                                .Tag("type", ax01_new.type)
+                                .Tag("data", "relay")
+                                .Field("relay1", ax01_new.relays.relay1)
+                                .Field("relay2", ax01_new.relays.relay2)
+                                .Field("relay3", ax01_new.relays.relay3)
+                                .Field("relay4", ax01_new.relays.relay4)
+                                .Timestamp(ax01_new.timestamp, WritePrecision.Ns);
+                            await writeApi.WritePointAsync(relay_AX01, _bucket, _org);
+                        }
+                    }
+
+                        break;
 
                 case "AX02":
                     var ax02 = JsonConvert.DeserializeObject<AX02<DHT22, Name_AX02>>(payload);
                     
-                    var point = PointData
+                    var data_AX02 = PointData
                         .Measurement("sensor_data")
                         .Tag("device_id", ax02.id)
                         .Tag("type", ax02.type)
                         .Field("tem", ax02.data.tem)
                         .Field("hum", ax02.data.hum)
                         .Timestamp(ax02.timestamp, WritePrecision.Ns);
-                    await writeApi.WritePointAsync(point, _bucket, _org);
+                    await writeApi.WritePointAsync(data_AX02, _bucket, _org);
                     break;
+
                 default:
 
                     break;
