@@ -2,9 +2,11 @@
 using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ModelLibrary;
+using Mono.TextTemplating;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
@@ -206,9 +208,8 @@ namespace CungCapAPI.Services
                         from(bucket: ""{_bucket}"")
                           |> {time}
                           |> filter(fn: (r) => r[""_measurement""] == ""sensor_data"")
-                          |> filter(fn: (r) => r[""type""] == ""{model.type}"")
                           |> filter(fn: (r) => r[""device_id""] == ""{model.deviceId}"")
-                          |> filter(fn: (r) => {fillterType})
+                          |> filter(fn: (r) => r[""data""] == ""data"")
                           {aggregateWindow}
                           |> pivot(rowKey: [""_time""], columnKey: [""_field""], valueColumn: ""_value"")
                           |> yield(name: ""mean"")";
@@ -218,26 +219,29 @@ namespace CungCapAPI.Services
                         from(bucket: ""{_bucket}"")
                           |> {time}
                           |> filter(fn: (r) => r._measurement == ""sensor_data"")
-                          |> filter(fn: (r) => r.device_id == ""{model.deviceId}"" and r.type == ""{model.type}"")
-                          |> filter(fn: (r) => {fillterType})
-                          |> difference(nonNegative: false)
-                          |> filter(fn: (r) => r._value != 0.0)
-                          |> keep(columns: [""_time"", ""_field"", ""_value""])
-                          |> yield(name: ""relayChanges"")";
+                          |> filter(fn: (r) => r.device_id == ""{model.deviceId}"")
+                          |> filter(fn: (r) => r[""data""] == ""relay"")
+                          |> pivot(
+                                rowKey: [""_time""],
+                                columnKey: [""_field""],
+                                valueColumn: ""_value""
+                            )
+                          |> keep(columns: [""_time"", ""relay1"", ""relay2"", ""relay3"", ""relay4""])
+                          |> yield(name: ""mean"")";
                     break;
+
                 default:
                     return null;
             }
 
-            
 
             var queryApi = _client.GetQueryApi();
             var tables = await queryApi.QueryAsync(flux, _org);
             var list = new List<dynamic>();
-            var sapxepList = new List<dynamic>();
+
             switch (model.typePick)
             {
-                case ("TemHum"):
+                case "TemHum":
                     foreach (var table in tables)
                     {
                         foreach (var record in table.Records)
@@ -251,45 +255,33 @@ namespace CungCapAPI.Services
                         }
                     }
                     break;
-                case ("Relay"):
+
+                case "Relay":
                     foreach (var table in tables)
                     {
                         foreach (var record in table.Records)
                         {
-                            var value = Convert.ToDouble(record.GetValue());
-                            var state = value > 0 ? "BẬT" : "TẮT";
                             list.Add(new
                             {
                                 time = record.GetTime()?.ToDateTimeUtc(),
-                                relay = record.GetField(),
-                                state = state
+                                relay1 = record.Values["relay1"],
+                                relay2 = record.Values["relay2"],
+                                relay3 = record.Values["relay3"],
+                                relay4 = record.Values["relay4"]
                             });
                         }
                     }
-                    sapxepList = list.OrderByDescending(x => x.time).ToList();
+                    // Sắp xếp theo thời gian giảm dần (mới nhất trước)
+                    list = list.OrderByDescending(d => d.time).ToList();
                     break;
+
                 default:
                     return null;
             }
-            
-            if (sapxepList.Any())
-            {
-                return sapxepList;
-            }
-            else
-            {
-                return list;
-            }
 
-            //string flux = $@"
-            //    from(bucket: ""{_bucket}"")
-            //      |> range(start: {startUtc.ToString("o", CultureInfo.InvariantCulture)}, stop: {stopUtc.ToString("o", CultureInfo.InvariantCulture)})
-            //      |> filter(fn: (r) => r._measurement == ""sensor_data"")
-            //      |> filter(fn: (r) => {fieldFilter})
-            //      |> filter(fn: (r) => r.device_id == ""{deviceId}"")
-            //      |> filter(fn: (r) => r.type == ""{type}"")
-            //      |> aggregateWindow(every: {windowPeriod}, fn: mean, createEmpty: false)
-            //      |> yield(name: ""mean"")";
+            // Trả về kết quả
+            return list;
+
         }
     }
 }
