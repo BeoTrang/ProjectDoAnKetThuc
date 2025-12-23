@@ -47,7 +47,7 @@ namespace CungCapAPI.MQTT
                             new MqttTopicFilter
                             {
                                 Topic = topic,
-                                QualityOfServiceLevel = MqttQualityOfServiceLevel.AtLeastOnce // QoS 1
+                                QualityOfServiceLevel = MqttQualityOfServiceLevel.AtLeastOnce
                             }
                         }
                     };
@@ -56,7 +56,6 @@ namespace CungCapAPI.MQTT
                 }
             };
 
-            // Khi mất kết nối
             _mqttClient.DisconnectedAsync += async e =>
             {
                 Console.WriteLine("❌ MQTT disconnected! Trying to reconnect in 5s...");
@@ -75,7 +74,6 @@ namespace CungCapAPI.MQTT
                 }
             };
 
-            // Khi nhận dữ liệu từ topic
             _mqttClient.ApplicationMessageReceivedAsync += async e =>
             {
                 var topic = e.ApplicationMessage.Topic;
@@ -105,7 +103,7 @@ namespace CungCapAPI.MQTT
                     case "data":
                         string keyData = $"device:{deviceID}:data";
                         
-                        await _hubContext.Clients.Group(deviceId).SendAsync("DeviceData", payload);
+                        await _hubContext.Clients.Group(deviceId).SendAsync("DeviceData", payload); 
                         await _influx.WriteSensorAsync(payload);
                         await _Redis.SetAsync(keyData, payload);
                         break;
