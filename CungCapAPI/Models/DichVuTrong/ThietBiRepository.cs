@@ -275,5 +275,42 @@ namespace CungCapAPI.Models.DichVuTrong
                 .ToListAsync();
             return result.FirstOrDefault();
         }
+
+        public async Task<List<TelegramInfo>> DanhSachTelegramChoCanhBao(int DeviceId)
+        {
+            var result = await _SqlServer.Database
+                .SqlQueryRaw<TelegramInfo>("EXEC SP_LayDanhSachTelegramChoCanhBaoNguong @DeviceId",
+                    new SqlParameter("@DeviceId", DeviceId)
+                )
+                .ToListAsync();
+            return result;
+        }
+
+        public async Task<bool> LuuNguongChoThietBi(string key, string data)
+        {
+            try
+            {
+                await _Redis.SetAsync(key, data);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public async Task<JObject> LayNguongChoHienThi(int deviceId)
+        {
+            try
+            {
+                string key = $"device:{deviceId}:CanhBao";
+                string jsonString = await _Redis.GetAsync(key);
+                JObject Nguong = string.IsNullOrEmpty(jsonString) ? new JObject() : JObject.Parse(jsonString);
+                return Nguong;
+            }
+            catch
+            {
+                return new JObject();
+            }
+        }
     }
 }

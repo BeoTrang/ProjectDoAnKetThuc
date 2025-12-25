@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -130,6 +131,11 @@ namespace ModelLibrary
         public string nameConfig { get; set; }
     }
 
+    public class RequestJObject
+    {
+        public Object data { get; set; }
+    }
+
     public class EspResponse
     {
         public int userId { get; set; }
@@ -154,4 +160,28 @@ namespace ModelLibrary
         public DateTime deviceTime { get; set; }
     }
 
+    public class Nguong_AX01
+    {
+        public int deviceId { get; set; }
+        public string deviceType { get; set; }
+        public double temNguongTren { get; set; }
+        public double temNguongDuoi { get; set; }
+        public double humNguongTren { get; set; }
+        public double humNguongDuoi { get; set; }
+
+        public bool temIsAlert { get; set; }
+        public bool humIsAlert { get; set; }      
+    }
+    public class Nguong_AX02
+    {
+        public int deviceId { get; set; }
+        public string deviceType { get; set; }
+        public double temNguongTren { get; set; }
+        public double temNguongDuoi { get; set; }
+        public double humNguongTren { get; set; }
+        public double humNguongDuoi { get; set; }
+
+        public bool temIsAlert { get; set; }
+        public bool humIsAlert { get; set; }
+    }
 }

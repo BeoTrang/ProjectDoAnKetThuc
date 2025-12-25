@@ -835,5 +835,139 @@ namespace CungCapAPI.Controllers
                 });
             }
         }
+
+        [Authorize]
+        [HttpPost("/thiet-bi/luu-nguong-cho-thiet-bi")]
+        public async Task<ActionResult> LuuNguongChoThietBi([FromBody] Nguong_AX01 request)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                int deviceId = request.deviceId;
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, deviceId);
+                if (Quyen == "full" || Quyen == "control")
+                {
+                    bool KetQua = await _thietBiService.LuuNguongChoThietBi_AX01(request);
+                    if (KetQua)
+                    {
+                        var response = new
+                        {
+                            success = true,
+                            message = "Lưu ngưỡng thành công!",
+                        };
+
+                        string json = JsonConvert.SerializeObject(response);
+
+                        return Content(json, "application/json");
+                    }
+                    else
+                    {
+                        var response = new
+                        {
+                            success = false,
+                            message = "Lưu ngưỡng không thành công!",
+                        };
+
+                        string json = JsonConvert.SerializeObject(response);
+
+                        return Content(json, "application/json");
+                    }
+                    
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Bạn không có quyền truy cập!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
+
+        [Authorize]
+        [HttpPost("/thiet-bi/lay-nguong-cho-hien-thi")]
+        public async Task<ActionResult> LayNguongDeHienThi([FromBody] ShareRequest123 request)
+        {
+            try
+            {
+                int NguoiDungId = int.Parse(User.FindFirst("NguoiDungId").Value);
+                string Quyen = await _thietBiService.KiemTraQuyenThietBi(NguoiDungId, request.deviceid);
+                if (Quyen == "full" || Quyen == "view" || Quyen == "control")
+                {
+                    JObject Nguong = await _thietBiService.LayNguongChoHienThi(request.deviceid);
+                    
+                    if (!Nguong.HasValues || Nguong == null)
+                    {
+                        Device thongtin = await _thietBiService.LayThongTinThietBi(request.deviceid);
+
+                        switch (thongtin.type)
+                        {
+                            case "AX01":
+                                Nguong["deviceId"] = thongtin.id;
+                                Nguong["deviceType"] = thongtin.type;
+                                Nguong["temNguongTren"] = 30;
+                                Nguong["temNguongDuoi"] = 10;
+                                Nguong["humNguongTren"] = 90;
+                                Nguong["humNguongDuoi"] = 50;
+                                Nguong["temIsAlert"] = false;
+                                Nguong["humIsAlert"] = false;
+
+                                break;
+                            case "AX02":
+                                Nguong["deviceId"] = thongtin.id;
+                                Nguong["deviceType"] = thongtin.type;
+                                Nguong["temNguongTren"] = 30;
+                                Nguong["temNguongDuoi"] = 10;
+                                Nguong["HumNguongTren"] = 90;
+                                Nguong["humNguongDuoi"] = 50;
+                                Nguong["temIsAlert"] = false;
+                                Nguong["humIsAlert"] = false;
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+
+                    var response = new
+                    {
+                        success = true,
+                        message = "Ok",
+                        data = Nguong
+                    };
+
+                    string json = JsonConvert.SerializeObject(response);
+
+                    return Content(json, "application/json");
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Bạn không có quyền try cập!"
+                    });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
+
     }
 }

@@ -4,6 +4,7 @@ using ModelLibrary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
+using System.Text;
 using WebIot.Helper;
 using WebIot.Models;
 
@@ -828,5 +829,128 @@ namespace WebIot.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("/api/luu-nguong-cho-thiet-bi")] 
+        public async Task<ActionResult> LuuNguongChoThietBi([FromBody] Nguong_AX01 request) 
+        { 
+            try 
+            { 
+                KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap(); 
+                if (!KiemTraDangNhap.success) 
+                    return Json(new 
+                    { 
+                        success = false, 
+                        message = "Đã hết hạn đăng nhập!" 
+                    }); 
+                var accessToken = KiemTraDangNhap.accessToken; 
+                var client = _httpClientFactory.CreateClient(); 
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                var payload = new
+                {
+                    deviceId = request.deviceId,
+                    deviceType = "",
+                    temNguongTren = request.temNguongTren,
+                    temNguongDuoi = request.temNguongDuoi,
+                    humNguongTren = request.humNguongTren,
+                    humNguongDuoi = request.humNguongDuoi,
+                    temIsAlert = request.temIsAlert,
+                    humIsAlert = request.humIsAlert
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(payload), 
+                    System.Text.Encoding.UTF8, "application/json"); 
+                var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/luu-nguong-cho-thiet-bi", content); 
+                var responseBody = await response.Content.ReadAsStringAsync(); 
+                if (!response.IsSuccessStatusCode) 
+                    return Json(new 
+                    { 
+                        success = false, 
+                        message = "Lỗi hệ thống!" 
+                    }); 
+                var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody); 
+                return Json(new { success = result.success, message = result.message }); 
+            } 
+            catch 
+            { 
+                return Json(new { success = false, message = "Lỗi hệ thống!" }); 
+            } 
+        }
+
+        [HttpGet]
+        [Route("/api/lay-nguong-cho-hien-thi/{deviceId}")]
+        public async Task<ActionResult> LayNguongChoHienThi(int deviceId)
+        {
+            try
+            {
+                KiemTraJWT KiemTraDangNhap = await _jWT_Helper.KiemTraDangNhap();
+                if (!KiemTraDangNhap.success)
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Đã hết hạn đăng nhập!"
+                    });
+                var accessToken = KiemTraDangNhap.accessToken;
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                var payload = new
+                {
+                    deviceId = deviceId
+                };
+                var content = new StringContent(
+                    JsonConvert.SerializeObject(payload),
+                    System.Text.Encoding.UTF8,
+                    "application/json"
+                );
+
+                var response = await client.PostAsync(_apiSettings.Url + "/thiet-bi/lay-nguong-cho-hien-thi", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+
+                if (!response.IsSuccessStatusCode)
+                    return Json(new { success = false, message = "Lỗi hệ thống!" });
+
+                var result = JsonConvert.DeserializeObject<Request<JObject>>(responseBody);
+
+                if (result.success)
+                {
+                    JObject data = result.data;
+                    string deviceType = data["deviceType"].ToString();
+                    switch (deviceType)
+                    {
+                        case "AX01":
+                            Nguong_AX01 nguong_AX01 = data.ToObject<Nguong_AX01>();
+                            return PartialView("AX01_Nguong", nguong_AX01);
+
+                        case "AX02":
+                            Nguong_AX02 nguong_AX02 = data.ToObject<Nguong_AX02>();
+                            return PartialView("AX02_Nguong", nguong_AX02);
+
+                        default:
+                            return Json(new
+                            {
+                                success = false,
+                                message = "Lỗi không thấy loại thiết bị!"
+                            });
+                    }
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = result.message
+                    });
+                }
+
+            }
+            catch
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi hệ thống!"
+                });
+            }
+        }
     }
 }

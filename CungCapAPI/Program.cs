@@ -1,6 +1,7 @@
 ﻿using CungCapAPI.Application.Interfaces;
 using CungCapAPI.Application.Services;
 using CungCapAPI.Hubs;
+using CungCapAPI.Models.Alert;
 using CungCapAPI.Models.Cache;
 using CungCapAPI.Models.DichVuNgoai;
 using CungCapAPI.Models.DichVuTrong;
@@ -83,12 +84,15 @@ builder.Services.AddScoped<ITaiKhoanService, TaiKhoanService>();
 builder.Services.AddScoped<IThietBiService, ThietBiService>();
 builder.Services.AddScoped<Cache>();
 builder.Services.AddScoped<Telegram>();
+builder.Services.AddScoped<AlertService>();
+
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var config = builder.Configuration.GetSection("Redis")["Configuration"];
     return ConnectionMultiplexer.Connect(config);
 });
+
 builder.Services.AddSingleton<InfluxService>();
 builder.Services.AddSingleton<MqttService>();
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>

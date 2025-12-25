@@ -376,5 +376,72 @@ namespace CungCapAPI.Application.Services
             }
         }
         
+
+        public async Task<JObject> LayNguongChoHienThi(int deviceId)
+        {
+            try
+            {
+                JObject Nguong = await _thietBiRepository.LayNguongChoHienThi(deviceId);
+                return Nguong;
+            }
+            catch
+            {
+                return new JObject();
+            }
+        }
+
+        public async Task<bool> LuuNguongChoThietBi_AX01(Nguong_AX01 data)
+        {
+            try
+            {
+                var thongtin = await _thietBiRepository.LayThongTinThietBi(data.deviceId);
+
+                string key = $"device:{data.deviceId}:CanhBao";
+                JObject dataSave = new JObject();
+                switch (thongtin.type)
+                {
+                    case "AX01":
+                        dataSave = new JObject
+                        {
+                            ["deviceId"] = data.deviceId,
+                            ["deviceType"] = thongtin.type,
+                            ["temNguongTren"] = data.temNguongTren,
+                            ["temNguongDuoi"] = data.temNguongDuoi,
+                            ["humNguongTren"] = data.humNguongTren,
+                            ["humNguongDuoi"] = data.humNguongDuoi,
+                            ["temIsAlert"] = data.temIsAlert,
+                            ["humIsAlert"] = data.humIsAlert,
+                        };
+                        break;
+
+                    case "AX02":
+                        dataSave = new JObject
+                        {
+                            ["deviceId"] = data.deviceId,
+                            ["deviceType"] = thongtin.type,
+                            ["temNguongTren"] = data.temNguongTren,
+                            ["temNguongDuoi"] = data.temNguongDuoi,
+                            ["humNguongTren"] = data.humNguongTren,
+                            ["humNguongDuoi"] = data.humNguongDuoi,
+                            ["temIsAlert"] = data.temIsAlert,
+                            ["humIsAlert"] = data.humIsAlert,
+                        };
+                        break;
+
+                    default:
+
+                        break;
+                }
+                string dataSaveString = JsonConvert.SerializeObject(dataSave);
+
+                bool KetQua = await _thietBiRepository.LuuNguongChoThietBi(key, dataSaveString);
+
+                return KetQua;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

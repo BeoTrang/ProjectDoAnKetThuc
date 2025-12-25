@@ -1,4 +1,5 @@
-﻿using CungCapAPI.Models.Redis;
+﻿using CungCapAPI.Models.DichVuTrong;
+using CungCapAPI.Models.Redis;
 using CungCapAPI.Models.SqlServer;
 using Microsoft.CodeAnalysis.FlowAnalysis;
 using Microsoft.Data.SqlClient;
@@ -11,14 +12,14 @@ namespace CungCapAPI.Models.DichVuNgoai
 {
     public class Telegram
     {
-        private readonly ApplicationDbContext _SqlServer;
         private readonly IRedisService _Redis;
         private readonly HttpClient _httpClient;
-        public Telegram(ApplicationDbContext SqlServer, IRedisService Redis, HttpClient httpClient)
+        private readonly ThietBiRepository _thietBiRepository;
+        public Telegram(ApplicationDbContext SqlServer, IRedisService Redis, HttpClient httpClient, ThietBiRepository thietBiRepository)
         {
             _httpClient = httpClient;
-            _SqlServer = SqlServer;
             _Redis = Redis;
+            _thietBiRepository = thietBiRepository;
         }
 
         public async Task GuiThongBaoTelegram(string chat_Id, string bot_Id, string message)
@@ -31,6 +32,15 @@ namespace CungCapAPI.Models.DichVuNgoai
             };
 
             var response = await _httpClient.PostAsync(url, new FormUrlEncodedContent(data));
+        }
+
+        public async Task GuiCanhBaoThietBi(int DeviceId, string message)
+        {
+            List<TelegramInfo> DanhSach = await _thietBiRepository.DanhSachTelegramChoCanhBao(DeviceId);
+            foreach (var item in DanhSach)
+            {
+                await GuiThongBaoTelegram(item.tele_chat_id, item.tele_bot_id, message);
+            }
         }
         
     }

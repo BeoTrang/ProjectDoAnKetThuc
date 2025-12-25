@@ -45,8 +45,6 @@ namespace CungCapAPI.Services
                 case "AX01":
                     var ax01_new = JsonConvert.DeserializeObject<AX01<DHT22, Relay4, Name_AX01>>(payload);
 
-
-
                     //Ghi nhiệt độ, độ ẩm
                     var data_AX01 = PointData
                         .Measurement("sensor_data")

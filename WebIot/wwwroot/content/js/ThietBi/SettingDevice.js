@@ -201,11 +201,44 @@ async function LoadDeviceInfo(id) {
     }
 };
 
+async function LoadNguongThietBi(id) {
+    try {
+        const res = await fetch(`/api/lay-nguong-cho-hien-thi/${id}`, {
+            method: "GET"
+        });
+
+        const contentType = res.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+            const data = await res.json();
+
+            if (!data.success) {
+                $('#NguongSetting').remove();
+                return;
+            }
+        } else {
+            const html = await res.text();
+            $('#NguongSetting').empty().append(html);
+        }
+    } catch (err) {
+        console.error(err);
+        Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Lỗi hệ thống",
+            showConfirmButton: false,
+            timer: 1000
+        });
+    } finally {
+        hideSpinner();
+    }
+}
 
 async function Init_SettingThietBi(id) {
     showSpinner();
     await LoadTrangSetting();
     await LoadDeviceSetting(id);
+    await LoadNguongThietBi(id);
     await LoadShareDevice(id);
     await LoadDeviceInfo(id);
     
@@ -530,6 +563,55 @@ async function Init_SettingThietBi(id) {
         });
         
         
+    });
+
+    $("#AX01ThresholdForm").on("submit", function (e) {
+        e.preventDefault();
+
+        const data = {
+            deviceId: parseInt($("#deviceid").val()),
+
+            temNguongDuoi: parseFloat($("#temNguongDuoi").val()),
+            temNguongTren: parseFloat($("#temNguongTren").val()),
+            humNguongDuoi: parseFloat($("#humNguongDuoi").val()),
+            humNguongTren: parseFloat($("#humNguongTren").val()),
+
+            temIsAlert: $("#temEnable").is(":checked"),
+            humIsAlert: $("#humEnable").is(":checked")
+        };
+
+        console.log(data);
+
+        $.ajax({
+            url: "/api/luu-nguong-cho-thiet-bi",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function (request) {
+                if (request.success) {
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: request.message,
+                        showConfirmButton: false,
+                        timer: 1000
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: request.message
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Lỗi hệ thống!"
+                });
+            }
+        });
     });
 
 };

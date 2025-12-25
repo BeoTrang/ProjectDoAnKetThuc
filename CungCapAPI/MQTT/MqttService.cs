@@ -1,4 +1,5 @@
 ﻿using CungCapAPI.Hubs;
+using CungCapAPI.Models.Alert;
 using CungCapAPI.Models.Redis;
 using CungCapAPI.Services;
 using InfluxDB.Client.Api.Domain;
@@ -22,13 +23,16 @@ namespace CungCapAPI.MQTT
         private MqttClientOptions _options;
         private readonly InfluxService _influx;
         private readonly IRedisService _Redis;
-
-        public MqttService(IConfiguration config, InfluxService influx, IHubContext<DeviceHub> hubContext, IRedisService Redis)
+        private readonly IServiceScopeFactory _scopeFactory;
+        public MqttService(IConfiguration config, InfluxService influx, IHubContext<DeviceHub> hubContext, IRedisService Redis, IServiceScopeFactory scopeFactory)
         {
             _hubContext = hubContext;
             _config = config;
             _Redis = Redis;
             _influx = influx;
+
+            _scopeFactory = scopeFactory;
+
             var factory = new MqttFactory();
             _mqttClient = factory.CreateMqttClient();
 
@@ -106,6 +110,7 @@ namespace CungCapAPI.MQTT
                         await _hubContext.Clients.Group(deviceId).SendAsync("DeviceData", payload); 
                         await _influx.WriteSensorAsync(payload);
                         await _Redis.SetAsync(keyData, payload);
+                        _ = XuLyAlertAsync(int.Parse(deviceID), deviceTYPE, payload);
                         break;
                     case "control_response":
                         EspResponse dataReponse = JsonConvert.DeserializeObject<EspResponse>(payload);
@@ -150,5 +155,16 @@ namespace CungCapAPI.MQTT
             await _mqttClient.PublishAsync(appMsg);
             Console.WriteLine($"📤 Published to {topic}: {payload}");
         }
+
+        private async Task XuLyAlertAsync(int deviceId, string deviceType, string payload)
+        {
+            using var scope = _scopeFactory.CreateScope();
+
+            var alertService = scope.ServiceProvider
+                                    .GetRequiredService<AlertService>();
+
+            await alertService.AlertProcess(deviceId, deviceType, payload);
+        }
+
     }
 }

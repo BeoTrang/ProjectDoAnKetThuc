@@ -11,4 +11,5 @@ namespace ModelLibrary
         public string tele_chat_id { get; set; }
         public string tele_bot_id { get; set; }
     }
+
 }
