@@ -1,6 +1,7 @@
 ﻿using CungCapAPI.Models.DichVuNgoai;
 using CungCapAPI.Models.DichVuTrong;
 using CungCapAPI.Models.Redis;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
 using ModelLibrary;
 using Newtonsoft.Json;
@@ -52,51 +53,62 @@ namespace CungCapAPI.Models.Alert
             var nguong = JsonConvert.DeserializeObject<Nguong_AX01>(jsonString);
             if (nguong == null) return;
 
-            var data = JsonConvert.DeserializeObject<AX01<DHT22, Relay4, Name_AX01>>(payload);
+            var data = JsonConvert.DeserializeObject<AX02<DHT22, Name_AX02>>(payload);
 
             double nhietDo = data.data.tem;
             double doAm = data.data.hum;
 
             bool temTrongNguong =
-                nhietDo > nguong.temNguongDuoi &&
-                nhietDo < nguong.temNguongTren;
+                nhietDo >= nguong.temNguongDuoi &&
+                nhietDo <= nguong.temNguongTren;
 
             bool humTrongNguong =
-                doAm > nguong.humNguongDuoi &&
-                doAm < nguong.humNguongTren;
+                doAm >= nguong.humNguongDuoi &&
+                doAm <= nguong.humNguongTren;
 
-            if (!nguong.temIsAlert && !temTrongNguong)
+            bool temThongBao = nguong.temThongBao;
+            bool humThongBao = nguong.humThongBao;
+
+            if (temThongBao)
             {
-                nguong.temIsAlert = true;
+                if (temTrongNguong)
+                {
+                    nguong.temIsAlert = true;
+                }
+                
+                if (!temTrongNguong && nguong.temIsAlert)
+                {
+                    nguong.temIsAlert = false;
 
-                string message =
-                    $"Cảnh báo thiết bị\n" +
-                    $"ID: {deviceId}\n" +
-                    $"Nhiệt độ: {nhietDo}°C\n" +
-                    $"Thông báo: Nhiệt độ vượt ngưỡng an toàn";
+                    string message =
+                        $"Cảnh báo thiết bị\n" +
+                        $"ID: {deviceId}\n" +
+                        $"Nhiệt độ: {nhietDo}°C\n" +
+                        $"Thông báo: Nhiệt độ vượt ngưỡng an toàn";
 
-                await _telegram.GuiCanhBaoThietBi(deviceId, message);
+                    await _telegram.GuiCanhBaoThietBi(deviceId, message);
+                }
             }
-            else if (nguong.temIsAlert && temTrongNguong)
-            {
-                nguong.temIsAlert = false;
-            }
 
-            if (!nguong.humIsAlert && !humTrongNguong)
+            if (humThongBao)
             {
-                nguong.humIsAlert = true;
+                if (humTrongNguong)
+                {
+                    nguong.humIsAlert = true;
+                }
+                
+                if (!humTrongNguong && nguong.humIsAlert)
+                {
+                    nguong.humIsAlert = false;
 
-                string message =
+                    string message =
                     $"Cảnh báo thiết bị\n" +
                     $"ID: {deviceId}\n" +
                     $"Độ ẩm: {doAm}%\n" +
                     $"Thông báo: Độ ẩm vượt ngưỡng an toàn";
 
-                await _telegram.GuiCanhBaoThietBi(deviceId, message);
-            }
-            else if (nguong.humIsAlert && humTrongNguong)
-            {
-                nguong.humIsAlert = false;
+                    await _telegram.GuiCanhBaoThietBi(deviceId, message);
+                }
             }
 
             await _Redis.SetAsync(key, JsonConvert.SerializeObject(nguong));
@@ -116,45 +128,56 @@ namespace CungCapAPI.Models.Alert
             double doAm = data.data.hum;
 
             bool temTrongNguong =
-                nhietDo > nguong.temNguongDuoi &&
-                nhietDo < nguong.temNguongTren;
+                nhietDo >= nguong.temNguongDuoi &&
+                nhietDo <= nguong.temNguongTren;
 
             bool humTrongNguong =
-                doAm > nguong.humNguongDuoi &&
-                doAm < nguong.humNguongTren;
+                doAm >= nguong.humNguongDuoi &&
+                doAm <= nguong.humNguongTren;
 
-            if (!nguong.temIsAlert && !temTrongNguong)
+            bool temThongBao = nguong.temThongBao;
+            bool humThongBao = nguong.humThongBao;
+
+            if (temThongBao)
             {
-                nguong.temIsAlert = true;
+                if (temTrongNguong)
+                {
+                    nguong.temIsAlert = true;
+                }
 
-                string message =
-                    $"Cảnh báo thiết bị\n" +
-                    $"ID: {deviceId}\n" +
-                    $"Nhiệt độ: {nhietDo}°C\n" +
-                    $"Thông báo: Nhiệt độ vượt ngưỡng an toàn";
+                if (!temTrongNguong && nguong.temIsAlert)
+                {
+                    nguong.temIsAlert = false;
 
-                await _telegram.GuiCanhBaoThietBi(deviceId, message);
+                    string message =
+                        $"Cảnh báo thiết bị\n" +
+                        $"ID: {deviceId}\n" +
+                        $"Nhiệt độ: {nhietDo}°C\n" +
+                        $"Thông báo: Nhiệt độ vượt ngưỡng an toàn";
+
+                    await _telegram.GuiCanhBaoThietBi(deviceId, message);
+                }
             }
-            else if (nguong.temIsAlert && temTrongNguong)
-            {
-                nguong.temIsAlert = false;
-            }
 
-            if (!nguong.humIsAlert && !humTrongNguong)
+            if (humThongBao)
             {
-                nguong.humIsAlert = true;
+                if (humTrongNguong)
+                {
+                    nguong.humIsAlert = true;
+                }
 
-                string message =
+                if (!humTrongNguong && nguong.humIsAlert)
+                {
+                    nguong.humIsAlert = false;
+
+                    string message =
                     $"Cảnh báo thiết bị\n" +
                     $"ID: {deviceId}\n" +
                     $"Độ ẩm: {doAm}%\n" +
                     $"Thông báo: Độ ẩm vượt ngưỡng an toàn";
 
-                await _telegram.GuiCanhBaoThietBi(deviceId, message);
-            }
-            else if (nguong.humIsAlert && humTrongNguong)
-            {
-                nguong.humIsAlert = false;
+                    await _telegram.GuiCanhBaoThietBi(deviceId, message);
+                }
             }
 
             await _Redis.SetAsync(key, JsonConvert.SerializeObject(nguong));

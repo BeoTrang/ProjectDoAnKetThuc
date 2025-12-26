@@ -169,19 +169,24 @@ namespace ModelLibrary
         public double humNguongTren { get; set; }
         public double humNguongDuoi { get; set; }
 
-        public bool temIsAlert { get; set; }
-        public bool humIsAlert { get; set; }      
+        public bool temIsAlert { get; set; } = true;
+        public bool humIsAlert { get; set; } = true;
+        public bool temThongBao { get; set; }
+        public bool humThongBao { get; set; }
     }
     public class Nguong_AX02
     {
         public int deviceId { get; set; }
-        public string deviceType { get; set; }
+        public string? deviceType { get; set; }
         public double temNguongTren { get; set; }
         public double temNguongDuoi { get; set; }
         public double humNguongTren { get; set; }
         public double humNguongDuoi { get; set; }
 
-        public bool temIsAlert { get; set; }
-        public bool humIsAlert { get; set; }
+        public bool temIsAlert { get; set; } = true;
+        public bool humIsAlert { get; set; } = true;
+
+        public bool temThongBao { get; set; }
+        public bool humThongBao { get; set; }
     }
 }

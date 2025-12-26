@@ -576,8 +576,8 @@ async function Init_SettingThietBi(id) {
             humNguongDuoi: parseFloat($("#humNguongDuoi").val()),
             humNguongTren: parseFloat($("#humNguongTren").val()),
 
-            temIsAlert: $("#temEnable").is(":checked"),
-            humIsAlert: $("#humEnable").is(":checked")
+            temThongBao: $("#temEnable").is(":checked"),
+            humThongBao: $("#humEnable").is(":checked")
         };
 
         console.log(data);

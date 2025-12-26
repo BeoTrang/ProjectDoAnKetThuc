@@ -921,6 +921,8 @@ namespace CungCapAPI.Controllers
                                 Nguong["humNguongDuoi"] = 50;
                                 Nguong["temIsAlert"] = false;
                                 Nguong["humIsAlert"] = false;
+                                Nguong["temThongBao"] = false;
+                                Nguong["humThongBao"] = false;
 
                                 break;
                             case "AX02":
@@ -932,6 +934,9 @@ namespace CungCapAPI.Controllers
                                 Nguong["humNguongDuoi"] = 50;
                                 Nguong["temIsAlert"] = false;
                                 Nguong["humIsAlert"] = false;
+                                Nguong["temThongBao"] = false;
+                                Nguong["humThongBao"] = false;
+
                                 break;
 
                             default:

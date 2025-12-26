@@ -411,6 +411,8 @@ namespace CungCapAPI.Application.Services
                             ["humNguongDuoi"] = data.humNguongDuoi,
                             ["temIsAlert"] = data.temIsAlert,
                             ["humIsAlert"] = data.humIsAlert,
+                            ["temThongBao"] = data.temThongBao,
+                            ["humThongBao"] = data.humThongBao
                         };
                         break;
 
@@ -425,6 +427,8 @@ namespace CungCapAPI.Application.Services
                             ["humNguongDuoi"] = data.humNguongDuoi,
                             ["temIsAlert"] = data.temIsAlert,
                             ["humIsAlert"] = data.humIsAlert,
+                            ["temThongBao"] = data.temThongBao,
+                            ["humThongBao"] = data.humThongBao
                         };
                         break;
 

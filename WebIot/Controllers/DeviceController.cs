@@ -854,7 +854,9 @@ namespace WebIot.Controllers
                     humNguongTren = request.humNguongTren,
                     humNguongDuoi = request.humNguongDuoi,
                     temIsAlert = request.temIsAlert,
-                    humIsAlert = request.humIsAlert
+                    humIsAlert = request.humIsAlert,
+                    temThongBao = request.temThongBao,
+                    humThongBao = request.humThongBao
                 };
                 var content = new StringContent(JsonConvert.SerializeObject(payload), 
                     System.Text.Encoding.UTF8, "application/json"); 
